@@ -29,6 +29,7 @@ c:\program files (x86)\microsoft directx sdk (june 2010)\include\xnamath.h(2742)
 c:\program files (x86)\microsoft directx sdk (june 2010)\include\xnamath.h(2743): warning C4838: conversion from 'unsigned int' to 'INT' requires a narrowing conversion
 c:\program files (x86)\microsoft directx sdk (june 2010)\include\xnamath.h(2754): warning C4838: conversion from 'unsigned int' to 'INT' requires a narrowing conversion
   Generating Code...
-c:\users\4frans08\downloads\advancedgamesprogramming\swinginggame\main.cpp(236): warning C4715: 'WndProc': not all control paths return a value
-c:\users\4frans08\downloads\advancedgamesprogramming\swinginggame\main.cpp(417): warning C4715: 'InitialiseGraphics': not all control paths return a value
-  SwingingGame.vcxproj -> C:\Users\4frans08\Downloads\AdvancedGamesProgramming\SwingingGame\Debug\SwingingGame.exe
+c:\users\4frans08\downloads\swinginggame\main.cpp(236): warning C4715: 'WndProc': not all control paths return a value
+c:\users\4frans08\downloads\swinginggame\main.cpp(417): warning C4715: 'InitialiseGraphics': not all control paths return a value
+  LINK : C:\Users\4frans08\Downloads\SwingingGame\Debug\SwingingGame.exe not found or not built by the last incremental link; performing full link
+  SwingingGame.vcxproj -> C:\Users\4frans08\Downloads\SwingingGame\Debug\SwingingGame.exe

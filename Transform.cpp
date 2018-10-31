@@ -1,0 +1,22 @@
+#include "Transform.h"
+
+
+
+Transform::Transform()
+{
+	scale = XMMatrixIdentity();
+	rotation = XMMatrixIdentity();
+	translation = XMMatrixIdentity();
+	world = get_world_transform();
+	
+}
+
+
+Transform::~Transform()
+{
+}
+
+XMMATRIX Transform::get_world_transform()
+{
+	return scale * rotation * translation;
+}
