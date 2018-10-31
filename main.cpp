@@ -8,6 +8,7 @@
 #define XM_NO_ALIGNMENT
 #include <xnamath.h>
 #include <iostream>
+#include "VGTime.h"
 
 //using namespace std;
 
@@ -16,6 +17,16 @@ struct POS_COL_VERTEX
 	XMFLOAT3 Pos;
 	XMFLOAT4 Col;
 };
+
+struct CONSTANT_BUFFER0
+{
+	float RedAmount; // 4 bytes
+	XMFLOAT3 packing_bytes; // 3x4 bytes = 12 bytes
+};
+
+CONSTANT_BUFFER0 cb0_changing_fraction;
+
+VGTime* timer;
 
 HINSTANCE g_hInst = NULL;
 HWND g_hWnd = NULL;
@@ -26,6 +37,7 @@ ID3D11Device* g_pD3DDevice = NULL;
 ID3D11DeviceContext* g_pImmediateContext = NULL;
 IDXGISwapChain* g_pSwapChain = NULL;
 ID3D11RenderTargetView* g_pBackBufferRTView = NULL;
+ID3D11Buffer* g_pConstantBuffer0;
 
 ID3D11Buffer* g_pVertexBuffer;
 ID3D11VertexShader* g_pVertexShader;
@@ -75,6 +87,8 @@ POS_COL_VERTEX shape_3[] =
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
+
+	timer = new VGTime();
 	UNREFERENCED_PARAMETER(hPrevInstance);
 	UNREFERENCED_PARAMETER(lpCmdLine);
 
@@ -97,9 +111,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		DXTRACE_MSG("Failed to initialise graphics");
 		return 0;
 	}
+	timer->start();
 
 	while (msg.message != WM_QUIT)
 	{
+		timer->tick();
 		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
 		{
 			TranslateMessage(&msg);
@@ -113,7 +129,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			//	//OutputDebugString("moved");
 			//}
 		}
+		
 	}
+
+	timer->stop();
 	return (int)msg.wParam;
 }
 
@@ -169,13 +188,6 @@ void AlterVertices(POS_COL_VERTEX* vert,WPARAM message) {
 	g_pImmediateContext->Unmap(g_pVertexBuffer, NULL);
 }
 
-//void InitializeD3D()
-//{
-//	ID3D11Texture2D* pBackBufferTexture;
-//	//hr = g_pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D),
-//	//	(LPVOID*)&pBackBufferTexture);
-//
-//}
 
 HRESULT InitialiseWindow(HINSTANCE hInstance, int nCmdShow)
 {
@@ -324,6 +336,16 @@ HRESULT InitialiseD3D() {
 
 void RenderFrame(void)
 {
+	double delta = timer->deltaTime();
+	if (cb0_changing_fraction.RedAmount <= 0.5f)
+	{
+		cb0_changing_fraction.RedAmount +=  0.1f * delta;
+	}
+
+	g_pImmediateContext->UpdateSubresource(g_pConstantBuffer0, 0, 0, &cb0_changing_fraction, 0, 0);
+
+	g_pImmediateContext->VSSetConstantBuffers(0, 1, &g_pConstantBuffer0);
+
 	float rgba_clear_colour[4] = { 0.1f,0.2f,0.6f,1.0f };
 	g_pImmediateContext->ClearRenderTargetView(g_pBackBufferRTView, rgba_clear_colour);
 
@@ -356,6 +378,18 @@ HRESULT InitialiseGraphics()
 	//};
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	// create constant buffer
+	D3D11_BUFFER_DESC constant_buffer_desc;
+	ZeroMemory(&constant_buffer_desc, sizeof(constant_buffer_desc));
+
+	constant_buffer_desc.Usage = D3D11_USAGE_DEFAULT; // can use UpdateSubresrource() to update
+	constant_buffer_desc.ByteWidth = 16; // MUST be a multiple of 16, calculate from CB struct
+	constant_buffer_desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+
+	hr = g_pD3DDevice->CreateBuffer(&constant_buffer_desc, NULL, &g_pConstantBuffer0);
+
+	if (FAILED(hr)) return hr;
 
 	// Set up and create vertex buffer
 	D3D11_BUFFER_DESC bufferDesc;
@@ -418,6 +452,7 @@ HRESULT InitialiseGraphics()
 
 void ShutdownD3D()
 {
+	if (g_pConstantBuffer0) g_pConstantBuffer0->Release();
 	if (g_pSwapChain) g_pSwapChain->Release();
 	if (g_pImmediateContext) g_pImmediateContext->Release();
 	if (g_pD3DDevice) g_pD3DDevice->Release();

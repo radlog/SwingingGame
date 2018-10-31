@@ -1,3 +1,10 @@
+cbuffer CBuffer0
+{
+	float red_fraction; // 4 bytes
+	float3 packing; // 3x4 bytes = 12 bytes
+};
+
+
 struct VOut
 {
 	float4 position : SV_POSITION;
@@ -8,6 +15,7 @@ VOut VShader(float4 position : POSITION, float4 color : COLOR)
 {
 	VOut output;
 
+	color.r *= red_fraction;
 	output.position = position;
 	output.color = color;
 
