@@ -4,6 +4,7 @@
 
 Character::Character()
 {
+	
 }
 
 
@@ -21,4 +22,9 @@ void Character::cut_target(Character target)
 
 void Character::throw_at(Character target)
 {
+}
+
+State Character::get_State()
+{
+	return this->state;
 }
