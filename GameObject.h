@@ -11,14 +11,16 @@ public:
 	GameObject();
 	~GameObject();
 
+	GameObject(std::string name);
 	GameObject(std::string name, Transform transform, Model model, float collision_radius);
 
-	void spawn(Vector3 position);
-	void render();
-	void start();
-	void update();
-	void move(Vector3 position);
-	void collided(Vector3 target);
+	virtual void spawn(Vector3 position);
+	virtual void render();
+	virtual void start();
+	virtual void update();
+	virtual void move(Vector3 position);
+	virtual void collided(Vector3 target);
+	virtual std::string get_name();
 
 protected:
 	std::string name;

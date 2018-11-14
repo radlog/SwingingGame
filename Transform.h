@@ -25,9 +25,9 @@ protected:
 
 
 private:
-	XMMATRIX rotation, translation, scale, world;
+	XMMATRIX XM_rotation, XM_translation, XM_scale, XM_world;
 	Vector3 position;
-	Vector3  scale;
+	//Vector3 scale;
 	//Quaternion rotation;
 
 

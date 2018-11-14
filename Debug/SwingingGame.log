@@ -27,7 +27,10 @@ c:\program files (x86)\microsoft directx sdk (june 2010)\include\xnamath.h(2732)
 c:\program files (x86)\microsoft directx sdk (june 2010)\include\xnamath.h(2742): warning C4838: conversion from 'unsigned int' to 'INT' requires a narrowing conversion
 c:\program files (x86)\microsoft directx sdk (june 2010)\include\xnamath.h(2743): warning C4838: conversion from 'unsigned int' to 'INT' requires a narrowing conversion
 c:\program files (x86)\microsoft directx sdk (june 2010)\include\xnamath.h(2754): warning C4838: conversion from 'unsigned int' to 'INT' requires a narrowing conversion
-d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\main.cpp(342): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
-d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\main.cpp(248): warning C4715: 'WndProc': not all control paths return a value
-d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\main.cpp(451): warning C4715: 'InitialiseGraphics': not all control paths return a value
-  SwingingGame.vcxproj -> D:\JohnsLair\JohsGoogleDrive\AdvancedGameProgramming\Projects\SwingingGame\Debug\SwingingGame.exe
+c:\users\4frans08\downloads\swinginggame\player.h(3): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+c:\users\4frans08\downloads\swinginggame\input.h(2): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+c:\users\4frans08\downloads\swinginggame\input.h(3): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+c:\users\4frans08\downloads\swinginggame\main.cpp(393): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+c:\users\4frans08\downloads\swinginggame\main.cpp(299): warning C4715: 'WndProc': not all control paths return a value
+c:\users\4frans08\downloads\swinginggame\main.cpp(502): warning C4715: 'InitialiseGraphics': not all control paths return a value
+  SwingingGame.vcxproj -> C:\Users\4frans08\Downloads\SwingingGame\Debug\SwingingGame.exe

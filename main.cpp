@@ -9,6 +9,12 @@
 #include <xnamath.h>
 #include <iostream>
 #include "VGTime.h"
+#include <vector>
+#include "GameObject.h"
+#include "Enemy.h"
+#include "Player.h"
+#include <typeinfo>
+#include <io.h>
 
 //using namespace std;
 
@@ -23,6 +29,12 @@ struct CONSTANT_BUFFER0
 	float RedAmount; // 4 bytes
 	XMFLOAT3 packing_bytes; // 3x4 bytes = 12 bytes
 };
+
+
+
+// game objects
+std::vector<GameObject> gameObjects(2);
+
 
 CONSTANT_BUFFER0 cb0_changing_fraction;
 
@@ -59,6 +71,12 @@ void RenderFrame(void);
 void AlterVertices(POS_COL_VERTEX* vert, WPARAM message);
 
 
+// methods
+void UpdateAI();
+void UpdateInput();
+void UpdateSound();
+void UpdateGraphics();
+
 
 
 POS_COL_VERTEX shape_1[] =
@@ -87,6 +105,10 @@ POS_COL_VERTEX shape_3[] =
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
+	//GameObject *p1 = new GameObject();
+	//GameObject *p2 = new GameObject();
+	//gameObjects.push_back(*p1);
+	//gameObjects.push_back(*p2);
 
 	timer = new VGTime();
 	UNREFERENCED_PARAMETER(hPrevInstance);
@@ -122,7 +144,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			DispatchMessage(&msg);
 		}
 		else {
-			RenderFrame();
+			//UpdateAI();
+			UpdateInput();
+			//UpdateSound();
+			//UpdateGraphics();
+			//RenderFrame();
 			//if (GetAsyncKeyState('A') & 0x0001)
 			//{
 			//	AlterVertices(vertices);
@@ -186,6 +212,31 @@ void AlterVertices(POS_COL_VERTEX* vert,WPARAM message) {
 
 	// unlock the buffer
 	g_pImmediateContext->Unmap(g_pVertexBuffer, NULL);
+}
+
+void UpdateAI()
+{
+
+}
+
+void UpdateInput()
+{
+	//for (GameObject var : gameObjects)
+	//{
+	//	//if (typeid(var) != typeid(Player)) continue;
+	//	//std::cout << var.get_name();
+	//}
+	std::cout << gameObjects[0].get_name();
+}
+
+void UpdateSound()
+{
+
+}
+
+void UpdateGraphics()
+{
+
 }
 
 

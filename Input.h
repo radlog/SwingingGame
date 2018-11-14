@@ -1,6 +1,9 @@
 #pragma once
 #include "Player.h";
 #include "Command.h";
+
+class Player;
+
 class Input
 {
 public:
