@@ -17,11 +17,13 @@ struct stats {
 	int score;
 };
 
-class Character : protected GameObject
+class Character : public GameObject
 {
 
 public:
 	Character();
+	Character(std::string name);
+	Character(std::string name, Transform transform, Model model, float collision_radius, int life, State state);
 	~Character();
 
 	Character(int life, State state);
@@ -31,7 +33,7 @@ public:
 	State get_State();
 
 
-private:
+protected:
 	int life;
 	Collectable collected;
 	State state = Standing;
