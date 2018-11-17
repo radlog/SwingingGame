@@ -13,17 +13,8 @@
 #include <xnamath.h>
 #include <iostream>
 #include "VGTime.h"
-<<<<<<< HEAD
 #include "Geometry.h"
 #include "Camera.h"
-=======
-#include <vector>
-#include "GameObject.h"
-#include "Enemy.h"
-#include "Player.h"
-#include <typeinfo>
-#include <io.h>
->>>>>>> cbb1e29bc125ff8c4a9d230abb164da70f956360
 
 //using namespace std;
 
@@ -41,21 +32,11 @@ struct cbuffer
 	XMFLOAT2 packing_bytes; // 8 bytes
 }; // total size = 80 bytes
 
-<<<<<<< HEAD
 Camera* camera;
 Geometry geo;
 Cube testCube;
 
 cbuffer cbuffer_default;
-=======
-
-
-// game objects
-std::vector<GameObject> gameObjects(2);
-
-
-CONSTANT_BUFFER0 cb0_changing_fraction;
->>>>>>> cbb1e29bc125ff8c4a9d230abb164da70f956360
 
 VGTime* timer;
 
@@ -90,17 +71,7 @@ void RenderFrame(void);
 void AlterVertices(POS_COL_VERTEX* vert, WPARAM message);
 
 
-<<<<<<< HEAD
 float scale = 1.0f;
-=======
-// methods
-void UpdateAI();
-void UpdateInput();
-void UpdateSound();
-void UpdateGraphics();
-
-
->>>>>>> cbb1e29bc125ff8c4a9d230abb164da70f956360
 
 POS_COL_VERTEX shape_1[] =
 {
@@ -186,15 +157,8 @@ POS_COL_VERTEX vertices[] =
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
-<<<<<<< HEAD
 	camera = new Camera();
 	geo.create_cube(1.0f, &testCube);
-=======
-	//GameObject *p1 = new GameObject();
-	//GameObject *p2 = new GameObject();
-	//gameObjects.push_back(*p1);
-	//gameObjects.push_back(*p2);
->>>>>>> cbb1e29bc125ff8c4a9d230abb164da70f956360
 
 	timer = new VGTime();
 	UNREFERENCED_PARAMETER(hPrevInstance);
@@ -230,11 +194,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			DispatchMessage(&msg);
 		}
 		else {
-			//UpdateAI();
-			UpdateInput();
-			//UpdateSound();
-			//UpdateGraphics();
-			//RenderFrame();
+			RenderFrame();
 			//if (GetAsyncKeyState('A') & 0x0001)
 			//{
 			//	AlterVertices(vertices);
@@ -438,31 +398,6 @@ HRESULT InitialiseGraphics()
 	g_pImmediateContext->IASetInputLayout(g_pInputLayout);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-}
-
-void UpdateAI()
-{
-
-}
-
-void UpdateInput()
-{
-	//for (GameObject var : gameObjects)
-	//{
-	//	//if (typeid(var) != typeid(Player)) continue;
-	//	//std::cout << var.get_name();
-	//}
-	std::cout << gameObjects[0].get_name();
-}
-
-void UpdateSound()
-{
-
-}
-
-void UpdateGraphics()
-{
-
 }
 
 

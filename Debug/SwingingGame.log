@@ -27,7 +27,6 @@ c:\program files (x86)\microsoft directx sdk (june 2010)\include\xnamath.h(2732)
 c:\program files (x86)\microsoft directx sdk (june 2010)\include\xnamath.h(2742): warning C4838: conversion from 'unsigned int' to 'INT' requires a narrowing conversion
 c:\program files (x86)\microsoft directx sdk (june 2010)\include\xnamath.h(2743): warning C4838: conversion from 'unsigned int' to 'INT' requires a narrowing conversion
 c:\program files (x86)\microsoft directx sdk (june 2010)\include\xnamath.h(2754): warning C4838: conversion from 'unsigned int' to 'INT' requires a narrowing conversion
-<<<<<<< HEAD
 d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\geometry.h(45): warning C4091: 'static ': ignored on left of 'Geometry' when no variable is declared
 d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\camera.h(40): warning C4305: 'initializing': truncation from 'double' to 'const float'
 d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\camera.h(41): warning C4305: 'initializing': truncation from 'double' to 'const float'
@@ -35,12 +34,3 @@ d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\main.
 d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\main.cpp(397): warning C4715: 'InitialiseGraphics': not all control paths return a value
 d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\main.cpp(562): warning C4715: 'WndProc': not all control paths return a value
   SwingingGame.vcxproj -> D:\JohnsLair\JohsGoogleDrive\AdvancedGameProgramming\Projects\SwingingGame\Debug\SwingingGame.exe
-=======
-c:\users\4frans08\downloads\swinginggame\player.h(3): warning C4067: unexpected tokens following preprocessor directive - expected a newline
-c:\users\4frans08\downloads\swinginggame\input.h(2): warning C4067: unexpected tokens following preprocessor directive - expected a newline
-c:\users\4frans08\downloads\swinginggame\input.h(3): warning C4067: unexpected tokens following preprocessor directive - expected a newline
-c:\users\4frans08\downloads\swinginggame\main.cpp(393): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
-c:\users\4frans08\downloads\swinginggame\main.cpp(299): warning C4715: 'WndProc': not all control paths return a value
-c:\users\4frans08\downloads\swinginggame\main.cpp(502): warning C4715: 'InitialiseGraphics': not all control paths return a value
-  SwingingGame.vcxproj -> C:\Users\4frans08\Downloads\SwingingGame\Debug\SwingingGame.exe
->>>>>>> cbb1e29bc125ff8c4a9d230abb164da70f956360

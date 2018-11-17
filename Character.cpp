@@ -7,15 +7,6 @@ Character::Character()
 	
 }
 
-Character::Character(std::string name)
-{
-	GameObject::GameObject(name);
-}
-
-Character::Character(std::string name, Transform transform, Model model, float collision_radius, int life, State state)
-{
-}
-
 
 Character::~Character()
 {
