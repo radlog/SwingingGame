@@ -12,6 +12,7 @@ public:
 	void set_aspect_ratio(float aspect_ratio);
 	void set_near_plane(float near_plane);
 	void set_far_plane(float far_plane);
+	void set_view(XMMATRIX view);
 
 	float get_fov();
 	float get_aspect_ratio();
@@ -23,7 +24,8 @@ public:
 
 private:
 	Transform transform;
-	XMMATRIX view, projection, world_view_projection;
+	
+	XMMATRIX world, view, projection, world_view_projection;
 
 	float fov;
 	float aspect_ratio;

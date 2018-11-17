@@ -5,6 +5,7 @@
 Camera::Camera()
 {
 	transform = Transform();
+	world = XMMatrixTranslation(0, 0, 5);
 	view = XMMatrixIdentity();
 	projection = XMMatrixPerspectiveFovLH(XMConvertToRadians(default_fov), default_aspect_ratio, default_near_plane, default_far_plane);
 }
@@ -16,7 +17,7 @@ Camera::~Camera()
 
 Camera::Camera(float fov, float aspect_ratio, float near_plane, float far_plane)
 {
-	transform = Transform();
+	world = XMMatrixTranslation(0, 0, 5);
 	view = XMMatrixIdentity();
 
 	set_fov(fov);
@@ -59,6 +60,11 @@ void Camera::set_far_plane(float far_plane)
 		this->far_plane = default_far_plane;
 }
 
+void Camera::set_view(XMMATRIX view)
+{
+	this->view = view;
+}
+
 float Camera::get_fov()
 {
 	return this->fov;
@@ -81,7 +87,7 @@ float Camera::get_far_plane()
 
 XMMATRIX Camera::get_world_view_projection()
 {
-	world_view_projection = transform.get_world_transform() * view * projection;
+	world_view_projection = world * view * projection;
 	return world_view_projection;
 }
 

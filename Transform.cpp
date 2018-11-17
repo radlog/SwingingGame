@@ -4,10 +4,10 @@
 
 Transform::Transform()
 {
-	scale = XMMatrixIdentity();
-	rotation = XMMatrixIdentity();
-	translation = XMMatrixIdentity();
-	world = get_world_transform();
+	//scale = ;
+	//local_rotation = XMMatrixIdentity();
+	//local_translation = XMMatrixIdentity();
+	//world = get_world_transform();
 	
 }
 
@@ -17,6 +17,7 @@ Transform::~Transform()
 }
 
 XMMATRIX Transform::get_world_transform()
-{
-	return scale * rotation * translation;
+{	
+	//return XMMATRIX( scale * rotation * position);
+	return NULL;
 }

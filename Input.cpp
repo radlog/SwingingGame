@@ -19,6 +19,24 @@ Input::Input(Player * actor)
 void Input::handle_input(WPARAM key)
 {
 	State state = actor->get_State();
+
+	switch (state)
+	{
+	case Crouching:
+		break;
+	case Standing:
+		break;
+	case Airborne:
+		break;		
+	case Moving:
+		break;
+	case Accelerating:
+		break;
+	case Hooking:
+		break;
+	}
+
+
 	switch (key)
 	{
 		// represets move forward

@@ -27,7 +27,10 @@ c:\program files (x86)\microsoft directx sdk (june 2010)\include\xnamath.h(2732)
 c:\program files (x86)\microsoft directx sdk (june 2010)\include\xnamath.h(2742): warning C4838: conversion from 'unsigned int' to 'INT' requires a narrowing conversion
 c:\program files (x86)\microsoft directx sdk (june 2010)\include\xnamath.h(2743): warning C4838: conversion from 'unsigned int' to 'INT' requires a narrowing conversion
 c:\program files (x86)\microsoft directx sdk (june 2010)\include\xnamath.h(2754): warning C4838: conversion from 'unsigned int' to 'INT' requires a narrowing conversion
-d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\main.cpp(342): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
-d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\main.cpp(248): warning C4715: 'WndProc': not all control paths return a value
-d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\main.cpp(451): warning C4715: 'InitialiseGraphics': not all control paths return a value
+d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\geometry.h(45): warning C4091: 'static ': ignored on left of 'Geometry' when no variable is declared
+d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\camera.h(40): warning C4305: 'initializing': truncation from 'double' to 'const float'
+d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\camera.h(41): warning C4305: 'initializing': truncation from 'double' to 'const float'
+d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\main.cpp(284): warning C4305: 'argument': truncation from 'double' to 'FLOAT'
+d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\main.cpp(397): warning C4715: 'InitialiseGraphics': not all control paths return a value
+d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\main.cpp(562): warning C4715: 'WndProc': not all control paths return a value
   SwingingGame.vcxproj -> D:\JohnsLair\JohsGoogleDrive\AdvancedGameProgramming\Projects\SwingingGame\Debug\SwingingGame.exe

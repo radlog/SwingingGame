@@ -1,5 +1,7 @@
 #pragma once
 #include "Input.h";
+#include "Character.h"
+class Input;
 class Player : public Character
 {
 public:

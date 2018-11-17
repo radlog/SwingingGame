@@ -15,7 +15,7 @@ GameObject::GameObject(std::string name, Transform transform, Model model, float
 {
 }
 
-void GameObject::spawn(Vector3 position)
+void GameObject::spawn(XMVECTOR position)
 {
 }
 
@@ -31,10 +31,12 @@ void GameObject::update()
 {
 }
 
-void GameObject::move(Vector3 position)
+void GameObject::move(XMVECTOR position)
 {
+	transform.position = position;
 }
 
-void GameObject::collided(Vector3 target)
+void GameObject::collided(XMVECTOR target)
 {
+
 }

@@ -6,9 +6,15 @@
 #include <dxerr.h>
 #define _XM_NO_INTRINSICS_
 #define XM_NO_ALIGNMENT
+
+
+
+
 #include <xnamath.h>
 #include <iostream>
 #include "VGTime.h"
+#include "Geometry.h"
+#include "Camera.h"
 
 //using namespace std;
 
@@ -18,13 +24,19 @@ struct POS_COL_VERTEX
 	XMFLOAT4 Col;
 };
 
-struct CONSTANT_BUFFER0
+struct cbuffer
 {
+	XMMATRIX WorldViewProjection; // 64 bytes
 	float RedAmount; // 4 bytes
-	XMFLOAT3 packing_bytes; // 3x4 bytes = 12 bytes
-};
+	float scale; // 4 bytes
+	XMFLOAT2 packing_bytes; // 8 bytes
+}; // total size = 80 bytes
 
-CONSTANT_BUFFER0 cb0_changing_fraction;
+Camera* camera;
+Geometry geo;
+Cube testCube;
+
+cbuffer cbuffer_default;
 
 VGTime* timer;
 
@@ -59,13 +71,13 @@ void RenderFrame(void);
 void AlterVertices(POS_COL_VERTEX* vert, WPARAM message);
 
 
-
+float scale = 1.0f;
 
 POS_COL_VERTEX shape_1[] =
 {
-	{XMFLOAT3(0.2f,0.2f,0.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(0.9f,-0.9f,0.0f), XMFLOAT4(0.2f, 0.0f, 1.0f, 1.0f)},
-	{XMFLOAT3(-0.9f,-0.9f,0.0f), XMFLOAT4(0.0f, 0.5f, 0.2f, 0.5f)}
+	{XMFLOAT3(scale,scale,scale), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(scale,-scale,scale), XMFLOAT4(0.2f, 0.0f, 1.0f, 1.0f)},
+	{XMFLOAT3(-scale,-scale,scale), XMFLOAT4(0.0f, 0.5f, 0.2f, 0.5f)}
 };
 
 
@@ -85,8 +97,68 @@ POS_COL_VERTEX shape_3[] =
 };
 
 
+
+POS_COL_VERTEX vertices[] =
+{
+
+ { XMFLOAT3(-scale, scale, scale), XMFLOAT4(1.0f,0.0f,0.0f,1.0f) },
+ { XMFLOAT3(-scale, -scale, scale), XMFLOAT4(1.0f,0.0f,0.0f,1.0f)},
+ { XMFLOAT3(scale, scale, scale), XMFLOAT4(1.0f,0.0f,0.0f,1.0f) },
+ { XMFLOAT3(scale, scale, scale), XMFLOAT4(1.0f,0.0f,0.0f,1.0f) },
+ { XMFLOAT3(-scale, -scale, scale), XMFLOAT4(1.0f,0.0f,0.0f,1.0f)},
+ { XMFLOAT3(scale, -scale, scale), XMFLOAT4(1.0f,0.0f,0.0f,1.0f) },
+
+
+ { XMFLOAT3(-scale, -scale, -scale), XMFLOAT4(1.0f,0.0f,0.0f,1.0f)},
+ { XMFLOAT3(-scale, scale, -scale) , XMFLOAT4(1.0f,0.0f,0.0f,1.0f)},
+ { XMFLOAT3(scale, scale, -scale), XMFLOAT4(1.0f,0.0f,0.0f,1.0f) },
+ { XMFLOAT3(-scale, -scale, -scale), XMFLOAT4(1.0f,0.0f,0.0f,1.0f)},
+ { XMFLOAT3(scale, scale, -scale), XMFLOAT4(1.0f,0.0f,0.0f,1.0f) },
+ { XMFLOAT3(scale, -scale, -scale), XMFLOAT4(1.0f,0.0f,0.0f,1.0f) },
+
+
+ { XMFLOAT3(-scale, -scale, -scale) , XMFLOAT4(0.0f,1.0f,0.0f,1.0f)},
+ { XMFLOAT3(-scale, -scale, scale), XMFLOAT4(0.0f,1.0f,0.0f,1.0f) },
+ { XMFLOAT3(-scale, scale, -scale), XMFLOAT4(0.0f,1.0f,0.0f,1.0f) },
+ { XMFLOAT3(-scale, -scale, scale), XMFLOAT4(0.0f,1.0f,0.0f,1.0f) },
+ { XMFLOAT3(-scale, scale, scale), XMFLOAT4(0.0f,1.0f,0.0f,1.0f) },
+ { XMFLOAT3(-scale, scale, -scale), XMFLOAT4(0.0f,1.0f,0.0f,1.0f) },
+
+
+ { XMFLOAT3(scale, -scale, scale), XMFLOAT4(0.0f,1.0f,0.0f,1.0f) },
+ { XMFLOAT3(scale, -scale, -scale) , XMFLOAT4(0.0f,1.0f,0.0f,1.0f)},
+ { XMFLOAT3(scale, scale, -scale), XMFLOAT4(0.0f,1.0f,0.0f,1.0f) },
+ { XMFLOAT3(scale, scale, scale), XMFLOAT4(0.0f,1.0f,0.0f,1.0f) },
+ { XMFLOAT3(scale, -scale, scale), XMFLOAT4(0.0f,1.0f,0.0f,1.0f) },
+ { XMFLOAT3(scale, scale, -scale), XMFLOAT4(0.0f,1.0f,0.0f,1.0f) },
+
+
+ { XMFLOAT3(scale, -scale, -scale), XMFLOAT4(0.0f,0.0f,1.0f,1.0f) },
+ { XMFLOAT3(scale, -scale, scale) , XMFLOAT4(0.0f,0.0f,1.0f,1.0f) },
+ { XMFLOAT3(-scale, -scale, -scale), XMFLOAT4(0.0f,0.0f,1.0f,1.0f)},
+ { XMFLOAT3(scale, -scale, scale), XMFLOAT4(0.0f,0.0f,1.0f,1.0f) },
+ { XMFLOAT3(-scale, -scale, scale), XMFLOAT4(0.0f,0.0f,1.0f,1.0f) },
+ { XMFLOAT3(-scale, -scale, -scale), XMFLOAT4(0.0f,0.0f,1.0f,1.0f)},
+
+ { XMFLOAT3(scale, scale, scale), XMFLOAT4(0.0f,0.0f,1.0f,1.0f) },
+ { XMFLOAT3(scale, scale, -scale), XMFLOAT4(0.0f,0.0f,1.0f,1.0f) },
+ { XMFLOAT3(-scale, scale, -scale), XMFLOAT4(0.0f,0.0f,1.0f,1.0f) },
+ { XMFLOAT3(-scale, scale, scale), XMFLOAT4(0.0f,0.0f,1.0f,1.0f) },
+ { XMFLOAT3(scale, scale, scale), XMFLOAT4(0.0f,0.0f,1.0f,1.0f) },
+ { XMFLOAT3(-scale, scale, -scale), XMFLOAT4(0.0f,0.0f,1.0f,1.0f) }
+};
+
+
+
+
+
+
+
+
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
+	camera = new Camera();
+	geo.create_cube(1.0f, &testCube);
 
 	timer = new VGTime();
 	UNREFERENCED_PARAMETER(hPrevInstance);
@@ -182,12 +254,173 @@ void AlterVertices(POS_COL_VERTEX* vert,WPARAM message) {
 	g_pImmediateContext->Map(g_pVertexBuffer, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms);
 
 	// copy the data
-	memcpy(ms.pData, shape_1, sizeof(shape_1));
+	memcpy(ms.pData, vertices, sizeof(vertices));
 
 	// unlock the buffer
 	g_pImmediateContext->Unmap(g_pVertexBuffer, NULL);
 }
 
+
+
+
+
+
+
+
+void RenderFrame(void)
+{
+	double delta = timer->deltaTime();
+	//if (cb0_changing_fraction.RedAmount <= 0.5f)
+	//{
+	//	cb0_changing_fraction.RedAmount +=  0.1f * delta;
+	//}
+
+	cbuffer_default.RedAmount = .1f;
+
+
+	XMVECTOR position = XMVectorSet(0.0, 0.0, -5.0, 0.0);
+	XMVECTOR lookat = XMVectorSet(0.0, 0.0, -4.0, 0.0);
+	XMVECTOR up = XMVectorSet(0.0, 1.0, 0.0, 0.0);
+
+	camera->set_view(XMMatrixLookAtLH(position,lookat,up));
+	try {
+
+	cbuffer_default.WorldViewProjection = camera->get_world_view_projection();
+	}
+	catch (int param) {
+		
+	};
+	
+
+	g_pImmediateContext->UpdateSubresource(g_pConstantBuffer0, 0, 0, &cbuffer_default, 0, 0);
+
+	g_pImmediateContext->VSSetConstantBuffers(0, 1, &g_pConstantBuffer0);
+
+	float rgba_clear_colour[4] = { 0.1f,0.2f,0.6f,1.0f };
+	g_pImmediateContext->ClearRenderTargetView(g_pBackBufferRTView, rgba_clear_colour);
+
+	UINT stride = sizeof(POS_COL_VERTEX);
+	UINT offset = 0;
+	g_pImmediateContext->IASetVertexBuffers(0, 1, &g_pVertexBuffer, &stride, &offset);
+
+	g_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	g_pImmediateContext->Draw(36, 0);
+
+
+	// RENDER HERE
+
+	g_pSwapChain->Present(0, 0);
+}
+
+
+HRESULT InitialiseGraphics()
+{
+	HRESULT hr = S_OK;
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	//POS_COL_VERTEX vertices[] =
+	//{
+	//	{XMFLOAT3(0.9f,0.9f,0.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
+	//	{XMFLOAT3(0.9f,-0.9f,0.0f), XMFLOAT4(0.2f, 0.0f, 1.0f, 1.0f)},
+	//	{XMFLOAT3(-0.9f,-0.9f,0.0f), XMFLOAT4(0.0f, 0.5f, 0.2f, 0.5f)}
+	//};
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	// create constant buffer
+	D3D11_BUFFER_DESC constant_buffer_desc;
+	ZeroMemory(&constant_buffer_desc, sizeof(constant_buffer_desc));
+
+	constant_buffer_desc.Usage = D3D11_USAGE_DEFAULT; // can use UpdateSubresrource() to update
+	constant_buffer_desc.ByteWidth = 80; // MUST be a multiple of 16, calculate from CB struct
+	constant_buffer_desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+
+	hr = g_pD3DDevice->CreateBuffer(&constant_buffer_desc, NULL, &g_pConstantBuffer0);
+
+	if (FAILED(hr)) return hr;
+
+	// Set up and create vertex buffer
+	D3D11_BUFFER_DESC bufferDesc;
+	ZeroMemory(&bufferDesc, sizeof(bufferDesc));
+	bufferDesc.Usage = D3D11_USAGE_DYNAMIC; //Dynamic -> used by CPU and GPU
+	bufferDesc.ByteWidth = sizeof(vertices); // Size of the buffer, 3 vertices
+	bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER; // use as a vertex buffer
+	bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE; // allow cpu access
+	hr = g_pD3DDevice->CreateBuffer(&bufferDesc, NULL, &g_pVertexBuffer); // create buffer
+
+	if (FAILED(hr)) { return hr; }
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	// Copy the vertices into the buffer
+	D3D11_MAPPED_SUBRESOURCE ms;
+
+
+
+	// Lock the buffer to allow writing
+	g_pImmediateContext->Map(g_pVertexBuffer, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms);
+
+	// copy the data
+	memcpy(ms.pData, vertices, sizeof(vertices));
+
+	// unlock the buffer
+	g_pImmediateContext->Unmap(g_pVertexBuffer, NULL);
+
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// load and compile pixel and vertex shaders - use vs_5_0 to target DX11 hardware only
+	ID3DBlob *VS, *PS, *error;
+	hr = D3DX11CompileFromFile("shaders.hlsl", 0, 0, "VShader", "vs_4_0", 0, 0, 0, &VS, &error, 0);
+	hr = D3DX11CompileFromFile("shaders.hlsl", 0, 0, "PShader", "ps_4_0", 0, 0, 0, &PS, &error, 0);
+
+	// create shader objects
+	hr = g_pD3DDevice->CreateVertexShader(VS->GetBufferPointer(), VS->GetBufferSize(), NULL, &g_pVertexShader);
+	hr = g_pD3DDevice->CreatePixelShader(PS->GetBufferPointer(), PS->GetBufferSize(), NULL, &g_pPixelShader);
+
+	// set the shader objects as active
+	g_pImmediateContext->VSSetShader(g_pVertexShader, 0, 0);
+	g_pImmediateContext->PSSetShader(g_pPixelShader, 0, 0);
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+	// create and set the input layout object
+	D3D11_INPUT_ELEMENT_DESC iedesc[] =
+	{
+		{"POSITION", 0,DXGI_FORMAT_R32G32B32_FLOAT,0,0,D3D11_INPUT_PER_VERTEX_DATA,0},
+		{"COLOR",0,DXGI_FORMAT_R32G32B32A32_FLOAT,0,D3D11_APPEND_ALIGNED_ELEMENT,D3D11_INPUT_PER_VERTEX_DATA,0}
+	};
+
+	hr = g_pD3DDevice->CreateInputLayout(iedesc, 2, VS->GetBufferPointer(), VS->GetBufferSize(), &g_pInputLayout);
+
+	g_pImmediateContext->IASetInputLayout(g_pInputLayout);
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+}
+
+
+
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 HRESULT InitialiseWindow(HINSTANCE hInstance, int nCmdShow)
 {
@@ -221,32 +454,6 @@ HRESULT InitialiseWindow(HINSTANCE hInstance, int nCmdShow)
 
 	return S_OK;
 }
-
-LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
-{
-	PAINTSTRUCT ps;
-	HDC hdc;
-
-	switch (message)
-	{
-	case WM_PAINT:
-		hdc = BeginPaint(hWnd, &ps);
-		EndPaint(hWnd, &ps);
-		break;
-	case WM_DESTROY:
-		PostQuitMessage(0);
-		break;
-	case WM_KEYDOWN:
-		AlterVertices(shape_1, wParam);
-		if (wParam == VK_ESCAPE)
-			DestroyWindow(g_hWnd);		
-		
-		return 0;
-	default:
-		return DefWindowProc(hWnd, message, wParam, lParam);
-	}
-}
-
 HRESULT InitialiseD3D() {
 	HRESULT hr = S_OK;
 
@@ -333,123 +540,30 @@ HRESULT InitialiseD3D() {
 	return S_OK;
 
 }
-
-void RenderFrame(void)
+LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-	double delta = timer->deltaTime();
-	if (cb0_changing_fraction.RedAmount <= 0.5f)
+	PAINTSTRUCT ps;
+	HDC hdc;
+
+	switch (message)
 	{
-		cb0_changing_fraction.RedAmount +=  0.1f * delta;
+	case WM_PAINT:
+		hdc = BeginPaint(hWnd, &ps);
+		EndPaint(hWnd, &ps);
+		break;
+	case WM_DESTROY:
+		PostQuitMessage(0);
+		break;
+	case WM_KEYDOWN:
+		AlterVertices(shape_1, wParam);
+		if (wParam == VK_ESCAPE)
+			DestroyWindow(g_hWnd);
+
+		return 0;
+	default:
+		return DefWindowProc(hWnd, message, wParam, lParam);
 	}
-
-	g_pImmediateContext->UpdateSubresource(g_pConstantBuffer0, 0, 0, &cb0_changing_fraction, 0, 0);
-
-	g_pImmediateContext->VSSetConstantBuffers(0, 1, &g_pConstantBuffer0);
-
-	float rgba_clear_colour[4] = { 0.1f,0.2f,0.6f,1.0f };
-	g_pImmediateContext->ClearRenderTargetView(g_pBackBufferRTView, rgba_clear_colour);
-
-	UINT stride = sizeof(POS_COL_VERTEX);
-	UINT offset = 0;
-	g_pImmediateContext->IASetVertexBuffers(0, 1, &g_pVertexBuffer, &stride, &offset);
-
-	g_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-	g_pImmediateContext->Draw(3, 0);
-
-
-	// RENDER HERE
-
-	g_pSwapChain->Present(0, 0);
 }
-
-
-HRESULT InitialiseGraphics()
-{
-	HRESULT hr = S_OK;
-
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-	//POS_COL_VERTEX vertices[] =
-	//{
-	//	{XMFLOAT3(0.9f,0.9f,0.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
-	//	{XMFLOAT3(0.9f,-0.9f,0.0f), XMFLOAT4(0.2f, 0.0f, 1.0f, 1.0f)},
-	//	{XMFLOAT3(-0.9f,-0.9f,0.0f), XMFLOAT4(0.0f, 0.5f, 0.2f, 0.5f)}
-	//};
-
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-	// create constant buffer
-	D3D11_BUFFER_DESC constant_buffer_desc;
-	ZeroMemory(&constant_buffer_desc, sizeof(constant_buffer_desc));
-
-	constant_buffer_desc.Usage = D3D11_USAGE_DEFAULT; // can use UpdateSubresrource() to update
-	constant_buffer_desc.ByteWidth = 16; // MUST be a multiple of 16, calculate from CB struct
-	constant_buffer_desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-
-	hr = g_pD3DDevice->CreateBuffer(&constant_buffer_desc, NULL, &g_pConstantBuffer0);
-
-	if (FAILED(hr)) return hr;
-
-	// Set up and create vertex buffer
-	D3D11_BUFFER_DESC bufferDesc;
-	ZeroMemory(&bufferDesc, sizeof(bufferDesc));
-	bufferDesc.Usage = D3D11_USAGE_DYNAMIC; //Dynamic -> used by CPU and GPU
-	bufferDesc.ByteWidth = sizeof(POS_COL_VERTEX) * 3; // Size of the buffer, 3 vertices
-	bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER; // use as a vertex buffer
-	bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE; // allow cpu access
-	hr = g_pD3DDevice->CreateBuffer(&bufferDesc, NULL, &g_pVertexBuffer); // create buffer
-
-	if (FAILED(hr)) { return hr; }
-
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-	// Copy the vertices into the buffer
-	D3D11_MAPPED_SUBRESOURCE ms;
-
-
-
-	// Lock the buffer to allow writing
-	g_pImmediateContext->Map(g_pVertexBuffer, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms);
-
-	// copy the data
-	memcpy(ms.pData, shape_1, sizeof(shape_1));
-
-	// unlock the buffer
-	g_pImmediateContext->Unmap(g_pVertexBuffer, NULL);
-
-
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// load and compile pixel and vertex shaders - use vs_5_0 to target DX11 hardware only
-	ID3DBlob *VS, *PS, *error;
-	hr = D3DX11CompileFromFile("shaders.hlsl", 0, 0, "VShader", "vs_4_0", 0, 0, 0, &VS, &error, 0);
-	hr = D3DX11CompileFromFile("shaders.hlsl", 0, 0, "PShader", "ps_4_0", 0, 0, 0, &PS, &error, 0);
-
-	// create shader objects
-	hr = g_pD3DDevice->CreateVertexShader(VS->GetBufferPointer(), VS->GetBufferSize(), NULL, &g_pVertexShader);
-	hr = g_pD3DDevice->CreatePixelShader(PS->GetBufferPointer(), PS->GetBufferSize(), NULL, &g_pPixelShader);
-
-	// set the shader objects as active
-	g_pImmediateContext->VSSetShader(g_pVertexShader, 0, 0);
-	g_pImmediateContext->PSSetShader(g_pPixelShader, 0, 0);
-
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-	// create and set the input layout object
-	D3D11_INPUT_ELEMENT_DESC iedesc[] =
-	{
-		{"POSITION", 0,DXGI_FORMAT_R32G32B32_FLOAT,0,0,D3D11_INPUT_PER_VERTEX_DATA,0},
-		{"COLOR",0,DXGI_FORMAT_R32G32B32A32_FLOAT,0,D3D11_APPEND_ALIGNED_ELEMENT,D3D11_INPUT_PER_VERTEX_DATA,0}
-	};
-
-	hr = g_pD3DDevice->CreateInputLayout(iedesc, 2, VS->GetBufferPointer(), VS->GetBufferSize(), &g_pInputLayout);
-
-	g_pImmediateContext->IASetInputLayout(g_pInputLayout);
-
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-}
-
 void ShutdownD3D()
 {
 	if (g_pConstantBuffer0) g_pConstantBuffer0->Release();

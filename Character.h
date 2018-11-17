@@ -6,7 +6,7 @@ enum State {
 	Standing,
 	Crouching,
 	Moving,
-	Jumping,
+	Airborne,
 	Accelerating,
 	Hooking
 };
