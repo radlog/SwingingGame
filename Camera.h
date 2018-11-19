@@ -12,20 +12,27 @@ public:
 	void set_aspect_ratio(float aspect_ratio);
 	void set_near_plane(float near_plane);
 	void set_far_plane(float far_plane);
-	void set_view(XMMATRIX view);
 
 	float get_fov();
 	float get_aspect_ratio();
 	float get_near_plane();
 	float get_far_plane();
 
-	XMMATRIX get_world_view_projection();
 
+
+	XMVECTOR lookat;
+
+	XMMATRIX get_world_view_projection();
+	XMMATRIX world, view, projection, world_view_projection;
+
+	Transform transform;
+
+
+	void look_at(XMVECTOR target);
 
 private:
-	Transform transform;
-	
-	XMMATRIX world, view, projection, world_view_projection;
+
+
 
 	float fov;
 	float aspect_ratio;
@@ -39,7 +46,7 @@ private:
 	const float min_fov = 45.0;
 	const float max_fov = 114.0;
 	//ASPECT_RATIO
-	const float default_aspect_ratio = 2.0/3.0;
+	const float default_aspect_ratio = 640.0/480.0;
 	const float min_aspect_ratio = 0.1;
 	const float max_aspect_ratio = 1.0;
 	//NEAR_PLANE
