@@ -23,6 +23,14 @@ public:
 	XMVECTOR rotation;
 	XMVECTOR lookat;
 
+<<<<<<< HEAD
+=======
+private:
+	XMMATRIX XM_rotation, XM_translation, XM_scale, XM_world;
+	Vector3 position;
+	//Vector3 scale;
+	//Quaternion rotation;
+>>>>>>> refs/remotes/origin/master
 
 	void translate(XMMATRIX position);
 	void rotate(float yaw, float pitch, float roll);

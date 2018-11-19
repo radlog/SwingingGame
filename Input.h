@@ -1,7 +1,13 @@
 #pragma once
 #include "Player.h";
 #include "Command.h";
+<<<<<<< HEAD
 class Player;
+=======
+
+class Player;
+
+>>>>>>> refs/remotes/origin/master
 class Input
 {
 public:
