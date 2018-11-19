@@ -1,29 +1,20 @@
-
+#include <Windows.h>
 #include <d3d11.h>
 #include <dxgi.h>
 #include <d3dx11.h>
-#include <Windows.h>
 #include <dxerr.h>
-#define _XM_NO_INTRINSICS_
-#define XM_NO_ALIGNMENT
-
-
-
-
 #include <xnamath.h>
-#include <iostream>
+//#include <iostream>
+//#include <vector>
+//#include <typeinfo>
+//#include <io.h>
+
+
 #include "VGTime.h"
-<<<<<<< HEAD
-#include "Geometry.h"
-#include "Camera.h"
-=======
-#include <vector>
 #include "GameObject.h"
 #include "Enemy.h"
 #include "Player.h"
-#include <typeinfo>
-#include <io.h>
->>>>>>> refs/remotes/origin/master
+#include "Camera.h"
 
 //using namespace std;
 
@@ -33,29 +24,22 @@ struct POS_COL_VERTEX
 	XMFLOAT4 Col;
 };
 
-struct cbuffer
+struct CONSTANT_BUFFER0
 {
 	XMMATRIX WorldViewProjection; // 64 bytes
 	float RedAmount; // 4 bytes
 	float scale; // 4 bytes
 	XMFLOAT2 packing_bytes; // 8 bytes
-}; // total size = 80 bytes
+};
 
-<<<<<<< HEAD
-Camera* camera;
-Geometry geo;
-Cube testCube;
-
-cbuffer cbuffer_default;
-=======
 
 
 // game objects
-std::vector<GameObject> gameObjects(2);
+Camera* camera;
+//std::vector<GameObject> gameObjects(2);
 
 
-CONSTANT_BUFFER0 cb0_changing_fraction;
->>>>>>> refs/remotes/origin/master
+CONSTANT_BUFFER0 cb0;
 
 VGTime* timer;
 
@@ -74,6 +58,7 @@ ID3D11Buffer* g_pVertexBuffer;
 ID3D11VertexShader* g_pVertexShader;
 ID3D11PixelShader* g_pPixelShader;
 ID3D11InputLayout* g_pInputLayout;
+ID3D11DepthStencilView* g_pZBuffer;
 
 
 
@@ -90,9 +75,6 @@ void RenderFrame(void);
 void AlterVertices(POS_COL_VERTEX* vert, WPARAM message);
 
 
-<<<<<<< HEAD
-float scale = 1.0f;
-=======
 // methods
 void UpdateAI();
 void UpdateInput();
@@ -100,101 +82,64 @@ void UpdateSound();
 void UpdateGraphics();
 
 
->>>>>>> refs/remotes/origin/master
+POS_COL_VERTEX cube[] =
+{
+	// back face 
+	{XMFLOAT3(-1.0f, 1.0f, 1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(-1.0f, -1.0f, 1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(-1.0f, -1.0f, 1.0f),XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(1.0f, -1.0f, 1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
+	// front face
+	{XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(-1.0f, 1.0f, -1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(1.0f, 1.0f, -1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(1.0f, 1.0f, -1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(1.0f, -1.0f, -1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
+	// left face
+	{XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(-1.0f, -1.0f, 1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(-1.0f, 1.0f, -1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(-1.0f, -1.0f, 1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(-1.0f, 1.0f, 1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(-1.0f, 1.0f, -1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
+	// right face
+	{XMFLOAT3(1.0f, -1.0f, 1.0f),  XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(1.0f, -1.0f, -1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(1.0f, 1.0f, -1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(1.0f, -1.0f, 1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(1.0f, 1.0f, -1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
+	// bottom face
+	{XMFLOAT3(1.0f, -1.0f, -1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(1.0f, -1.0f, 1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(1.0f, -1.0f, 1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(-1.0f, -1.0f, 1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
+	// top face
+	{XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(1.0f, 1.0f, -1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(-1.0f, 1.0f, -1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(-1.0f, 1.0f, 1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(-1.0f, 1.0f, -1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)}
+
+};
 
 POS_COL_VERTEX shape_1[] =
 {
-	{XMFLOAT3(scale,scale,scale), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(scale,-scale,scale), XMFLOAT4(0.2f, 0.0f, 1.0f, 1.0f)},
-	{XMFLOAT3(-scale,-scale,scale), XMFLOAT4(0.0f, 0.5f, 0.2f, 0.5f)}
-};
-
-
-POS_COL_VERTEX shape_2[] =
-{
 	{XMFLOAT3(0.2f,0.2f,0.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
 	{XMFLOAT3(0.9f,-0.9f,0.0f), XMFLOAT4(0.2f, 0.0f, 1.0f, 1.0f)},
 	{XMFLOAT3(-0.9f,-0.9f,0.0f), XMFLOAT4(0.0f, 0.5f, 0.2f, 0.5f)}
 };
-
-
-POS_COL_VERTEX shape_3[] =
-{
-	{XMFLOAT3(0.2f,0.2f,0.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(0.9f,-0.9f,0.0f), XMFLOAT4(0.2f, 0.0f, 1.0f, 1.0f)},
-	{XMFLOAT3(-0.9f,-0.9f,0.0f), XMFLOAT4(0.0f, 0.5f, 0.2f, 0.5f)}
-};
-
-
-
-POS_COL_VERTEX vertices[] =
-{
-
- { XMFLOAT3(-scale, scale, scale), XMFLOAT4(1.0f,0.0f,0.0f,1.0f) },
- { XMFLOAT3(-scale, -scale, scale), XMFLOAT4(1.0f,0.0f,0.0f,1.0f)},
- { XMFLOAT3(scale, scale, scale), XMFLOAT4(1.0f,0.0f,0.0f,1.0f) },
- { XMFLOAT3(scale, scale, scale), XMFLOAT4(1.0f,0.0f,0.0f,1.0f) },
- { XMFLOAT3(-scale, -scale, scale), XMFLOAT4(1.0f,0.0f,0.0f,1.0f)},
- { XMFLOAT3(scale, -scale, scale), XMFLOAT4(1.0f,0.0f,0.0f,1.0f) },
-
-
- { XMFLOAT3(-scale, -scale, -scale), XMFLOAT4(1.0f,0.0f,0.0f,1.0f)},
- { XMFLOAT3(-scale, scale, -scale) , XMFLOAT4(1.0f,0.0f,0.0f,1.0f)},
- { XMFLOAT3(scale, scale, -scale), XMFLOAT4(1.0f,0.0f,0.0f,1.0f) },
- { XMFLOAT3(-scale, -scale, -scale), XMFLOAT4(1.0f,0.0f,0.0f,1.0f)},
- { XMFLOAT3(scale, scale, -scale), XMFLOAT4(1.0f,0.0f,0.0f,1.0f) },
- { XMFLOAT3(scale, -scale, -scale), XMFLOAT4(1.0f,0.0f,0.0f,1.0f) },
-
-
- { XMFLOAT3(-scale, -scale, -scale) , XMFLOAT4(0.0f,1.0f,0.0f,1.0f)},
- { XMFLOAT3(-scale, -scale, scale), XMFLOAT4(0.0f,1.0f,0.0f,1.0f) },
- { XMFLOAT3(-scale, scale, -scale), XMFLOAT4(0.0f,1.0f,0.0f,1.0f) },
- { XMFLOAT3(-scale, -scale, scale), XMFLOAT4(0.0f,1.0f,0.0f,1.0f) },
- { XMFLOAT3(-scale, scale, scale), XMFLOAT4(0.0f,1.0f,0.0f,1.0f) },
- { XMFLOAT3(-scale, scale, -scale), XMFLOAT4(0.0f,1.0f,0.0f,1.0f) },
-
-
- { XMFLOAT3(scale, -scale, scale), XMFLOAT4(0.0f,1.0f,0.0f,1.0f) },
- { XMFLOAT3(scale, -scale, -scale) , XMFLOAT4(0.0f,1.0f,0.0f,1.0f)},
- { XMFLOAT3(scale, scale, -scale), XMFLOAT4(0.0f,1.0f,0.0f,1.0f) },
- { XMFLOAT3(scale, scale, scale), XMFLOAT4(0.0f,1.0f,0.0f,1.0f) },
- { XMFLOAT3(scale, -scale, scale), XMFLOAT4(0.0f,1.0f,0.0f,1.0f) },
- { XMFLOAT3(scale, scale, -scale), XMFLOAT4(0.0f,1.0f,0.0f,1.0f) },
-
-
- { XMFLOAT3(scale, -scale, -scale), XMFLOAT4(0.0f,0.0f,1.0f,1.0f) },
- { XMFLOAT3(scale, -scale, scale) , XMFLOAT4(0.0f,0.0f,1.0f,1.0f) },
- { XMFLOAT3(-scale, -scale, -scale), XMFLOAT4(0.0f,0.0f,1.0f,1.0f)},
- { XMFLOAT3(scale, -scale, scale), XMFLOAT4(0.0f,0.0f,1.0f,1.0f) },
- { XMFLOAT3(-scale, -scale, scale), XMFLOAT4(0.0f,0.0f,1.0f,1.0f) },
- { XMFLOAT3(-scale, -scale, -scale), XMFLOAT4(0.0f,0.0f,1.0f,1.0f)},
-
- { XMFLOAT3(scale, scale, scale), XMFLOAT4(0.0f,0.0f,1.0f,1.0f) },
- { XMFLOAT3(scale, scale, -scale), XMFLOAT4(0.0f,0.0f,1.0f,1.0f) },
- { XMFLOAT3(-scale, scale, -scale), XMFLOAT4(0.0f,0.0f,1.0f,1.0f) },
- { XMFLOAT3(-scale, scale, scale), XMFLOAT4(0.0f,0.0f,1.0f,1.0f) },
- { XMFLOAT3(scale, scale, scale), XMFLOAT4(0.0f,0.0f,1.0f,1.0f) },
- { XMFLOAT3(-scale, scale, -scale), XMFLOAT4(0.0f,0.0f,1.0f,1.0f) }
-};
-
-
-
-
-
-
 
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
-<<<<<<< HEAD
 	camera = new Camera();
-	geo.create_cube(1.0f, &testCube);
-=======
-	//GameObject *p1 = new GameObject();
-	//GameObject *p2 = new GameObject();
-	//gameObjects.push_back(*p1);
-	//gameObjects.push_back(*p2);
->>>>>>> refs/remotes/origin/master
 
 	timer = new VGTime();
 	UNREFERENCED_PARAMETER(hPrevInstance);
@@ -231,113 +176,62 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		}
 		else {
 			//UpdateAI();
-			UpdateInput();
+			//UpdateInput();
 			//UpdateSound();
 			//UpdateGraphics();
-			//RenderFrame();
+			RenderFrame();
 			//if (GetAsyncKeyState('A') & 0x0001)
 			//{
 			//	AlterVertices(vertices);
 			//	//OutputDebugString("moved");
 			//}
 		}
-		
+
 	}
 
 	timer->stop();
 	return (int)msg.wParam;
 }
 
-void AlterVertices(POS_COL_VERTEX* vert,WPARAM message) {
-
-	int size = sizeof(vert);
-	//OutputDebugString("" + message);
-
-	switch (message)
-	{
-	case VK_RIGHT:
-		OutputDebugString("moved");
-		for (int i = 0; i < size; i++)
-		{
-			vert[i].Pos.x += 0.01f;
-			OutputDebugString("moved");
-		}		
-		break;
-	case VK_LEFT:
-		for (int i = 0; i < size; i++)
-		{
-			vert[i].Pos.x -= 0.01f;
-			OutputDebugString("moved");
-		}
-		break;
-	case VK_UP:
-		OutputDebugString("moved");
-		for (int i = 0; i < size; i++)
-		{
-			vert[i].Pos.y += 0.01f;
-			OutputDebugString("moved");
-		}
-		break;
-	case VK_DOWN:
-		for (int i = 0; i < size; i++)
-		{
-			vert[i].Pos.y -= 0.01f;
-			OutputDebugString("moved");
-		}
-		break;
-	}
-
-	
-	D3D11_MAPPED_SUBRESOURCE ms;
-
-	// Lock the buffer to allow writing
-	g_pImmediateContext->Map(g_pVertexBuffer, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms);
-
-	// copy the data
-	memcpy(ms.pData, vertices, sizeof(vertices));
-
-	// unlock the buffer
-	g_pImmediateContext->Unmap(g_pVertexBuffer, NULL);
-}
-
-
-
-
-
-
-
-
 void RenderFrame(void)
 {
 	double delta = timer->deltaTime();
-	//if (cb0_changing_fraction.RedAmount <= 0.5f)
-	//{
-	//	cb0_changing_fraction.RedAmount +=  0.1f * delta;
-	//}
-
-	cbuffer_default.RedAmount = .1f;
-
-
-	XMVECTOR position = XMVectorSet(0.0, 0.0, -5.0, 0.0);
-	XMVECTOR lookat = XMVectorSet(0.0, 0.0, -4.0, 0.0);
-	XMVECTOR up = XMVectorSet(0.0, 1.0, 0.0, 0.0);
-
-	camera->set_view(XMMatrixLookAtLH(position,lookat,up));
-	try {
-
-	cbuffer_default.WorldViewProjection = camera->get_world_view_projection();
+	if (cb0.RedAmount <= 0.5f)
+	{
+		cb0.RedAmount += 0.1f * delta;
 	}
-	catch (int param) {
-		
-	};
-	
 
-	g_pImmediateContext->UpdateSubresource(g_pConstantBuffer0, 0, 0, &cbuffer_default, 0, 0);
+	XMMATRIX projection, world, view;
+
+	/*XMFLOAT4X4 projection, world, view;
+	XMStoreFloat4x4(&world, XMMatrixTranslation(0, 0, 5));
+	XMStoreFloat4x4(&projection, XMMatrixPerspectiveFovLH(XMConvertToRadians(45.0), 640.0 / 480.0, 1.0, 100.0));
+	XMStoreFloat4x4(&view, XMMatrixIdentity());*/
+	//XMMATRIX test = world * view * projection;
+	/*XMMATRIX test = *///XMMatrixMultiply(XMLoadFloat4x4(&world), XMMatrixMultiply(XMLoadFloat4x4(&view), XMLoadFloat4x4(&projection)));
+	//XMStoreFloat4x4(&cb0.WorldViewProjection, test);
+	
+	world = XMMatrixTranslation(0, 0, 5);
+	projection = XMMatrixPerspectiveFovLH(XMConvertToRadians(45.0), 640.0 / 480.0, 1.0, 100.0);
+	view = XMMatrixIdentity();
+	cb0.WorldViewProjection = world * view * projection;
+
+	//camera->position = XMVectorSet(0.0, 0.0, -5.0, 0.0);
+	//camera->lookat = XMVectorSet(0.0, 0.0, -4.0, 0.0);
+	//camera->transform.Up = XMVectorSet(0.0, 1.0, 0.0, 0.0);
+
+	//camera->view = XMMatrixLookAtLH(camera->position, camera->lookat, camera->transform.Up);
+
+	//cb0.WorldViewProjection = camera->get_world_view_projection();
+
+
+	g_pImmediateContext->UpdateSubresource(g_pConstantBuffer0, 0, 0, &cb0, 0, 0);
 
 	g_pImmediateContext->VSSetConstantBuffers(0, 1, &g_pConstantBuffer0);
 
 	float rgba_clear_colour[4] = { 0.1f,0.2f,0.6f,1.0f };
 	g_pImmediateContext->ClearRenderTargetView(g_pBackBufferRTView, rgba_clear_colour);
+	g_pImmediateContext->ClearDepthStencilView(g_pZBuffer, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
 	UINT stride = sizeof(POS_COL_VERTEX);
 	UINT offset = 0;
@@ -358,39 +252,30 @@ HRESULT InitialiseGraphics()
 {
 	HRESULT hr = S_OK;
 
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-	//POS_COL_VERTEX vertices[] =
-	//{
-	//	{XMFLOAT3(0.9f,0.9f,0.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
-	//	{XMFLOAT3(0.9f,-0.9f,0.0f), XMFLOAT4(0.2f, 0.0f, 1.0f, 1.0f)},
-	//	{XMFLOAT3(-0.9f,-0.9f,0.0f), XMFLOAT4(0.0f, 0.5f, 0.2f, 0.5f)}
-	//};
-
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 	// create constant buffer
 	D3D11_BUFFER_DESC constant_buffer_desc;
 	ZeroMemory(&constant_buffer_desc, sizeof(constant_buffer_desc));
 
 	constant_buffer_desc.Usage = D3D11_USAGE_DEFAULT; // can use UpdateSubresrource() to update
-	constant_buffer_desc.ByteWidth = 80; // MUST be a multiple of 16, calculate from CB struct
+	constant_buffer_desc.ByteWidth = sizeof(cb0); // MUST be a multiple of 16, calculate from CB struct
 	constant_buffer_desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 
 	hr = g_pD3DDevice->CreateBuffer(&constant_buffer_desc, NULL, &g_pConstantBuffer0);
 
-	if (FAILED(hr)) return hr;
+	if (FAILED(hr))
+		return hr;
 
 	// Set up and create vertex buffer
 	D3D11_BUFFER_DESC bufferDesc;
 	ZeroMemory(&bufferDesc, sizeof(bufferDesc));
 	bufferDesc.Usage = D3D11_USAGE_DYNAMIC; //Dynamic -> used by CPU and GPU
-	bufferDesc.ByteWidth = sizeof(vertices); // Size of the buffer, 3 vertices
+	bufferDesc.ByteWidth = sizeof(cube); // Size of the buffer, 3 vertices
 	bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER; // use as a vertex buffer
 	bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE; // allow cpu access
 	hr = g_pD3DDevice->CreateBuffer(&bufferDesc, NULL, &g_pVertexBuffer); // create buffer
 
-	if (FAILED(hr)) { return hr; }
+	if (FAILED(hr)) { 
+		return hr; }
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -403,7 +288,7 @@ HRESULT InitialiseGraphics()
 	g_pImmediateContext->Map(g_pVertexBuffer, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms);
 
 	// copy the data
-	memcpy(ms.pData, vertices, sizeof(vertices));
+	memcpy(ms.pData, cube, sizeof(cube));
 
 	// unlock the buffer
 	g_pImmediateContext->Unmap(g_pVertexBuffer, NULL);
@@ -440,52 +325,6 @@ HRESULT InitialiseGraphics()
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 }
 
-void UpdateAI()
-{
-
-}
-
-void UpdateInput()
-{
-	//for (GameObject var : gameObjects)
-	//{
-	//	//if (typeid(var) != typeid(Player)) continue;
-	//	//std::cout << var.get_name();
-	//}
-	std::cout << gameObjects[0].get_name();
-}
-
-void UpdateSound()
-{
-
-}
-
-void UpdateGraphics()
-{
-
-}
-
-
-
-
-
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 HRESULT InitialiseWindow(HINSTANCE hInstance, int nCmdShow)
 {
@@ -519,6 +358,32 @@ HRESULT InitialiseWindow(HINSTANCE hInstance, int nCmdShow)
 
 	return S_OK;
 }
+
+LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+	PAINTSTRUCT ps;
+	HDC hdc;
+
+	switch (message)
+	{
+	case WM_PAINT:
+		hdc = BeginPaint(hWnd, &ps);
+		EndPaint(hWnd, &ps);
+		break;
+	case WM_DESTROY:
+		PostQuitMessage(0);
+		break;
+	case WM_KEYDOWN:
+		//AlterVertices(shape_1, wParam);
+		if (wParam == VK_ESCAPE)
+			DestroyWindow(g_hWnd);
+
+		return 0;
+	default:
+		return DefWindowProc(hWnd, message, wParam, lParam);
+	}
+}
+
 HRESULT InitialiseD3D() {
 	HRESULT hr = S_OK;
 
@@ -588,7 +453,35 @@ HRESULT InitialiseD3D() {
 
 	if (FAILED(hr)) return hr;
 
-	g_pImmediateContext->OMSetRenderTargets(1, &g_pBackBufferRTView, NULL);
+	// create z buffer texture
+	D3D11_TEXTURE2D_DESC tex2dDesc;
+	ZeroMemory(&tex2dDesc, sizeof(tex2dDesc));
+
+	tex2dDesc.Width = width;
+	tex2dDesc.Height = height;
+	tex2dDesc.ArraySize = 1;
+	tex2dDesc.MipLevels = 1;
+	tex2dDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	tex2dDesc.SampleDesc.Count = sd.SampleDesc.Count;
+	tex2dDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+	tex2dDesc.Usage = D3D11_USAGE_DEFAULT;
+
+	ID3D11Texture2D *pZBufferTexture;
+	hr = g_pD3DDevice->CreateTexture2D(&tex2dDesc, NULL, &pZBufferTexture);
+
+	if (FAILED(hr)) return hr;
+
+	// create z buffer
+	D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc;
+	ZeroMemory(&dsvDesc, sizeof(dsvDesc));
+
+	dsvDesc.Format = tex2dDesc.Format;
+	dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+
+	g_pD3DDevice->CreateDepthStencilView(pZBufferTexture, &dsvDesc, &g_pZBuffer);
+	pZBufferTexture->Release();
+
+	g_pImmediateContext->OMSetRenderTargets(1, &g_pBackBufferRTView, g_pZBuffer);
 
 	D3D11_VIEWPORT viewport;
 
@@ -605,32 +498,12 @@ HRESULT InitialiseD3D() {
 	return S_OK;
 
 }
-LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
-{
-	PAINTSTRUCT ps;
-	HDC hdc;
 
-	switch (message)
-	{
-	case WM_PAINT:
-		hdc = BeginPaint(hWnd, &ps);
-		EndPaint(hWnd, &ps);
-		break;
-	case WM_DESTROY:
-		PostQuitMessage(0);
-		break;
-	case WM_KEYDOWN:
-		AlterVertices(shape_1, wParam);
-		if (wParam == VK_ESCAPE)
-			DestroyWindow(g_hWnd);
-
-		return 0;
-	default:
-		return DefWindowProc(hWnd, message, wParam, lParam);
-	}
-}
 void ShutdownD3D()
 {
+	
+	if (g_pPixelShader) g_pPixelShader->Release();
+	if (g_pVertexBuffer) g_pVertexBuffer->Release();
 	if (g_pConstantBuffer0) g_pConstantBuffer0->Release();
 	if (g_pSwapChain) g_pSwapChain->Release();
 	if (g_pImmediateContext) g_pImmediateContext->Release();
@@ -638,3 +511,79 @@ void ShutdownD3D()
 	if (g_pBackBufferRTView) g_pBackBufferRTView->Release();
 }
 
+void UpdateAI()
+{
+
+}
+
+void UpdateInput()
+{
+	//for (GameObject var : gameObjects)
+	//{
+	//	//if (typeid(var) != typeid(Player)) continue;
+	//	//std::cout << var.get_name();
+	//}
+	//std::cout << gameObjects[0].get_name();
+}
+
+void UpdateSound()
+{
+
+}
+
+void UpdateGraphics()
+{
+
+}
+
+void AlterVertices(POS_COL_VERTEX* vert, WPARAM message) {
+
+	int size = sizeof(vert);
+	//OutputDebugString("" + message);
+
+	switch (message)
+	{
+	case VK_RIGHT:
+		OutputDebugString("moved");
+		for (int i = 0; i < size; i++)
+		{
+			vert[i].Pos.x += 0.01f;
+			OutputDebugString("moved");
+		}
+		break;
+	case VK_LEFT:
+		for (int i = 0; i < size; i++)
+		{
+			vert[i].Pos.x -= 0.01f;
+			OutputDebugString("moved");
+		}
+		break;
+	case VK_UP:
+		OutputDebugString("moved");
+		for (int i = 0; i < size; i++)
+		{
+			vert[i].Pos.y += 0.01f;
+			OutputDebugString("moved");
+		}
+		break;
+	case VK_DOWN:
+		for (int i = 0; i < size; i++)
+		{
+			vert[i].Pos.y -= 0.01f;
+			OutputDebugString("moved");
+		}
+		break;
+	}
+
+
+	D3D11_MAPPED_SUBRESOURCE ms;
+
+	// Lock the buffer to allow writing
+	g_pImmediateContext->Map(g_pVertexBuffer, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms);
+
+	// copy the data
+	memcpy(ms.pData, cube, sizeof(cube));
+
+	// unlock the buffer
+	g_pImmediateContext->Unmap(g_pVertexBuffer, NULL);
+}

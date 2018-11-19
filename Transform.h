@@ -2,7 +2,6 @@
 #include <d3d11.h>
 #include <D3DX11.h>
 #include <xnamath.h>
-
 class Transform
 {
 public:
@@ -10,34 +9,29 @@ public:
 	~Transform();
 
 	XMMATRIX get_world_transform();
+	XMVECTOR up = XMVectorSet(0.0, 1.0, 0.0, 0.0);
+	XMVECTOR down = XMVectorSet(0.0, -1.0, 0.0, 0.0);
+	XMVECTOR left = XMVectorSet(-1.0, 0.0, 0.0, 0.0);
+	XMVECTOR right = XMVectorSet(1.0, 1.0, 0.0, 0.0);
+	XMVECTOR forward = XMVectorSet(0.0, 0.0, 1.0, 0.0);
+	XMVECTOR backward = XMVectorSet(0.0, 0.0, -1.0, 0.0);
 
-	XMVECTOR Forward;
-	XMVECTOR Backward;
-	XMVECTOR Left;
-	XMVECTOR Right;
-	XMVECTOR Up;
-	XMVECTOR Down;
+	XMVECTOR position, scale, rotation;
 
-	XMVECTOR position;
-	XMVECTOR scale;
-	XMVECTOR rotation;
-	XMVECTOR lookat;
+	//XMMATRIX position, scale, rotation;
 
-<<<<<<< HEAD
-=======
+	void translate(XMVECTOR position);
+	void rotate(float yaw, float pitch, float roll);
+	//void scale(float x, float y, float z);
+
+protected:
+
+
 private:
-	XMMATRIX XM_rotation, XM_translation, XM_scale, XM_world;
-	Vector3 position;
+
 	//Vector3 scale;
 	//Quaternion rotation;
->>>>>>> refs/remotes/origin/master
 
-	void translate(XMMATRIX position);
-	void rotate(float yaw, float pitch, float roll);
 
 };
-
-
-
-
 

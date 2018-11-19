@@ -28,7 +28,7 @@ public:
 	virtual void move(Vector3 position);
 	virtual void collided(Vector3 target);
 	virtual std::string get_name();
->>>>>>> refs/remotes/origin/master
+>>>>>>> cbb1e29bc125ff8c4a9d230abb164da70f956360
 
 protected:
 	std::string name;
