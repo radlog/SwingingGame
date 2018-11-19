@@ -22,8 +22,7 @@ public:
 
 	XMVECTOR lookat;
 
-	XMMATRIX get_world_view_projection();
-	XMMATRIX world, view, projection, world_view_projection;
+	XMMATRIX get_view_projection();
 
 	Transform transform;
 
@@ -38,6 +37,9 @@ private:
 	float aspect_ratio;
 	float near_plane;
 	float far_plane;
+
+	XMMATRIX view_projection;
+	XMMATRIX projection, /*world, */view;
 
 
 	//////////////////////////////////////////////////////////////////CONSTANTS///////////////////////////////////////////////////////////////////////////

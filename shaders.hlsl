@@ -1,9 +1,11 @@
 cbuffer CBuffer0
 {
-	matrix WVPMatrix; // 64 bytes
+	float4x4 WVPMatrix; // 64 bytes
 	float red_fraction; // 4 bytes
+	float green_fraction; // 4 bytes
+	float blue_fraction; // 4 bytes
 	float scale; // 4 bytes
-	float2 packing; // 8 bytes
+	//float3 packing; // 12 bytes
 }; // total 80 bytes
 
 
@@ -18,6 +20,8 @@ VOut VShader(float4 position : POSITION, float4 color : COLOR)
 	VOut output;
 
 	color.r *= red_fraction;
+	color.g *= green_fraction;
+	color.b *= blue_fraction;
 	output.position = mul(WVPMatrix, position);
 	output.color = color;
 

@@ -16,9 +16,10 @@ public:
 	XMVECTOR forward = XMVectorSet(0.0, 0.0, 1.0, 0.0);
 	XMVECTOR backward = XMVectorSet(0.0, 0.0, -1.0, 0.0);
 
-	XMVECTOR position, scale, rotation;
-
-	//XMMATRIX position, scale, rotation;
+	XMVECTOR scale;
+	XMVECTOR rotation;
+	XMVECTOR position;
+	XMMATRIX world; 
 
 	void translate(XMVECTOR position);
 	void rotate(float yaw, float pitch, float roll);
@@ -29,8 +30,6 @@ protected:
 
 private:
 
-	//Vector3 scale;
-	//Quaternion rotation;
 
 
 };

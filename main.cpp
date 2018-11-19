@@ -28,9 +28,11 @@ struct CONSTANT_BUFFER0
 {
 	XMMATRIX WorldViewProjection; // 64 bytes
 	float RedAmount; // 4 bytes
+	float GreenAmount; // 4 bytes
+	float BlueAmount; // 4 bytes
 	float scale; // 4 bytes
-	XMFLOAT2 packing_bytes; // 8 bytes
-};
+	//XMFLOAT3 packing_bytes; // 12 bytes
+}; // 80 bytes
 
 
 
@@ -94,38 +96,38 @@ POS_COL_VERTEX cube[] =
 	// front face
 	{XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
 	{XMFLOAT3(-1.0f, 1.0f, -1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(1.0f, 1.0f, -1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(1.0f, 1.0f, -1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(1.0f, -1.0f, -1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(1.0f, 1.0f, -1.0f),  XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(-1.0f, -1.0f, -1.0f),  XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(1.0f, 1.0f, -1.0f),  XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(1.0f, -1.0f, -1.0f),  XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
 	// left face
-	{XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(-1.0f, -1.0f, 1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(-1.0f, 1.0f, -1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(-1.0f, -1.0f, 1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(-1.0f, 1.0f, 1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(-1.0f, 1.0f, -1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
+	{XMFLOAT3(-1.0f, -1.0f, 1.0f), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
+	{XMFLOAT3(-1.0f, 1.0f, -1.0f), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
+	{XMFLOAT3(-1.0f, -1.0f, 1.0f), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
+	{XMFLOAT3(-1.0f, 1.0f, 1.0f), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
+	{XMFLOAT3(-1.0f, 1.0f, -1.0f), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
 	// right face
-	{XMFLOAT3(1.0f, -1.0f, 1.0f),  XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(1.0f, -1.0f, -1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(1.0f, 1.0f, -1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(1.0f, -1.0f, 1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(1.0f, 1.0f, -1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(1.0f, -1.0f, 1.0f),  XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
+	{XMFLOAT3(1.0f, -1.0f, -1.0f),  XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
+	{XMFLOAT3(1.0f, 1.0f, -1.0f),  XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
+	{XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
+	{XMFLOAT3(1.0f, -1.0f, 1.0f),  XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
+	{XMFLOAT3(1.0f, 1.0f, -1.0f),  XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
 	// bottom face
-	{XMFLOAT3(1.0f, -1.0f, -1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(1.0f, -1.0f, 1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(1.0f, -1.0f, 1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(-1.0f, -1.0f, 1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(1.0f, -1.0f, -1.0f), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(1.0f, -1.0f, 1.0f), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(1.0f, -1.0f, 1.0f), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(-1.0f, -1.0f, 1.0f), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)},
 	// top face
-	{XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(1.0f, 1.0f, -1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(-1.0f, 1.0f, -1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(-1.0f, 1.0f, 1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(-1.0f, 1.0f, -1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)}
+	{XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(1.0f, 1.0f, -1.0f),XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(-1.0f, 1.0f, -1.0f), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(-1.0f, 1.0f, 1.0f), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(-1.0f, 1.0f, -1.0f), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)}
 
 };
 
@@ -196,40 +198,39 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 void RenderFrame(void)
 {
 	double delta = timer->deltaTime();
-	if (cb0.RedAmount <= 0.5f)
+	static bool glow;
+	delta *= 10;
+
+	if (cb0.RedAmount <= 0.01f || cb0.GreenAmount <= 0.01f || cb0.BlueAmount <= 0.01f) glow = true;
+	else if (cb0.RedAmount >= 0.99f || cb0.GreenAmount >= 0.99f || cb0.BlueAmount >= 0.99f) glow = false;
+
+	if (glow)
 	{
 		cb0.RedAmount += 0.1f * delta;
+		cb0.GreenAmount += 0.1f * delta;
+		cb0.BlueAmount += 0.1f * delta;
+	}else
+	{
+		cb0.RedAmount -= 0.1f * delta;
+		cb0.GreenAmount -= 0.1f * delta;
+		cb0.BlueAmount -= 0.1f * delta;
 	}
 
-	XMMATRIX projection, world, view;
 
-	/*XMFLOAT4X4 projection, world, view;
-	XMStoreFloat4x4(&world, XMMatrixTranslation(0, 0, 5));
-	XMStoreFloat4x4(&projection, XMMatrixPerspectiveFovLH(XMConvertToRadians(45.0), 640.0 / 480.0, 1.0, 100.0));
-	XMStoreFloat4x4(&view, XMMatrixIdentity());*/
-	//XMMATRIX test = world * view * projection;
-	/*XMMATRIX test = *///XMMatrixMultiply(XMLoadFloat4x4(&world), XMMatrixMultiply(XMLoadFloat4x4(&view), XMLoadFloat4x4(&projection)));
-	//XMStoreFloat4x4(&cb0.WorldViewProjection, test);
 	
-	world = XMMatrixTranslation(0, 0, 5);
-	projection = XMMatrixPerspectiveFovLH(XMConvertToRadians(45.0), 640.0 / 480.0, 1.0, 100.0);
-	view = XMMatrixIdentity();
-	cb0.WorldViewProjection = world * view * projection;
+	camera->look_at(XMVectorSet(0.0, 0.0, -4.0, 0.0));
 
-	//camera->position = XMVectorSet(0.0, 0.0, -5.0, 0.0);
-	//camera->lookat = XMVectorSet(0.0, 0.0, -4.0, 0.0);
-	//camera->transform.Up = XMVectorSet(0.0, 1.0, 0.0, 0.0);
-
-	//camera->view = XMMatrixLookAtLH(camera->position, camera->lookat, camera->transform.Up);
-
-	//cb0.WorldViewProjection = camera->get_world_view_projection();
+	const XMMATRIX view_projection = camera->get_view_projection();
+	const XMMATRIX world = XMMatrixRotationQuaternion(XMQuaternionRotationRollPitchYaw(timer->totalTime() * 4, timer->totalTime() * 2, timer->totalTime() * 3));
+	cb0.WorldViewProjection = world * view_projection;
 
 
 	g_pImmediateContext->UpdateSubresource(g_pConstantBuffer0, 0, 0, &cb0, 0, 0);
 
 	g_pImmediateContext->VSSetConstantBuffers(0, 1, &g_pConstantBuffer0);
 
-	float rgba_clear_colour[4] = { 0.1f,0.2f,0.6f,1.0f };
+	//float rgba_clear_colour[4] = { 0.1f,0.2f,0.6f,1.0f };
+	float rgba_clear_colour[4] = { 0.0f,0.0f,0.0f,1.0f };
 	g_pImmediateContext->ClearRenderTargetView(g_pBackBufferRTView, rgba_clear_colour);
 	g_pImmediateContext->ClearDepthStencilView(g_pZBuffer, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 

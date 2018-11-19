@@ -20,10 +20,10 @@ private:
 	long long int _start; //startTime
 	long long int _paused; //Time when the timer was paused
 	long long int _idle; //total time the timer was paused
-	long long int _total; //total time the timer ran(total lifetime - idle)
 	long long int _current; //currentTime
 	long long int _previous; //time of the previous tick
 
+	double _total; //total time the timer ran(total lifetime - idle)
 	double _delta; //time between two frames
 	double _seconds_per_tick;
 
