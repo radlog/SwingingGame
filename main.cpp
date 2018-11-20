@@ -41,6 +41,8 @@ Camera* camera;
 //std::vector<GameObject> gameObjects(2);
 
 
+const float rot_speed = 200.0f;
+
 CONSTANT_BUFFER0 cb0;
 
 VGTime* timer;
@@ -82,6 +84,7 @@ void UpdateAI();
 void UpdateInput();
 void UpdateSound();
 void UpdateGraphics();
+void MoveCamera(WPARAM message);
 
 
 POS_COL_VERTEX cube[] =
@@ -218,12 +221,12 @@ void RenderFrame(void)
 
 
 	
-	camera->look_at(XMVectorSet(0.0, 0.0, -4.0, 0.0));
+	//camera->look_at(XMVectorSet(0.0, 0.0, -4.0, 0.0));
 
 	const XMMATRIX view_projection = camera->get_view_projection();
-	const XMMATRIX world = XMMatrixRotationQuaternion(XMQuaternionRotationRollPitchYaw(timer->totalTime() * 4, timer->totalTime() * 2, timer->totalTime() * 3));
-	cb0.WorldViewProjection = world * view_projection;
-
+	//const XMMATRIX world = XMMatrixRotationQuaternion(XMQuaternionRotationRollPitchYaw(timer->totalTime() * 4, timer->totalTime() * 2, timer->totalTime() * 3));
+	//cb0.WorldViewProjection = world * view_projection;
+	cb0.WorldViewProjection = XMMatrixIdentity() * view_projection;
 
 	g_pImmediateContext->UpdateSubresource(g_pConstantBuffer0, 0, 0, &cb0, 0, 0);
 
@@ -376,6 +379,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		break;
 	case WM_KEYDOWN:
 		//AlterVertices(shape_1, wParam);
+		MoveCamera(wParam);
 		if (wParam == VK_ESCAPE)
 			DestroyWindow(g_hWnd);
 
@@ -587,4 +591,31 @@ void AlterVertices(POS_COL_VERTEX* vert, WPARAM message) {
 
 	// unlock the buffer
 	g_pImmediateContext->Unmap(g_pVertexBuffer, NULL);
+}
+
+float move_speed = 200.0f;
+
+void MoveCamera(WPARAM message) {
+
+	switch (message)
+	{
+	case VK_RIGHT:
+		camera->rotate(0, timer->deltaTime() * rot_speed, 0);
+		OutputDebugString("moved");
+		break;
+	case VK_LEFT:
+		camera->rotate(0, -timer->deltaTime() * rot_speed, 0);		
+		OutputDebugString("moved");
+		break;
+	case VK_UP:
+		camera->move_forward(timer->deltaTime()*move_speed);		
+		OutputDebugString("moved");
+		break;
+	case VK_DOWN:
+		camera->move_forward(-timer->deltaTime()*move_speed);
+		//camera->transform.translate(XMVECTOR(XMVectorSet(camera->transform.position.x, camera->transform.position.y, camera->transform.position.z - timer->deltaTime() * move_speed, 0)));
+		OutputDebugString("moved");
+		break;
+	default: break;
+	}
 }

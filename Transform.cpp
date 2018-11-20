@@ -19,3 +19,14 @@ XMMATRIX Transform::get_world_transform()
 	world = XMMatrixScalingFromVector(scale) * XMMatrixRotationQuaternion(rotation) * XMMatrixTranslationFromVector(position);
 	return world;
 }
+
+void Transform::translate(XMVECTOR position)
+{
+	this->position = position;
+}
+
+
+void Transform::rotate(float yaw, float pitch, float roll)
+{
+	rotation = XMQuaternionMultiply(rotation, XMQuaternionRotationRollPitchYaw(yaw, pitch, roll));
+}

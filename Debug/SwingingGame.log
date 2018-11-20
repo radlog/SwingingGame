@@ -1,16 +1,12 @@
-﻿  main.cpp
-d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\player.h(3): warning C4067: unexpected tokens following preprocessor directive - expected a newline
-d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\input.h(2): warning C4067: unexpected tokens following preprocessor directive - expected a newline
-d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\input.h(3): warning C4067: unexpected tokens following preprocessor directive - expected a newline
-d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\camera.h(51): warning C4305: 'initializing': truncation from 'double' to 'const float'
+﻿  Camera.cpp
 d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\camera.h(52): warning C4305: 'initializing': truncation from 'double' to 'const float'
-d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\main.cpp(209): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
-d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\main.cpp(210): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
-d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\main.cpp(211): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
-d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\main.cpp(214): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
-d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\main.cpp(215): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
-d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\main.cpp(216): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
-d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\main.cpp(224): warning C4244: 'argument': conversion from 'double' to 'FLOAT', possible loss of data
-d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\main.cpp(327): warning C4715: 'InitialiseGraphics': not all control paths return a value
-d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\main.cpp(386): warning C4715: 'WndProc': not all control paths return a value
+d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\camera.h(53): warning C4305: 'initializing': truncation from 'double' to 'const float'
+d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\camera.cpp(95): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\camera.cpp(95): warning C4244: 'initializing': conversion from 'double' to 'const float', possible loss of data
+d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\camera.cpp(96): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\camera.cpp(96): warning C4244: 'initializing': conversion from 'double' to 'const float', possible loss of data
+d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\camera.cpp(106): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\camera.cpp(106): warning C4244: 'initializing': conversion from 'double' to 'const float', possible loss of data
+d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\camera.cpp(107): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\camera.cpp(107): warning C4244: 'initializing': conversion from 'double' to 'const float', possible loss of data
   SwingingGame.vcxproj -> D:\JohnsLair\JohsGoogleDrive\AdvancedGameProgramming\Projects\SwingingGame\Debug\SwingingGame.exe
