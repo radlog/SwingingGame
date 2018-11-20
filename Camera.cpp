@@ -5,7 +5,7 @@
 Camera::Camera()
 {
 	transform = Transform();
-	transform.position = XMVectorSet(0.0, 0.0, -5.0, 0.0);
+	transform.local_position = XMVectorSet(0.0, 0.0, -5.0, 0.0);
 	//XMStoreFloat4x4(&world, transform.get_world_transform());
 	view = XMMatrixIdentity();
 	projection = XMMatrixPerspectiveFovLH(XMConvertToRadians(default_fov), default_aspect_ratio, default_near_plane, default_far_plane);
@@ -92,29 +92,8 @@ XMMATRIX Camera::get_view_projection()
 
 void Camera::look_at(XMVECTOR target)
 {
-	const float dx = sin(transform.rotation.y * (180 * XM_PI));
-	const float dz = cos(transform.rotation.y * (180 * XM_PI));
-
-	lookat = XMVectorSet(transform.position.x + dx, transform.position.y, transform.position.z + dz,0);
-	view = XMMatrixLookAtLH(transform.position, lookat, transform.up);
 }
 
-void Camera::rotate(float yaw, float pitch, float roll)
-{
-	transform.rotate(yaw, pitch, roll);
 
-	const float dx = sin(transform.rotation.y * (180 * XM_PI));
-	const float dz = cos(transform.rotation.y * (180 * XM_PI));
 
-	lookat = XMVectorSet(transform.position.x + dx, transform.position.y, transform.position.z + dz, 0);
-	view = XMMatrixLookAtLH(transform.position, lookat, transform.up);
-
-	//transform.forward = XMVector4Normalize(XMVectorSet(dx, 0 ,dz,0));
-	//look_at(XMVECTOR(XMVectorSet(dx,pitch ,dz,0)));
-}
-
-void Camera::move_forward(float speed)
-{
-	transform.position += lookat * speed;
-}
 

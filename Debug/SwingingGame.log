@@ -1,12 +1,40 @@
 ﻿  Camera.cpp
+d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\camera.h(51): warning C4305: 'initializing': truncation from 'double' to 'const float'
 d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\camera.h(52): warning C4305: 'initializing': truncation from 'double' to 'const float'
-d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\camera.h(53): warning C4305: 'initializing': truncation from 'double' to 'const float'
-d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\camera.cpp(95): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\camera.cpp(95): warning C4244: 'initializing': conversion from 'double' to 'const float', possible loss of data
-d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\camera.cpp(96): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\camera.cpp(96): warning C4244: 'initializing': conversion from 'double' to 'const float', possible loss of data
-d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\camera.cpp(106): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\camera.cpp(106): warning C4244: 'initializing': conversion from 'double' to 'const float', possible loss of data
-d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\camera.cpp(107): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\camera.cpp(107): warning C4244: 'initializing': conversion from 'double' to 'const float', possible loss of data
+  Character.cpp
+  Command.cpp
+  Enemy.cpp
+  GameObject.cpp
+  Input.cpp
+d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\input.h(2): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\player.h(3): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\input.h(3): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+  main.cpp
+d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\player.h(3): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\input.h(2): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\input.h(3): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\camera.h(51): warning C4305: 'initializing': truncation from 'double' to 'const float'
+d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\camera.h(52): warning C4305: 'initializing': truncation from 'double' to 'const float'
+d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\main.cpp(212): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\main.cpp(213): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\main.cpp(214): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\main.cpp(217): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
+d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\main.cpp(218): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
+d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\main.cpp(219): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
+d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\main.cpp(227): warning C4244: 'argument': conversion from 'double' to 'FLOAT', possible loss of data
+d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\main.cpp(603): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\main.cpp(606): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\main.cpp(609): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\main.cpp(612): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+  Obstacle.cpp
+  Player.cpp
+d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\player.h(3): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\input.h(2): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\input.h(3): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+  Geometry.cpp
+d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\geometry.h(45): warning C4091: 'static ': ignored on left of 'Geometry' when no variable is declared
+  Transform.cpp
+  Generating Code...
+d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\main.cpp(330): warning C4715: 'InitialiseGraphics': not all control paths return a value
+d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\main.cpp(390): warning C4715: 'WndProc': not all control paths return a value
   SwingingGame.vcxproj -> D:\JohnsLair\JohsGoogleDrive\AdvancedGameProgramming\Projects\SwingingGame\Debug\SwingingGame.exe

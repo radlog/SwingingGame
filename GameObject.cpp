@@ -35,11 +35,6 @@ void GameObject::update()
 {
 }
 
-void GameObject::move(XMVECTOR position)
-{
-	transform.position = position;
-}
-
 void GameObject::collided(XMVECTOR target)
 {
 

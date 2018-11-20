@@ -28,8 +28,7 @@ public:
 
 
 	void look_at(XMVECTOR target);
-	void rotate(float yaw, float pitch, float roll);
-	void move_forward(float speed);
+
 private:
 
 

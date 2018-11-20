@@ -224,9 +224,9 @@ void RenderFrame(void)
 	//camera->look_at(XMVectorSet(0.0, 0.0, -4.0, 0.0));
 
 	const XMMATRIX view_projection = camera->get_view_projection();
-	//const XMMATRIX world = XMMatrixRotationQuaternion(XMQuaternionRotationRollPitchYaw(timer->totalTime() * 4, timer->totalTime() * 2, timer->totalTime() * 3));
+	const XMMATRIX cube_rotation = XMMatrixRotationQuaternion(XMQuaternionRotationRollPitchYaw(timer->totalTime() * 4, timer->totalTime() * 2, timer->totalTime() * 3));
 	//cb0.WorldViewProjection = world * view_projection;
-	cb0.WorldViewProjection = XMMatrixIdentity() * view_projection;
+	cb0.WorldViewProjection = cube_rotation * view_projection;
 
 	g_pImmediateContext->UpdateSubresource(g_pConstantBuffer0, 0, 0, &cb0, 0, 0);
 
@@ -593,28 +593,23 @@ void AlterVertices(POS_COL_VERTEX* vert, WPARAM message) {
 	g_pImmediateContext->Unmap(g_pVertexBuffer, NULL);
 }
 
-float move_speed = 200.0f;
+float move_speed = 2000.0f;
 
 void MoveCamera(WPARAM message) {
 
 	switch (message)
 	{
 	case VK_RIGHT:
-		camera->rotate(0, timer->deltaTime() * rot_speed, 0);
-		OutputDebugString("moved");
+		camera->transform.rotate(0, timer->deltaTime() * rot_speed, 0);
 		break;
 	case VK_LEFT:
-		camera->rotate(0, -timer->deltaTime() * rot_speed, 0);		
-		OutputDebugString("moved");
+		camera->transform.rotate(0, -timer->deltaTime() * rot_speed, 0);
 		break;
 	case VK_UP:
-		camera->move_forward(timer->deltaTime()*move_speed);		
-		OutputDebugString("moved");
+		camera->transform.forward(timer->deltaTime()*move_speed);
 		break;
 	case VK_DOWN:
-		camera->move_forward(-timer->deltaTime()*move_speed);
-		//camera->transform.translate(XMVECTOR(XMVectorSet(camera->transform.position.x, camera->transform.position.y, camera->transform.position.z - timer->deltaTime() * move_speed, 0)));
-		OutputDebugString("moved");
+		camera->transform.forward(-timer->deltaTime()*move_speed);
 		break;
 	default: break;
 	}

@@ -8,7 +8,7 @@
 class GameObject {
 public:
 	GameObject();
-	~GameObject();
+	virtual ~GameObject();
 
 	GameObject(std::string name);
 	GameObject(std::string name, Transform transform, Model model, float collision_radius);
@@ -19,7 +19,6 @@ public:
 	virtual void render();
 	virtual void start();
 	virtual void update();
-	virtual void move(XMVECTOR position);
 	virtual void collided(XMVECTOR target);
 	virtual std::string get_name();
 
