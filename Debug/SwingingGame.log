@@ -1,3 +1,28 @@
-﻿  Transform.cpp
-d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\transform.cpp(53): warning C4244: 'argument': conversion from 'const double' to 'FLOAT', possible loss of data
-  SwingingGame.vcxproj -> D:\JohnsLair\JohsGoogleDrive\AdvancedGameProgramming\Projects\SwingingGame\Debug\SwingingGame.exe
+﻿  main.cpp
+c:\users\4frans08\downloads\player.h(3): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+c:\users\4frans08\downloads\input.h(2): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+c:\users\4frans08\downloads\input.h(3): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+c:\users\4frans08\downloads\camera.h(46): warning C4305: 'initializing': truncation from 'double' to 'const float'
+c:\users\4frans08\downloads\camera.h(47): warning C4305: 'initializing': truncation from 'double' to 'const float'
+c:\users\4frans08\downloads\main.cpp(233): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+c:\users\4frans08\downloads\main.cpp(234): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+c:\users\4frans08\downloads\main.cpp(235): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+c:\users\4frans08\downloads\main.cpp(239): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
+c:\users\4frans08\downloads\main.cpp(240): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
+c:\users\4frans08\downloads\main.cpp(241): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
+c:\users\4frans08\downloads\main.cpp(249): warning C4244: 'argument': conversion from 'double' to 'FLOAT', possible loss of data
+c:\users\4frans08\downloads\main.cpp(649): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+c:\users\4frans08\downloads\main.cpp(650): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+c:\users\4frans08\downloads\main.cpp(651): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+c:\users\4frans08\downloads\main.cpp(652): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+c:\users\4frans08\downloads\main.cpp(655): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+c:\users\4frans08\downloads\main.cpp(656): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+c:\users\4frans08\downloads\main.cpp(657): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+c:\users\4frans08\downloads\main.cpp(658): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+c:\users\4frans08\downloads\main.cpp(680): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+c:\users\4frans08\downloads\main.cpp(681): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+c:\users\4frans08\downloads\main.cpp(700): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+c:\users\4frans08\downloads\main.cpp(704): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+c:\users\4frans08\downloads\main.cpp(355): warning C4715: 'InitialiseGraphics': not all control paths return a value
+c:\users\4frans08\downloads\main.cpp(470): warning C4715: 'WndProc': not all control paths return a value
+  SwingingGame.vcxproj -> C:\Users\4frans08\Downloads\Debug\SwingingGame.exe

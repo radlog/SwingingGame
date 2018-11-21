@@ -5,3 +5,4 @@
 #include <d3dx11.h>
 #include <dxerr.h>
 #include <xnamath.h>
+#include <dinput.h>

@@ -4,6 +4,8 @@
 #include <d3dx11.h>
 #include <dxerr.h>
 #include <xnamath.h>
+#include <dinput.h>
+//#include <Xinput.h>
 //#include <iostream>
 //#include <vector>
 //#include <typeinfo>
@@ -48,6 +50,9 @@ const float look_speed = 10.0f;
 float mouse_x_center = 480.0f;
 float mouse_y_center = 640.0f;
 
+float mouse_x = mouse_x_center;
+float mouse_y = mouse_y_center;
+
 CONSTANT_BUFFER0 cb0;
 
 VGTime* timer;
@@ -68,8 +73,12 @@ ID3D11VertexShader* g_pVertexShader;
 ID3D11PixelShader* g_pPixelShader;
 ID3D11InputLayout* g_pInputLayout;
 ID3D11DepthStencilView* g_pZBuffer;
+IDirectInput8 *g_direct_input;
+IDirectInputDevice8 *g_keyboard_device;
+unsigned char g_keyboard_keys_state[256];
 
-
+IDirectInputDevice8 *mouse_input;
+DIMOUSESTATE mouse_state;
 
 //g_Title is a replace for g_TutorialName
 char g_Title[100] = "Swing to Win(g)";
@@ -79,18 +88,21 @@ HRESULT InitialiseWindow(HINSTANCE hInstance, int nCmdShow);
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 HRESULT InitialiseD3D();
 HRESULT InitialiseGraphics(void);
+HRESULT InitialiseInput();
 void ShutdownD3D();
 void RenderFrame(void);
-void AlterVertices(POS_COL_VERTEX* vert, WPARAM message);
+//void AlterVertices(POS_COL_VERTEX* vert, WPARAM message);
 
 
 // methods
 void UpdateAI();
-void UpdateInput();
+HRESULT UpdateInput();
 void UpdateSound();
 void UpdateGraphics();
-void MoveCamera();
+bool IsKeyPressed(unsigned char DI_keycode);
+void MouseMoved();
 
+//void MoveCamera();
 
 POS_COL_VERTEX cube[] =
 {
@@ -175,6 +187,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		DXTRACE_MSG("Failed to initialise graphics");
 		return 0;
 	}
+
+
+	if (FAILED(InitialiseInput()))
+	{
+		DXTRACE_MSG("Failed to initialise Input");
+		return 0;
+	}
+
 	timer->start();
 
 	while (msg.message != WM_QUIT)
@@ -191,11 +211,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			//UpdateSound();
 			//UpdateGraphics();
 			RenderFrame();
-			//if (GetAsyncKeyState('A') & 0x0001)
-			//{
-			//	AlterVertices(vertices);
-			//	//OutputDebugString("moved");
-			//}
 		}
 
 	}
@@ -218,7 +233,8 @@ void RenderFrame(void)
 		cb0.RedAmount += 0.1f * delta;
 		cb0.GreenAmount += 0.1f * delta;
 		cb0.BlueAmount += 0.1f * delta;
-	}else
+	}
+	else
 	{
 		cb0.RedAmount -= 0.1f * delta;
 		cb0.GreenAmount -= 0.1f * delta;
@@ -226,21 +242,22 @@ void RenderFrame(void)
 	}
 
 
-	
+
 	//camera->look_at(XMVectorSet(0.0, 0.0, -4.0, 0.0));
 
 	const auto view_projection = camera->get_view_projection();
 	const auto cube_rotation = XMMatrixRotationQuaternion(XMQuaternionRotationRollPitchYaw(timer->totalTime() * 4, timer->totalTime() * 2, timer->totalTime() * 3));
 	//cb0.WorldViewProjection = world * view_projection;
-	//cb0.WorldViewProjection = cube_rotation * view_projection;
-	cb0.WorldViewProjection = XMMatrixIdentity() * view_projection;
+	cb0.WorldViewProjection = cube_rotation * view_projection;
+	//cb0.WorldViewProjection = XMMatrixIdentity() * view_projection;
 
 	g_pImmediateContext->UpdateSubresource(g_pConstantBuffer0, 0, nullptr, &cb0, 0, 0);
 
 	g_pImmediateContext->VSSetConstantBuffers(0, 1, &g_pConstantBuffer0);
 
 	//float rgba_clear_colour[4] = { 0.1f,0.2f,0.6f,1.0f };
-	float rgba_clear_colour[4] = { 0.1f,0.1f,0.5f,1.0f };
+	//float rgba_clear_colour[4] = { 0.1f,0.1f,0.5f,1.0f };
+	float rgba_clear_colour[4] = { 0.0f,0.0f,0.0f,1.0f };
 	g_pImmediateContext->ClearRenderTargetView(g_pBackBufferRTView, rgba_clear_colour);
 	g_pImmediateContext->ClearDepthStencilView(g_pZBuffer, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
@@ -285,8 +302,9 @@ HRESULT InitialiseGraphics()
 	bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE; // allow cpu access
 	hr = g_pD3DDevice->CreateBuffer(&bufferDesc, NULL, &g_pVertexBuffer); // create buffer
 
-	if (FAILED(hr)) { 
-		return hr; }
+	if (FAILED(hr)) {
+		return hr;
+	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -336,12 +354,66 @@ HRESULT InitialiseGraphics()
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 }
 
+HRESULT InitialiseInput()
+{
+	HRESULT hr;
+	ZeroMemory(g_keyboard_keys_state, sizeof(g_keyboard_keys_state));
+
+	// initialise input factory
+	hr = DirectInput8Create(g_hInst, DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&g_direct_input, NULL);
+	if (FAILED(hr)) return hr;
+
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////keyboard init////////////////////////////////////////////////////////////////
+	// create keyboard
+	hr = g_direct_input->CreateDevice(GUID_SysKeyboard, &g_keyboard_device, NULL);
+	if (FAILED(hr)) return hr;
+
+	// set keyboard format
+	hr = g_keyboard_device->SetDataFormat(&c_dfDIKeyboard);
+	if (FAILED(hr)) return hr;
+
+	// set keyboards behaviour of interaction between other instances of the same device on different processes and the system
+	hr = g_keyboard_device->SetCooperativeLevel(g_hWnd, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE);
+	if (FAILED(hr)) return hr;
+
+	// acquire the setup device
+	hr = g_keyboard_device->Acquire();
+	if (FAILED(hr)) return hr;
+
+	////////////////////////////////////////////////////////keyboard init////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////mouse init///////////////////////////////////////////////////////////////////
+	// create mouse
+	hr = g_direct_input->CreateDevice(GUID_SysMouse, &mouse_input, NULL);
+	if (FAILED(hr)) return hr;
+
+	// set data format for the mouse
+	hr = mouse_input->SetDataFormat(&c_dfDIMouse);
+	if (FAILED(hr)) return hr;
+
+	// set interaction of mouse between processes and other instances of the same device
+	hr = mouse_input->SetCooperativeLevel(g_hWnd, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE);
+	if (FAILED(hr)) return hr;
+
+	// acquire setup mouse
+	hr = mouse_input->Acquire();
+	if (FAILED(hr)) return hr;
+
+	////////////////////////////////////////////////////////mouse init///////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	return S_OK;
+}
+
 
 HRESULT InitialiseWindow(HINSTANCE hInstance, int nCmdShow)
 {
 
 	// window title
-	char Name[100] = "Hello World\0";
+	char Name[100] = "Swing around\0";
 
 	// Register class
 	WNDCLASSEX wcex = { 0 };
@@ -384,14 +456,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_DESTROY:
 		PostQuitMessage(0);
 		break;
-	case WM_KEYDOWN:
-		//AlterVertices(shape_1, wParam);
-		//MoveCamera(wParam);
-		if (wParam == VK_ESCAPE)
-			DestroyWindow(g_hWnd);
-	case WM_MOUSEMOVE:
-		//camera->transform.rotate(0, abs(pos.x) - abs(x), 0);
-		return 0;
+		//case WM_KEYDOWN:
+		//	//AlterVertices(shape_1, wParam);
+		//	//MoveCamera(wParam);
+		//	if (wParam == VK_ESCAPE)
+		//		DestroyWindow(g_hWnd);
+		//case WM_MOUSEMOVE:
+		//	//camera->transform.rotate(0, abs(pos.x) - abs(x), 0);
+		//	return 0;
 	default:
 		return DefWindowProc(hWnd, message, wParam, lParam);
 	}
@@ -514,6 +586,7 @@ HRESULT InitialiseD3D() {
 
 void ShutdownD3D()
 {
+
 	if (camera) camera->~Camera();
 	if (g_pPixelShader) g_pPixelShader->Release();
 	if (g_pVertexBuffer) g_pVertexBuffer->Release();
@@ -522,6 +595,17 @@ void ShutdownD3D()
 	if (g_pImmediateContext) g_pImmediateContext->Release();
 	if (g_pD3DDevice) g_pD3DDevice->Release();
 	if (g_pBackBufferRTView) g_pBackBufferRTView->Release();
+	if (g_keyboard_device) {
+		g_keyboard_device->Unacquire();
+		g_keyboard_device->Release();
+	}
+
+	if (mouse_input)
+	{
+		mouse_input->Unacquire();
+		mouse_input->Release();
+	}
+	if (g_direct_input) g_direct_input->Release();
 }
 
 void UpdateAI()
@@ -529,15 +613,50 @@ void UpdateAI()
 
 }
 
-void UpdateInput()
+HRESULT UpdateInput()
 {
-	MoveCamera();
+	HRESULT hr;
 	//for (GameObject var : gameObjects)
 	//{
 	//	//if (typeid(var) != typeid(Player)) continue;
 	//	//std::cout << var.get_name();
 	//}
 	//std::cout << gameObjects[0].get_name();
+
+	hr = g_keyboard_device->GetDeviceState(sizeof(g_keyboard_keys_state), (LPVOID)&g_keyboard_keys_state);
+
+	if (FAILED(hr)) {
+		if ((hr == DIERR_INPUTLOST) || (hr == DIERR_NOTACQUIRED))
+		{
+			g_keyboard_device->Acquire();
+		}
+	}
+
+	hr = mouse_input->GetDeviceState(sizeof(mouse_state), (LPVOID)&mouse_state);
+
+	if (FAILED(hr)) {
+		if ((hr == DIERR_INPUTLOST) || (hr == DIERR_NOTACQUIRED))
+		{
+			mouse_input->Acquire();
+		}
+	}
+
+	MouseMoved();
+
+	if (IsKeyPressed(DIK_ESCAPE)) DestroyWindow(g_hWnd);
+
+	if (IsKeyPressed(DIK_A)) camera->transform.right(-timer->deltaTime() * move_speed);
+	if (IsKeyPressed(DIK_D)) camera->transform.right(timer->deltaTime() * move_speed);
+	if (IsKeyPressed(DIK_W)) camera->transform.forward(timer->deltaTime()*move_speed);
+	if (IsKeyPressed(DIK_S)) camera->transform.forward(-timer->deltaTime()*move_speed);
+
+
+	if (IsKeyPressed(DIK_LEFT)) camera->transform.rotate(0, -timer->deltaTime() * look_speed, 0);
+	if (IsKeyPressed(DIK_RIGHT)) camera->transform.rotate(0, timer->deltaTime() * look_speed, 0);
+	if (IsKeyPressed(DIK_UP)) camera->transform.rotate(-timer->deltaTime() * look_speed, 0, 0);
+	if (IsKeyPressed(DIK_DOWN)) camera->transform.rotate(timer->deltaTime() * look_speed, 0, 0);
+
+	return S_OK;
 }
 
 void UpdateSound()
@@ -550,76 +669,85 @@ void UpdateGraphics()
 
 }
 
-void AlterVertices(POS_COL_VERTEX* vert, WPARAM message) {
 
-	int size = sizeof(vert);
-	//OutputDebugString("" + message);
-
-	switch (message)
-	{
-	case VK_RIGHT:
-		OutputDebugString("moved");
-		for (int i = 0; i < size; i++)
-		{
-			vert[i].Pos.x += 0.01f;
-			OutputDebugString("moved");
-		}
-		break;
-	case VK_LEFT:
-		for (int i = 0; i < size; i++)
-		{
-			vert[i].Pos.x -= 0.01f;
-			OutputDebugString("moved");
-		}
-		break;
-	case VK_UP:
-		OutputDebugString("moved");
-		for (int i = 0; i < size; i++)
-		{
-			vert[i].Pos.y += 0.01f;
-			OutputDebugString("moved");
-		}
-		break;
-	case VK_DOWN:
-		for (int i = 0; i < size; i++)
-		{
-			vert[i].Pos.y -= 0.01f;
-			OutputDebugString("moved");
-		}
-		break;
-	}
+//void MoveCamera() {
+//
+//	POINT pos;
+//	GetCursorPos(&pos);
+//
+//	//camera->transform.rotate(/*(abs(pos.y) - abs(mouse_y_center)) * timer->deltaTime() * look_speed*/ 0, (abs(pos.x) - abs(mouse_x_center)) * timer->deltaTime() * look_speed, 0);
+//	camera->transform.rotate((abs(pos.y) - abs(mouse_y_center)) * timer->deltaTime() * look_speed, (abs(pos.x) - abs(mouse_x_center)) * timer->deltaTime() * look_speed, 0);
+//	SetCursorPos(mouse_x_center, mouse_y_center);
+//
+//}
 
 
-	D3D11_MAPPED_SUBRESOURCE ms;
+bool IsKeyPressed(unsigned char DI_keycode)
+{
+	return g_keyboard_keys_state[DI_keycode] & 0x80;
+}
 
-	// Lock the buffer to allow writing
-	g_pImmediateContext->Map(g_pVertexBuffer, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms);
+void MouseMoved()
+{
 
-	// copy the data
-	memcpy(ms.pData, cube, sizeof(cube));
+	
+	mouse_x += mouse_state.lX;
+	mouse_y += mouse_state.lY;
 
-	// unlock the buffer
-	g_pImmediateContext->Unmap(g_pVertexBuffer, NULL);
+
+	// tricky solution -> TODO: find an other way to do it -> directly use the mouse_state.lX and the mouse_state.lY to rotate
+	camera->transform.rotate((abs(mouse_y) - abs(mouse_y_center)) * timer->deltaTime() * move_speed, (abs(mouse_x) - abs(mouse_x_center)) * timer->deltaTime() * move_speed, 0);
+
+	mouse_x = mouse_x_center;
+	mouse_y = mouse_y_center;
+	SetCursorPos(mouse_x, mouse_x);
 }
 
 
 
-void MoveCamera() {
-	if(GetKeyState('A') & 0x8000) camera->transform.right(-timer->deltaTime() * move_speed);
-	if(GetKeyState('D') & 0x8000) camera->transform.right(timer->deltaTime() * move_speed);
-	if(GetKeyState('W') & 0x8000) camera->transform.forward(timer->deltaTime()*move_speed);
-	if(GetKeyState('S') & 0x8000) camera->transform.forward(-timer->deltaTime()*move_speed);
 
-	//if (GetKeyState(VK_LEFT) & 0x8000) camera->transform.rotate(0, -timer->deltaTime() * look_speed, 0);
-	//if (GetKeyState(VK_RIGHT) & 0x8000) camera->transform.rotate(0, timer->deltaTime() * look_speed, 0);
-	//if (GetKeyState(VK_UP) & 0x8000) camera->transform.rotate(-timer->deltaTime() * look_speed, 0, 0);
-	//if (GetKeyState(VK_DOWN) & 0x8000) camera->transform.rotate(timer->deltaTime() * look_speed, 0, 0);
-
-	POINT pos;
-	GetCursorPos(&pos);
-
-	//camera->transform.rotate(/*(abs(pos.y) - abs(mouse_y_center)) * timer->deltaTime() * look_speed*/ 0, (abs(pos.x) - abs(mouse_x_center)) * timer->deltaTime() * look_speed, 0);
-	camera->transform.rotate((abs(pos.y) - abs(mouse_y_center)) * timer->deltaTime() * look_speed, (abs(pos.x) - abs(mouse_x_center)) * timer->deltaTime() * look_speed, 0);
-	SetCursorPos(mouse_x_center, mouse_y_center);
-
-}
+//void AlterVertices(POS_COL_VERTEX* vert, WPARAM message) {
+//
+//	int size = sizeof(vert);
+//	//OutputDebugString("" + message);
+//
+//	switch (message)
+//	{
+//	case VK_RIGHT:
+//		for (int i = 0; i < size; i++)
+//		{
+//			vert[i].Pos.x += 0.01f;
+//		}
+//		break;
+//	case VK_LEFT:
+//		for (int i = 0; i < size; i++)
+//		{
+//			vert[i].Pos.x -= 0.01f;
+//		}
+//		break;
+//	case VK_UP:
+//		for (int i = 0; i < size; i++)
+//		{
+//			vert[i].Pos.y += 0.01f;
+//		}
+//		break;
+//	case VK_DOWN:
+//		for (int i = 0; i < size; i++)
+//		{
+//			vert[i].Pos.y -= 0.01f;
+//		}
+//		break;
+//	}
+//
+//
+//	D3D11_MAPPED_SUBRESOURCE ms;
+//
+//	// Lock the buffer to allow writing
+//	g_pImmediateContext->Map(g_pVertexBuffer, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms);
+//
+//	// copy the data
+//	memcpy(ms.pData, cube, sizeof(cube));
+//
+//	// unlock the buffer
+//	g_pImmediateContext->Unmap(g_pVertexBuffer, NULL);
+//}

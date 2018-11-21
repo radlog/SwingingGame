@@ -36,22 +36,22 @@ void Transform::rotate(const float pitch, const float yaw, const float roll)
 {
 	local_rotation = XMQuaternionMultiply(XMQuaternionRotationRollPitchYaw(pitch, 0, roll), XMQuaternionMultiply(local_rotation, XMQuaternionRotationAxis(world_up, yaw)));
 	
-	const auto transformed = XMVector3Rotate(world_up, local_rotation);
-	auto flattened = transformed - XMVector3Dot(transformed, local_right) * local_right;
-	flattened = XMVector3Normalize(flattened);
-	const auto dot = XMVector3Dot(world_up, flattened).x;
-	const auto cross = XMVector3Cross(world_up, flattened);
-	const auto cd = XMVector3Dot(cross, local_right).x;
-	const auto sign = (0 < cd) - (cd < 0);
-	const auto theta = std::acos(dot) * sign;
-	const auto DEG2RAD = M_PI / 180.0;
-	const auto d = theta + (89.0 * DEG2RAD);
-	if(d < 0)
-	{
-		OutputDebugString((std::to_string(dot) + " " + std::to_string(theta) + "\n").c_str());
-		OutputDebugString((std::to_string(d) + "\n").c_str());
-		local_rotation = XMQuaternionMultiply(XMQuaternionRotationAxis(world_right, -d), local_rotation);
-	}
+	//const auto transformed = XMVector3Rotate(world_up, local_rotation);
+	//auto flattened = transformed - XMVector3Dot(transformed, local_right) * local_right;
+	//flattened = XMVector3Normalize(flattened);
+	//const auto dot = XMVector3Dot(world_up, flattened).x;
+	//const auto cross = XMVector3Cross(world_up, flattened);
+	//const auto cd = XMVector3Dot(cross, local_right).x;
+	//const auto sign = (0 < cd) - (cd < 0);
+	//const auto theta = std::acos(dot) * sign;
+	//const auto DEG2RAD = M_PI / 180.0;
+	//const auto d = theta + (89.0 * DEG2RAD);
+	//if(d < 0)
+	//{
+	//	OutputDebugString((std::to_string(dot) + " " + std::to_string(theta) + "\n").c_str());
+	//	OutputDebugString((std::to_string(d) + "\n").c_str());
+	//	local_rotation = XMQuaternionMultiply(XMQuaternionRotationAxis(world_right, -d), local_rotation);
+	//}
 
 	const auto rot_matrix = XMMatrixRotationQuaternion(local_rotation);
 	local_forward = XMVector4Transform(world_forward, rot_matrix);
