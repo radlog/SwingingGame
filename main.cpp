@@ -26,6 +26,13 @@ struct POS_COL_VERTEX
 	XMFLOAT4 Col;
 };
 
+struct POS_COL_TEX_VERTEX
+{
+	XMFLOAT3 Pos;
+	XMFLOAT4 Col;
+	XMFLOAT2 Texture0;
+};
+
 struct CONSTANT_BUFFER0
 {
 	XMMATRIX WorldViewProjection; // 64 bytes
@@ -42,7 +49,7 @@ struct CONSTANT_BUFFER0
 Camera* camera;
 //std::vector<GameObject> gameObjects(2);
 
-
+bool enable_glowing = false;
 const float rot_speed = 10.0f;
 const float move_speed = 10.0f;
 const float look_speed = 10.0f;
@@ -73,12 +80,15 @@ ID3D11VertexShader* g_pVertexShader;
 ID3D11PixelShader* g_pPixelShader;
 ID3D11InputLayout* g_pInputLayout;
 ID3D11DepthStencilView* g_pZBuffer;
+ID3D11SamplerState * g_pSampler0;
 IDirectInput8 *g_direct_input;
 IDirectInputDevice8 *g_keyboard_device;
 unsigned char g_keyboard_keys_state[256];
 
 IDirectInputDevice8 *mouse_input;
 DIMOUSESTATE mouse_state;
+
+ID3D11ShaderResourceView *texture;
 
 //g_Title is a replace for g_TutorialName
 char g_Title[100] = "Swing to Win(g)";
@@ -150,6 +160,52 @@ POS_COL_VERTEX cube[] =
 	{XMFLOAT3(cube_scale, cube_scale, cube_scale), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)},
 	{XMFLOAT3(-cube_scale, cube_scale, -cube_scale), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)}
 
+};
+
+POS_COL_TEX_VERTEX textured_cube[] =
+{
+	// back face 
+	{XMFLOAT3(-cube_scale, cube_scale, cube_scale), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f), XMFLOAT2(0.0f,0.0f)},
+	{XMFLOAT3(-cube_scale, -cube_scale, cube_scale), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f), XMFLOAT2(0.0f,1.0f)},
+	{XMFLOAT3(cube_scale, cube_scale, cube_scale), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f), XMFLOAT2(1.0f,0.0f)},
+	{XMFLOAT3(cube_scale, cube_scale, cube_scale), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f), XMFLOAT2(1.0f,0.0f)},
+	{XMFLOAT3(-cube_scale, -cube_scale, cube_scale),XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f), XMFLOAT2(0.0f,1.0f)},
+	{XMFLOAT3(cube_scale, -cube_scale, cube_scale), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f), XMFLOAT2(1.0f,1.0f)},
+	// front face
+	{XMFLOAT3(-cube_scale, -cube_scale, -cube_scale), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f), XMFLOAT2(0.0f,1.0f)},
+	{XMFLOAT3(-cube_scale, cube_scale, -cube_scale), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f), XMFLOAT2(0.0f,0.0f)},
+	{XMFLOAT3(cube_scale, cube_scale, -cube_scale),  XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f), XMFLOAT2(1.0f,0.0f)},
+	{XMFLOAT3(-cube_scale, -cube_scale, -cube_scale),  XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f),XMFLOAT2(0.0f,1.0f)},
+	{XMFLOAT3(cube_scale, cube_scale, -cube_scale),  XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f), XMFLOAT2(1.0f,0.0f)},
+	{XMFLOAT3(cube_scale, -cube_scale, -cube_scale),  XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f), XMFLOAT2(1.0f,1.0f)},
+	// left face
+	{XMFLOAT3(-cube_scale, -cube_scale, -cube_scale), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f), XMFLOAT2(0.0f,1.0f)},
+	{XMFLOAT3(-cube_scale, -cube_scale, cube_scale), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f), XMFLOAT2(0.0f,0.0f)},
+	{XMFLOAT3(-cube_scale, cube_scale, -cube_scale), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f), XMFLOAT2(1.0f,1.0f)},
+	{XMFLOAT3(-cube_scale, -cube_scale, cube_scale), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f), XMFLOAT2(0.0f,0.0f)},
+	{XMFLOAT3(-cube_scale, cube_scale, cube_scale), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f), XMFLOAT2(1.0f,0.0f)},
+	{XMFLOAT3(-cube_scale, cube_scale, -cube_scale), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f), XMFLOAT2(1.0f,1.0f)},
+	// right face
+	{XMFLOAT3(cube_scale, -cube_scale, cube_scale),  XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f), XMFLOAT2(0.0f,0.0f)},
+	{XMFLOAT3(cube_scale, -cube_scale, -cube_scale),  XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f), XMFLOAT2(0.0f,1.0f)},
+	{XMFLOAT3(cube_scale, cube_scale, -cube_scale),  XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f), XMFLOAT2(1.0f,1.0f)},
+	{XMFLOAT3(cube_scale, cube_scale, cube_scale), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f), XMFLOAT2(1.0f,0.0f)},
+	{XMFLOAT3(cube_scale, -cube_scale, cube_scale),  XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f), XMFLOAT2(0.0f,0.0f)},
+	{XMFLOAT3(cube_scale, cube_scale, -cube_scale),  XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f), XMFLOAT2(1.0f,1.0f)},
+	// bottom face
+	{XMFLOAT3(cube_scale, -cube_scale, -cube_scale), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f), XMFLOAT2(1.0f,1.0f)},
+	{XMFLOAT3(cube_scale, -cube_scale, cube_scale), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f), XMFLOAT2(1.0f,0.0f)},
+	{XMFLOAT3(-cube_scale, -cube_scale, -cube_scale), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f),XMFLOAT2(0.0f,1.0f)},
+	{XMFLOAT3(cube_scale, -cube_scale, cube_scale), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f),XMFLOAT2(1.0f,0.0f)},
+	{XMFLOAT3(-cube_scale, -cube_scale, cube_scale), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f),XMFLOAT2(0.0f,0.0f)},
+	{XMFLOAT3(-cube_scale, -cube_scale, -cube_scale), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f),XMFLOAT2(0.0f,1.0f)},
+	// top face
+	{XMFLOAT3(cube_scale, cube_scale, cube_scale), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f), XMFLOAT2(1.0f,0.0f)},
+	{XMFLOAT3(cube_scale, cube_scale, -cube_scale),XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f), XMFLOAT2(1.0f,1.0f)},
+	{XMFLOAT3(-cube_scale, cube_scale, -cube_scale), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f), XMFLOAT2(0.0f,1.0f)},
+	{XMFLOAT3(-cube_scale, cube_scale, cube_scale), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f), XMFLOAT2(0.0f,0.0f)},
+	{XMFLOAT3(cube_scale, cube_scale, cube_scale), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f), XMFLOAT2(1.0f,0.0f)},
+	{XMFLOAT3(-cube_scale, cube_scale, -cube_scale), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f), XMFLOAT2(0.0f,1.0f)}
 };
 
 const float skyboxScale = 20.0f;
@@ -271,23 +327,32 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 void RenderFrame(void)
 {
 	double delta = timer->deltaTime();
-	static bool glow;
-	delta *= 10;
 
-	if (cb0.RedAmount <= 0.01f || cb0.GreenAmount <= 0.01f || cb0.BlueAmount <= 0.01f) glow = true;
-	else if (cb0.RedAmount >= 0.99f || cb0.GreenAmount >= 0.99f || cb0.BlueAmount >= 0.99f) glow = false;
-
-	if (glow)
+	if (enable_glowing)
 	{
-		cb0.RedAmount += 0.1f * delta;
-		cb0.GreenAmount += 0.1f * delta;
-		cb0.BlueAmount += 0.1f * delta;
+		static bool glow;
+		delta *= 10;
+		if (cb0.RedAmount <= 0.01f || cb0.GreenAmount <= 0.01f || cb0.BlueAmount <= 0.01f) glow = true;
+		else if (cb0.RedAmount >= 0.99f || cb0.GreenAmount >= 0.99f || cb0.BlueAmount >= 0.99f) glow = false;
+
+		if (glow)
+		{
+			cb0.RedAmount += 0.1f * delta;
+			cb0.GreenAmount += 0.1f * delta;
+			cb0.BlueAmount += 0.1f * delta;
+		}
+		else
+		{
+			cb0.RedAmount -= 0.1f * delta;
+			cb0.GreenAmount -= 0.1f * delta;
+			cb0.BlueAmount -= 0.1f * delta;
+		}
 	}
 	else
 	{
-		cb0.RedAmount -= 0.1f * delta;
-		cb0.GreenAmount -= 0.1f * delta;
-		cb0.BlueAmount -= 0.1f * delta;
+		cb0.RedAmount = 1.0f;
+		cb0.GreenAmount = 1.0f;
+		cb0.BlueAmount = 1.0f;
 	}
 
 
@@ -297,8 +362,8 @@ void RenderFrame(void)
 	const auto view_projection = camera->get_view_projection();
 	const auto cube_rotation = XMMatrixRotationQuaternion(XMQuaternionRotationRollPitchYaw(timer->totalTime() * 4, timer->totalTime() * 2, timer->totalTime() * 3));
 	//cb0.WorldViewProjection = world * view_projection;
-	cb0.WorldViewProjection = cube_rotation * view_projection;
-	//cb0.WorldViewProjection = XMMatrixIdentity() * view_projection;
+	//cb0.WorldViewProjection = cube_rotation * view_projection;
+	cb0.WorldViewProjection = XMMatrixIdentity() * view_projection;
 
 	g_pImmediateContext->UpdateSubresource(g_pConstantBuffer0, 0, nullptr, &cb0, 0, 0);
 
@@ -310,11 +375,14 @@ void RenderFrame(void)
 	g_pImmediateContext->ClearRenderTargetView(g_pBackBufferRTView, rgba_clear_colour);
 	g_pImmediateContext->ClearDepthStencilView(g_pZBuffer, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
-	UINT stride = sizeof(POS_COL_VERTEX);
+	UINT stride = sizeof(POS_COL_TEX_VERTEX);
 	UINT offset = 0;
 	g_pImmediateContext->IASetVertexBuffers(0, 1, &g_pVertexBuffer, &stride, &offset);
 
 	g_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	g_pImmediateContext->PSSetSamplers(0, 0, &g_pSampler0);
+	g_pImmediateContext->PSSetShaderResources(0, 1, &texture);
 
 	g_pImmediateContext->Draw(36, 0);
 
@@ -346,7 +414,7 @@ HRESULT InitialiseGraphics()
 	D3D11_BUFFER_DESC bufferDesc;
 	ZeroMemory(&bufferDesc, sizeof(bufferDesc));
 	bufferDesc.Usage = D3D11_USAGE_DYNAMIC; //Dynamic -> used by CPU and GPU
-	bufferDesc.ByteWidth = sizeof(cube); // Size of the buffer, 3 vertices
+	bufferDesc.ByteWidth = sizeof(textured_cube); // Size of the buffer, 3 vertices
 	bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER; // use as a vertex buffer
 	bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE; // allow cpu access
 	hr = g_pD3DDevice->CreateBuffer(&bufferDesc, NULL, &g_pVertexBuffer); // create buffer
@@ -366,7 +434,7 @@ HRESULT InitialiseGraphics()
 	g_pImmediateContext->Map(g_pVertexBuffer, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms);
 
 	// copy the data
-	memcpy(ms.pData, cube, sizeof(cube));
+	memcpy(ms.pData, textured_cube, sizeof(textured_cube));
 
 	// unlock the buffer
 	g_pImmediateContext->Unmap(g_pVertexBuffer, NULL);
@@ -393,14 +461,26 @@ HRESULT InitialiseGraphics()
 	D3D11_INPUT_ELEMENT_DESC iedesc[] =
 	{
 		{"POSITION", 0,DXGI_FORMAT_R32G32B32_FLOAT,0,0,D3D11_INPUT_PER_VERTEX_DATA,0},
-		{"COLOR",0,DXGI_FORMAT_R32G32B32A32_FLOAT,0,D3D11_APPEND_ALIGNED_ELEMENT,D3D11_INPUT_PER_VERTEX_DATA,0}
+		{"COLOR",0,DXGI_FORMAT_R32G32B32A32_FLOAT,0,D3D11_APPEND_ALIGNED_ELEMENT,D3D11_INPUT_PER_VERTEX_DATA,0},
+		{"TEXCOORD",0,DXGI_FORMAT_R32G32_FLOAT,0,D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA,0}
 	};
 
-	hr = g_pD3DDevice->CreateInputLayout(iedesc, 2, VS->GetBufferPointer(), VS->GetBufferSize(), &g_pInputLayout);
+	hr = g_pD3DDevice->CreateInputLayout(iedesc, ARRAYSIZE(iedesc), VS->GetBufferPointer(), VS->GetBufferSize(), &g_pInputLayout);
 
 	g_pImmediateContext->IASetInputLayout(g_pInputLayout);
 
+
+	D3DX11CreateShaderResourceViewFromFile(g_pD3DDevice, "assets/crate.jpg", nullptr, nullptr, &texture, nullptr);
+
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	D3D11_SAMPLER_DESC  sampler_desc;
+	ZeroMemory(&sampler_desc, sizeof(sampler_desc));
+	sampler_desc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	sampler_desc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	sampler_desc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	sampler_desc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	sampler_desc.MaxLOD = D3D11_FLOAT32_MAX;
 }
 
 HRESULT InitialiseInput()
@@ -635,7 +715,8 @@ HRESULT InitialiseD3D() {
 
 void ShutdownD3D()
 {
-
+	if (texture) texture->Release();
+	if (g_pSampler0) g_pSampler0->Release();
 	if (camera) camera->~Camera();
 	if (g_pPixelShader) g_pPixelShader->Release();
 	if (g_pVertexBuffer) g_pVertexBuffer->Release();
@@ -739,9 +820,9 @@ bool IsKeyPressed(unsigned char DI_keycode)
 void MouseMoved()
 {
 
-	
+
 	mouse_x += mouse_state.lX;
-	
+
 	mouse_y += mouse_state.lY;
 
 

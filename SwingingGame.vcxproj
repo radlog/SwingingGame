@@ -210,6 +210,10 @@
     <ClInclude Include="Transform.h" />
     <ClInclude Include="VGTime.h" />
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="assets\crate.jpg" />
+    <Image Include="assets\texture.bmp" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

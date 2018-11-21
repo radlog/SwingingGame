@@ -1,3 +1,6 @@
+Texture2D texture0;
+SamplerState sampler0;
+
 cbuffer CBuffer0
 {
 	float4x4 WVPMatrix; // 64 bytes
@@ -13,9 +16,10 @@ struct VOut
 {
 	float4 position : SV_POSITION;
 	float4 color : COLOR;
+	float2 texcoord : TEXCOORD;
 };
 
-VOut VShader(float4 position : POSITION, float4 color : COLOR)
+VOut VShader(float4 position : POSITION, float4 color : COLOR, float2 texcoord : TEXCOORD)
 {
 	VOut output;
 
@@ -24,12 +28,14 @@ VOut VShader(float4 position : POSITION, float4 color : COLOR)
 	color.b *= blue_fraction;
 	output.position = mul(WVPMatrix, position);
 	output.color = color;
+	output.texcoord = texcoord;
 
 	return output;
 }
 
 // NOTE: try to change the name to see if it still works
-float4 PShader(float4 position : SV_POSITION, float4 color : COLOR) : SV_TARGET
+float4 PShader(float4 position : SV_POSITION, float4 color : COLOR, float2 texcoord : TEXCOORD) : SV_TARGET
 {
-	return color;
+
+	return color * texture0.Sample(sampler0,texcoord);
 }
