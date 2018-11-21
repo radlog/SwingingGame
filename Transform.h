@@ -10,11 +10,11 @@ public:
 
 	XMMATRIX get_world_transform();
 	XMVECTOR local_up = XMVectorSet(0.0, 1.0, 0.0, 0.0);
-	XMVECTOR local_down = XMVectorSet(0.0, -1.0, 0.0, 0.0);
-	XMVECTOR local_left = XMVectorSet(-1.0, 0.0, 0.0, 0.0);
-	XMVECTOR local_right = XMVectorSet(1.0, 1.0, 0.0, 0.0);
+	XMVECTOR local_down = -local_up;
+	XMVECTOR local_right = XMVectorSet(1.0, 0.0, 0.0, 0.0);
+	XMVECTOR local_left = -local_right;
 	XMVECTOR local_forward = XMVectorSet(0.0, 0.0, 1.0, 0.0);
-	XMVECTOR local_backward = XMVectorSet(0.0, 0.0, -1.0, 0.0);
+	XMVECTOR local_backward = -local_forward;
 
 	XMVECTOR local_scale;
 	XMVECTOR local_rotation;
@@ -27,6 +27,8 @@ public:
 
 	void translate(XMVECTOR direction, float speed);
 	void forward(float speed);
+	void right(float speed);
+	void up(float speed);
 
 
 	static const XMVECTOR world_up;

@@ -41,7 +41,12 @@ Camera* camera;
 //std::vector<GameObject> gameObjects(2);
 
 
-const float rot_speed = 200.0f;
+const float rot_speed = 10.0f;
+const float move_speed = 10.0f;
+const float look_speed = 10.0f;
+
+float mouse_x_center = 480.0f;
+float mouse_y_center = 640.0f;
 
 CONSTANT_BUFFER0 cb0;
 
@@ -84,7 +89,7 @@ void UpdateAI();
 void UpdateInput();
 void UpdateSound();
 void UpdateGraphics();
-void MoveCamera(WPARAM message);
+void MoveCamera();
 
 
 POS_COL_VERTEX cube[] =
@@ -144,6 +149,7 @@ POS_COL_VERTEX shape_1[] =
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
+	ShowCursor(false);
 	camera = new Camera();
 
 	timer = new VGTime();
@@ -181,7 +187,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		}
 		else {
 			//UpdateAI();
-			//UpdateInput();
+			UpdateInput();
 			//UpdateSound();
 			//UpdateGraphics();
 			RenderFrame();
@@ -223,17 +229,18 @@ void RenderFrame(void)
 	
 	//camera->look_at(XMVectorSet(0.0, 0.0, -4.0, 0.0));
 
-	const XMMATRIX view_projection = camera->get_view_projection();
-	const XMMATRIX cube_rotation = XMMatrixRotationQuaternion(XMQuaternionRotationRollPitchYaw(timer->totalTime() * 4, timer->totalTime() * 2, timer->totalTime() * 3));
+	const auto view_projection = camera->get_view_projection();
+	const auto cube_rotation = XMMatrixRotationQuaternion(XMQuaternionRotationRollPitchYaw(timer->totalTime() * 4, timer->totalTime() * 2, timer->totalTime() * 3));
 	//cb0.WorldViewProjection = world * view_projection;
-	cb0.WorldViewProjection = cube_rotation * view_projection;
+	//cb0.WorldViewProjection = cube_rotation * view_projection;
+	cb0.WorldViewProjection = XMMatrixIdentity() * view_projection;
 
-	g_pImmediateContext->UpdateSubresource(g_pConstantBuffer0, 0, 0, &cb0, 0, 0);
+	g_pImmediateContext->UpdateSubresource(g_pConstantBuffer0, 0, nullptr, &cb0, 0, 0);
 
 	g_pImmediateContext->VSSetConstantBuffers(0, 1, &g_pConstantBuffer0);
 
 	//float rgba_clear_colour[4] = { 0.1f,0.2f,0.6f,1.0f };
-	float rgba_clear_colour[4] = { 0.0f,0.0f,0.0f,1.0f };
+	float rgba_clear_colour[4] = { 0.1f,0.1f,0.5f,1.0f };
 	g_pImmediateContext->ClearRenderTargetView(g_pBackBufferRTView, rgba_clear_colour);
 	g_pImmediateContext->ClearDepthStencilView(g_pZBuffer, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
@@ -379,10 +386,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		break;
 	case WM_KEYDOWN:
 		//AlterVertices(shape_1, wParam);
-		MoveCamera(wParam);
+		//MoveCamera(wParam);
 		if (wParam == VK_ESCAPE)
 			DestroyWindow(g_hWnd);
-
+	case WM_MOUSEMOVE:
+		//camera->transform.rotate(0, abs(pos.x) - abs(x), 0);
 		return 0;
 	default:
 		return DefWindowProc(hWnd, message, wParam, lParam);
@@ -506,7 +514,7 @@ HRESULT InitialiseD3D() {
 
 void ShutdownD3D()
 {
-	
+	if (camera) camera->~Camera();
 	if (g_pPixelShader) g_pPixelShader->Release();
 	if (g_pVertexBuffer) g_pVertexBuffer->Release();
 	if (g_pConstantBuffer0) g_pConstantBuffer0->Release();
@@ -523,6 +531,7 @@ void UpdateAI()
 
 void UpdateInput()
 {
+	MoveCamera();
 	//for (GameObject var : gameObjects)
 	//{
 	//	//if (typeid(var) != typeid(Player)) continue;
@@ -593,24 +602,24 @@ void AlterVertices(POS_COL_VERTEX* vert, WPARAM message) {
 	g_pImmediateContext->Unmap(g_pVertexBuffer, NULL);
 }
 
-float move_speed = 2000.0f;
 
-void MoveCamera(WPARAM message) {
 
-	switch (message)
-	{
-	case VK_RIGHT:
-		camera->transform.rotate(0, timer->deltaTime() * rot_speed, 0);
-		break;
-	case VK_LEFT:
-		camera->transform.rotate(0, -timer->deltaTime() * rot_speed, 0);
-		break;
-	case VK_UP:
-		camera->transform.forward(timer->deltaTime()*move_speed);
-		break;
-	case VK_DOWN:
-		camera->transform.forward(-timer->deltaTime()*move_speed);
-		break;
-	default: break;
-	}
+void MoveCamera() {
+	if(GetKeyState('A') & 0x8000) camera->transform.right(-timer->deltaTime() * move_speed);
+	if(GetKeyState('D') & 0x8000) camera->transform.right(timer->deltaTime() * move_speed);
+	if(GetKeyState('W') & 0x8000) camera->transform.forward(timer->deltaTime()*move_speed);
+	if(GetKeyState('S') & 0x8000) camera->transform.forward(-timer->deltaTime()*move_speed);
+
+	//if (GetKeyState(VK_LEFT) & 0x8000) camera->transform.rotate(0, -timer->deltaTime() * look_speed, 0);
+	//if (GetKeyState(VK_RIGHT) & 0x8000) camera->transform.rotate(0, timer->deltaTime() * look_speed, 0);
+	//if (GetKeyState(VK_UP) & 0x8000) camera->transform.rotate(-timer->deltaTime() * look_speed, 0, 0);
+	//if (GetKeyState(VK_DOWN) & 0x8000) camera->transform.rotate(timer->deltaTime() * look_speed, 0, 0);
+
+	POINT pos;
+	GetCursorPos(&pos);
+
+	//camera->transform.rotate(/*(abs(pos.y) - abs(mouse_y_center)) * timer->deltaTime() * look_speed*/ 0, (abs(pos.x) - abs(mouse_x_center)) * timer->deltaTime() * look_speed, 0);
+	camera->transform.rotate((abs(pos.y) - abs(mouse_y_center)) * timer->deltaTime() * look_speed, (abs(pos.x) - abs(mouse_x_center)) * timer->deltaTime() * look_speed, 0);
+	SetCursorPos(mouse_x_center, mouse_y_center);
+
 }
