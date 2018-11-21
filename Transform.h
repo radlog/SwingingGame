@@ -22,8 +22,10 @@ public:
 	XMMATRIX world; 
 
 	void translate(XMVECTOR position);
-	void rotate(float yaw, float pitch, float roll);
+	void rotate(float pitch, float yaw, float roll);
 	void scale(float x, float y, float z) const;
+
+	void rotate_fixed(float pitch, float yaw, float roll);
 
 	void translate(XMVECTOR direction, float speed);
 	void forward(float speed);
@@ -43,6 +45,6 @@ protected:
 
 private:
 	float y_rotation_sum = 0.0f;
-	const float y_rotation_max = 89.0f;
+	float y_rotation_max = 89.0f;
 };
 

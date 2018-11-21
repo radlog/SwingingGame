@@ -103,51 +103,100 @@ bool IsKeyPressed(unsigned char DI_keycode);
 void MouseMoved();
 
 //void MoveCamera();
+const float cube_scale = 1.0f;
 
 POS_COL_VERTEX cube[] =
 {
 	// back face 
-	{XMFLOAT3(-1.0f, 1.0f, 1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(-1.0f, -1.0f, 1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(-1.0f, -1.0f, 1.0f),XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(1.0f, -1.0f, 1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(-cube_scale, cube_scale, cube_scale), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(-cube_scale, -cube_scale, cube_scale), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(cube_scale, cube_scale, cube_scale), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(cube_scale, cube_scale, cube_scale), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(-cube_scale, -cube_scale, cube_scale),XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(cube_scale, -cube_scale, cube_scale), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
 	// front face
-	{XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(-1.0f, 1.0f, -1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(1.0f, 1.0f, -1.0f),  XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(-1.0f, -1.0f, -1.0f),  XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(1.0f, 1.0f, -1.0f),  XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(1.0f, -1.0f, -1.0f),  XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(-cube_scale, -cube_scale, -cube_scale), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(-cube_scale, cube_scale, -cube_scale), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(cube_scale, cube_scale, -cube_scale),  XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(-cube_scale, -cube_scale, -cube_scale),  XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(cube_scale, cube_scale, -cube_scale),  XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(cube_scale, -cube_scale, -cube_scale),  XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
 	// left face
-	{XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
-	{XMFLOAT3(-1.0f, -1.0f, 1.0f), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
-	{XMFLOAT3(-1.0f, 1.0f, -1.0f), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
-	{XMFLOAT3(-1.0f, -1.0f, 1.0f), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
-	{XMFLOAT3(-1.0f, 1.0f, 1.0f), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
-	{XMFLOAT3(-1.0f, 1.0f, -1.0f), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
+	{XMFLOAT3(-cube_scale, -cube_scale, -cube_scale), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
+	{XMFLOAT3(-cube_scale, -cube_scale, cube_scale), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
+	{XMFLOAT3(-cube_scale, cube_scale, -cube_scale), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
+	{XMFLOAT3(-cube_scale, -cube_scale, cube_scale), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
+	{XMFLOAT3(-cube_scale, cube_scale, cube_scale), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
+	{XMFLOAT3(-cube_scale, cube_scale, -cube_scale), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
 	// right face
-	{XMFLOAT3(1.0f, -1.0f, 1.0f),  XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
-	{XMFLOAT3(1.0f, -1.0f, -1.0f),  XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
-	{XMFLOAT3(1.0f, 1.0f, -1.0f),  XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
-	{XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
-	{XMFLOAT3(1.0f, -1.0f, 1.0f),  XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
-	{XMFLOAT3(1.0f, 1.0f, -1.0f),  XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
+	{XMFLOAT3(cube_scale, -cube_scale, cube_scale),  XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
+	{XMFLOAT3(cube_scale, -cube_scale, -cube_scale),  XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
+	{XMFLOAT3(cube_scale, cube_scale, -cube_scale),  XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
+	{XMFLOAT3(cube_scale, cube_scale, cube_scale), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
+	{XMFLOAT3(cube_scale, -cube_scale, cube_scale),  XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
+	{XMFLOAT3(cube_scale, cube_scale, -cube_scale),  XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
 	// bottom face
-	{XMFLOAT3(1.0f, -1.0f, -1.0f), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(1.0f, -1.0f, 1.0f), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(1.0f, -1.0f, 1.0f), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(-1.0f, -1.0f, 1.0f), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(cube_scale, -cube_scale, -cube_scale), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(cube_scale, -cube_scale, cube_scale), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(-cube_scale, -cube_scale, -cube_scale), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(cube_scale, -cube_scale, cube_scale), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(-cube_scale, -cube_scale, cube_scale), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(-cube_scale, -cube_scale, -cube_scale), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)},
 	// top face
-	{XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(1.0f, 1.0f, -1.0f),XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(-1.0f, 1.0f, -1.0f), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(-1.0f, 1.0f, 1.0f), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(-1.0f, 1.0f, -1.0f), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)}
+	{XMFLOAT3(cube_scale, cube_scale, cube_scale), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(cube_scale, cube_scale, -cube_scale),XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(-cube_scale, cube_scale, -cube_scale), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(-cube_scale, cube_scale, cube_scale), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(cube_scale, cube_scale, cube_scale), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(-cube_scale, cube_scale, -cube_scale), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)}
+
+};
+
+const float skyboxScale = 20.0f;
+POS_COL_VERTEX skybox[] =
+{
+	// back face 
+	{XMFLOAT3(-skyboxScale, -skyboxScale, skyboxScale), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(-skyboxScale, skyboxScale, skyboxScale), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(skyboxScale, skyboxScale, skyboxScale), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(-skyboxScale, -skyboxScale, skyboxScale),XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(skyboxScale, skyboxScale, skyboxScale), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(skyboxScale, -skyboxScale, skyboxScale), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
+	// front face
+	{XMFLOAT3(-skyboxScale, skyboxScale, -skyboxScale), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(-skyboxScale, -skyboxScale, -skyboxScale), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(skyboxScale, skyboxScale, -skyboxScale),  XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(skyboxScale, skyboxScale, -skyboxScale),  XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(-skyboxScale, -skyboxScale, -skyboxScale),  XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(skyboxScale, -skyboxScale, -skyboxScale),  XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
+	// left face
+	{XMFLOAT3(-skyboxScale, -skyboxScale, skyboxScale), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
+	{XMFLOAT3(-skyboxScale, -skyboxScale, -skyboxScale), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
+	{XMFLOAT3(-skyboxScale, skyboxScale, -skyboxScale), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
+	{XMFLOAT3(-skyboxScale, skyboxScale, skyboxScale), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
+	{XMFLOAT3(-skyboxScale, -skyboxScale, skyboxScale), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
+	{XMFLOAT3(-skyboxScale, skyboxScale, -skyboxScale), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
+	// right face
+	{XMFLOAT3(skyboxScale, -skyboxScale, -skyboxScale),  XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
+	{XMFLOAT3(skyboxScale, -skyboxScale, skyboxScale),  XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
+	{XMFLOAT3(skyboxScale, skyboxScale, -skyboxScale),  XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
+	{XMFLOAT3(skyboxScale, -skyboxScale, skyboxScale),  XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
+	{XMFLOAT3(skyboxScale, skyboxScale, skyboxScale), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
+	{XMFLOAT3(skyboxScale, skyboxScale, -skyboxScale),  XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
+	// bottom face
+	{XMFLOAT3(skyboxScale, -skyboxScale, skyboxScale), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(skyboxScale, -skyboxScale, -skyboxScale), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(-skyboxScale, -skyboxScale, -skyboxScale), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(-skyboxScale, -skyboxScale, skyboxScale), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(skyboxScale, -skyboxScale, skyboxScale), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(-skyboxScale, -skyboxScale, -skyboxScale), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)},
+	// top face
+	{XMFLOAT3(skyboxScale, skyboxScale, -skyboxScale),XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(skyboxScale, skyboxScale, skyboxScale), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(-skyboxScale, skyboxScale, -skyboxScale), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(skyboxScale, skyboxScale, skyboxScale), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(-skyboxScale, skyboxScale, skyboxScale), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(-skyboxScale, skyboxScale, -skyboxScale), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)}
 
 };
 
@@ -651,10 +700,10 @@ HRESULT UpdateInput()
 	if (IsKeyPressed(DIK_S)) camera->transform.forward(-timer->deltaTime()*move_speed);
 
 
-	if (IsKeyPressed(DIK_LEFT)) camera->transform.rotate(0, -timer->deltaTime() * look_speed, 0);
-	if (IsKeyPressed(DIK_RIGHT)) camera->transform.rotate(0, timer->deltaTime() * look_speed, 0);
-	if (IsKeyPressed(DIK_UP)) camera->transform.rotate(-timer->deltaTime() * look_speed, 0, 0);
-	if (IsKeyPressed(DIK_DOWN)) camera->transform.rotate(timer->deltaTime() * look_speed, 0, 0);
+	if (IsKeyPressed(DIK_LEFT)) camera->transform.rotate_fixed(0, -timer->deltaTime() * look_speed, 0);
+	if (IsKeyPressed(DIK_RIGHT)) camera->transform.rotate_fixed(0, timer->deltaTime() * look_speed, 0);
+	if (IsKeyPressed(DIK_UP)) camera->transform.rotate_fixed(-timer->deltaTime() * look_speed, 0, 0);
+	if (IsKeyPressed(DIK_DOWN)) camera->transform.rotate_fixed(timer->deltaTime() * look_speed, 0, 0);
 
 	return S_OK;
 }
@@ -692,11 +741,13 @@ void MouseMoved()
 
 	
 	mouse_x += mouse_state.lX;
+	
 	mouse_y += mouse_state.lY;
 
 
 	// tricky solution -> TODO: find an other way to do it -> directly use the mouse_state.lX and the mouse_state.lY to rotate
-	camera->transform.rotate((abs(mouse_y) - abs(mouse_y_center)) * timer->deltaTime() * move_speed, (abs(mouse_x) - abs(mouse_x_center)) * timer->deltaTime() * move_speed, 0);
+	//camera->transform.rotate((abs(mouse_y) - abs(mouse_y_center)) * timer->deltaTime() * move_speed, (abs(mouse_x) - abs(mouse_x_center)) * timer->deltaTime() * move_speed, 0);
+	camera->transform.rotate_fixed(mouse_state.lY * timer->deltaTime() * move_speed, mouse_state.lX * timer->deltaTime() * move_speed, 0);
 
 	mouse_x = mouse_x_center;
 	mouse_y = mouse_y_center;
