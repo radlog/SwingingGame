@@ -42,6 +42,7 @@ protected:
 
 
 private:
-
+	float y_rotation_sum = 0.0f;
+	const float y_rotation_max = 89.0f;
 };
 

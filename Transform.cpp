@@ -55,6 +55,7 @@ void Transform::rotate(const float pitch, const float yaw, const float roll)
 
 	const auto rot_matrix = XMMatrixRotationQuaternion(local_rotation);
 	local_forward = XMVector4Transform(world_forward, rot_matrix);
+	local_forward = XMVectorSet(local_forward.x, 0, local_forward.z, 0);
 	local_backward = -local_forward;
 	local_right = XMVector4Transform(world_right, rot_matrix);
 	local_left = -local_right;
