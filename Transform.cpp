@@ -69,6 +69,12 @@ void Transform::forward(const float speed)
 	local_position += local_forward * speed;
 }
 
+void Transform::horizontal_forward(const float speed)
+{
+	const auto forward_new = XMVector3Normalize(XMVECTOR(XMVectorSet(local_forward.x, 0, local_forward.z, 0)));
+	local_position += forward_new * speed;
+}
+
 void Transform::right(const float speed)
 {
 	local_position += local_right * speed;

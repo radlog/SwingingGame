@@ -29,6 +29,7 @@ public:
 
 	void translate(XMVECTOR direction, float speed);
 	void forward(float speed);
+	void horizontal_forward(float speed);
 	void right(float speed);
 	void up(float speed);
 

@@ -90,6 +90,7 @@ DIMOUSESTATE mouse_state;
 
 ID3D11ShaderResourceView *texture;
 
+
 //g_Title is a replace for g_TutorialName
 char g_Title[100] = "Swing to Win(g)";
 
@@ -777,8 +778,8 @@ HRESULT UpdateInput()
 
 	if (IsKeyPressed(DIK_A)) camera->transform.right(-timer->deltaTime() * move_speed);
 	if (IsKeyPressed(DIK_D)) camera->transform.right(timer->deltaTime() * move_speed);
-	if (IsKeyPressed(DIK_W)) camera->transform.forward(timer->deltaTime()*move_speed);
-	if (IsKeyPressed(DIK_S)) camera->transform.forward(-timer->deltaTime()*move_speed);
+	if (IsKeyPressed(DIK_W)) camera->transform.horizontal_forward(timer->deltaTime()*move_speed);
+	if (IsKeyPressed(DIK_S)) camera->transform.horizontal_forward(-timer->deltaTime()*move_speed);
 
 
 	if (IsKeyPressed(DIK_LEFT)) camera->transform.rotate_fixed(0, -timer->deltaTime() * look_speed, 0);
