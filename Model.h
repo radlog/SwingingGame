@@ -20,9 +20,12 @@ public:
 	HRESULT SetDefaultInputLayout();
 	HRESULT SetInputLayout(D3D11_INPUT_ELEMENT_DESC iedesc[], int size);
 	void set_shader_file(char* shader_file);
-	void Draw(XMMATRIX view_projection);
+	void Draw(XMMATRIX view_projection, D3D11_PRIMITIVE_TOPOLOGY mode = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	HRESULT CreateConstantBuffer();
+	HRESULT CreateDefaultSamplerForTexture();
+	HRESULT LoadTexture();
 
+	void Cleanup();
 private:
 	MODEL_CONSTANT_BUFFER cb;
 	string shader_file = "model_shaders.hlsl";
@@ -35,6 +38,9 @@ private:
 	ID3DBlob *VS, *PS;
 	ID3D11InputLayout* inputLayout;
 	ID3D11Buffer* constantBuffer;
+
+	ID3D11SamplerState * sampler0;
+	ID3D11ShaderResourceView *texture;
 
 	Transform transform;
 

@@ -44,3 +44,7 @@ std::string GameObject::get_name()
 {
 	return name;
 }
+
+void GameObject::Cleanup()
+{
+}

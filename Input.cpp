@@ -4,6 +4,7 @@
 
 Input::Input()
 {
+
 }
 
 
@@ -11,30 +12,31 @@ Input::~Input()
 {
 }
 
-Input::Input(Player * actor)
+Input::Input(GameObject * actor)
 {
 	this->actor = actor;
 }
 
 void Input::handle_input(WPARAM key)
 {
-	State state = actor->get_State();
+	//if(actor )
+	//State state = actor->get_State();
 
-	switch (state)
-	{
-	case Crouching:
-		break;
-	case Standing:
-		break;
-	case Airborne:
-		break;		
-	case Moving:
-		break;
-	case Accelerating:
-		break;
-	case Hooking:
-		break;
-	}
+	//switch (state)
+	//{
+	//case Crouching:
+	//	break;
+	//case Standing:
+	//	break;
+	//case Airborne:
+	//	break;		
+	//case Moving:
+	//	break;
+	//case Accelerating:
+	//	break;
+	//case Hooking:
+	//	break;
+	//}
 
 
 	switch (key)
@@ -58,5 +60,129 @@ void Input::handle_input(WPARAM key)
 		// represents crouch
 	case VK_LCONTROL:
 		break;
+	}
+}
+
+HRESULT Input::InitialiseInput(HINSTANCE hInstance, HWND hWnd)
+{
+	HRESULT hr;
+	ZeroMemory(keyboardKeysState, sizeof(keyboardKeysState));
+
+	// initialise input factory
+	hr = DirectInput8Create(hInstance, DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&directInput, NULL);
+	if (FAILED(hr)) return hr;
+
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////keyboard init////////////////////////////////////////////////////////////////
+	// create keyboard
+	hr = directInput->CreateDevice(GUID_SysKeyboard, &keyboard, NULL);
+	if (FAILED(hr)) return hr;
+
+	// set keyboard format
+	hr = keyboard->SetDataFormat(&c_dfDIKeyboard);
+	if (FAILED(hr)) return hr;
+
+	// set keyboards behaviour of interaction between other instances of the same device on different processes and the system
+	hr = keyboard->SetCooperativeLevel(hWnd, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE);
+	if (FAILED(hr)) return hr;
+
+	// acquire the setup device
+	hr = keyboard->Acquire();
+	if (FAILED(hr)) return hr;
+
+	////////////////////////////////////////////////////////keyboard init////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////mouse init///////////////////////////////////////////////////////////////////
+	// create mouse
+	hr = directInput->CreateDevice(GUID_SysMouse, &mouseInput, NULL);
+	if (FAILED(hr)) return hr;
+
+	// set data format for the mouse
+	hr = mouseInput->SetDataFormat(&c_dfDIMouse);
+	if (FAILED(hr)) return hr;
+
+	// set interaction of mouse between processes and other instances of the same device
+	hr = mouseInput->SetCooperativeLevel(hWnd, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE);
+	if (FAILED(hr)) return hr;
+
+	// acquire setup mouse
+	hr = mouseInput->Acquire();
+	if (FAILED(hr)) return hr;
+
+	////////////////////////////////////////////////////////mouse init///////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	return S_OK;
+}
+
+HRESULT Input::UpdateInput(GameObject* actor, VGTime* gameTime)
+{
+	HRESULT hr;
+
+	hr = keyboard->GetDeviceState(sizeof(keyboardKeysState), (LPVOID)&keyboardKeysState);
+
+	if (FAILED(hr)) {
+		if ((hr == DIERR_INPUTLOST) || (hr == DIERR_NOTACQUIRED))
+		{
+			keyboard->Acquire();
+		}
+	}
+
+	hr = mouseInput->GetDeviceState(sizeof(mouseState), (LPVOID)&mouseState);
+
+	if (FAILED(hr)) {
+		if ((hr == DIERR_INPUTLOST) || (hr == DIERR_NOTACQUIRED))
+		{
+			mouseInput->Acquire();
+		}
+	}
+
+	if(fps)	MouseMoved(actor, gameTime);
+
+	if (IsKeyPressed(DIK_ESCAPE)) DestroyWindow(d3dfw::getInstance()->hWnd);
+
+	if (IsKeyPressed(DIK_A)) actor->transform.right(-gameTime->deltaTime() * move_speed);
+	if (IsKeyPressed(DIK_D)) actor->transform.right(gameTime->deltaTime() * move_speed);
+	if (IsKeyPressed(DIK_W)) actor->transform.horizontal_forward(gameTime->deltaTime()*move_speed);
+	if (IsKeyPressed(DIK_S)) actor->transform.horizontal_forward(-gameTime->deltaTime()*move_speed);
+
+
+	if (IsKeyPressed(DIK_LEFT)) actor->transform.rotate_fixed(0, -gameTime->deltaTime() * look_speed, 0);
+	if (IsKeyPressed(DIK_RIGHT)) actor->transform.rotate_fixed(0, gameTime->deltaTime() * look_speed, 0);
+	if (IsKeyPressed(DIK_UP)) actor->transform.rotate_fixed(-gameTime->deltaTime() * look_speed, 0, 0);
+	if (IsKeyPressed(DIK_DOWN)) actor->transform.rotate_fixed(gameTime->deltaTime() * look_speed, 0, 0);
+
+	return S_OK;
+}
+
+void Input::MouseMoved(GameObject* actor, VGTime* gameTime)
+{
+	mouse_x += mouseState.lX;
+	mouse_y += mouseState.lY;
+
+	actor->transform.rotate_fixed(mouseState.lY * gameTime->deltaTime() * move_speed, mouseState.lX * gameTime->deltaTime() * move_speed, 0);
+
+	mouse_x = mouse_x_center;
+	mouse_y = mouse_y_center;
+	SetCursorPos(mouse_x, mouse_x);
+}
+
+bool Input::IsKeyPressed(unsigned char DI_keycode)
+{
+	return keyboardKeysState[DI_keycode] & 0x80;
+}
+
+void Input::Cleanup()
+{
+	if (keyboard) {
+		keyboard->Unacquire();
+		keyboard->Release();
+	}
+	if (mouseInput)
+	{
+		mouseInput->Unacquire();
+		mouseInput->Release();
 	}
 }

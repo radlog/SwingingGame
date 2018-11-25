@@ -1,6 +1,7 @@
 #pragma once
 #include "Transform.h"
-class Camera
+#include "GameObject.h"
+class Camera : public GameObject
 {
 public:
 	Camera();
@@ -19,7 +20,6 @@ public:
 	float get_far_plane() const;
 	
 	XMMATRIX get_view_projection();
-	Transform transform;
 
 	void look_at(XMVECTOR target);
 

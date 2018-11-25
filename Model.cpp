@@ -18,6 +18,8 @@ Model::Model(ID3D11Device * device, ID3D11DeviceContext * context)
 	CreateConstantBuffer();
 	CompileShaders();
 	SetDefaultInputLayout();
+	CreateDefaultSamplerForTexture();
+	LoadTexture();
 }
 
 Model::~Model()
@@ -75,25 +77,6 @@ void Model::set_shader_file(char * shader_file)
 	this->shader_file = shader_file;
 }
 
-void Model::Draw(XMMATRIX view_projection)
-{
-	XMMATRIX world = XMMatrixMultiply( 
-		XMMatrixScalingFromVector(XMVECTOR(XMVectorSet(1.0f,1.0f,1.0f,0.0f))), 
-		XMMatrixRotationQuaternion( XMQuaternionIdentity())) 
-		* XMMatrixIdentity();
-
-	cb.WorldViewProjection = view_projection;
-
-	immediateContext->UpdateSubresource(constantBuffer, 0, nullptr, &cb, 0, 0);
-	immediateContext->VSSetConstantBuffers(0,1,&constantBuffer);
-
-	// set the shader objects as active
-	immediateContext->VSSetShader(vShader, 0, 0);
-	immediateContext->PSSetShader(pShader, 0, 0);
-
-	objFileModel->Draw();
-}
-
 HRESULT Model::CreateConstantBuffer()
 {
 	HRESULT hr;
@@ -110,3 +93,64 @@ HRESULT Model::CreateConstantBuffer()
 	return hr;
 }
 
+HRESULT Model::CreateDefaultSamplerForTexture()
+{
+	HRESULT hr;
+
+	D3D11_SAMPLER_DESC  sampler_desc;
+	ZeroMemory(&sampler_desc, sizeof(sampler_desc));
+	sampler_desc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	sampler_desc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	sampler_desc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	sampler_desc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	sampler_desc.MaxLOD = D3D11_FLOAT32_MAX;
+
+	hr = device->CreateSamplerState(&sampler_desc, &sampler0);
+
+	return hr;
+}
+
+HRESULT Model::LoadTexture()
+{
+	HRESULT hr = D3DX11CreateShaderResourceViewFromFile(device, "assets/crate.jpg", nullptr, nullptr, &texture, nullptr);
+	return hr;
+}
+
+void Model::Draw(XMMATRIX view_projection, D3D11_PRIMITIVE_TOPOLOGY mode)
+{
+	XMMATRIX world = XMMatrixMultiply(
+		XMMatrixScalingFromVector(XMVECTOR(XMVectorSet(1.0f, 1.0f, 1.0f, 0.0f))),
+		XMMatrixRotationQuaternion(XMQuaternionIdentity()))
+		* XMMatrixIdentity();
+
+	cb.WorldViewProjection = view_projection;
+
+	immediateContext->UpdateSubresource(constantBuffer, 0, nullptr, &cb, 0, 0);
+	immediateContext->VSSetConstantBuffers(0, 1, &constantBuffer);
+
+	// set the shader objects as active
+	immediateContext->VSSetShader(vShader, 0, 0);
+	immediateContext->PSSetShader(pShader, 0, 0);
+
+	immediateContext->PSSetSamplers(0, 1, &sampler0);
+	immediateContext->PSSetShaderResources(0, 1, &texture);
+
+	immediateContext->IASetPrimitiveTopology(mode);
+
+	objFileModel->Draw();
+	
+}
+
+void Model::Cleanup()
+{
+	if (device) device->Release();
+	if (immediateContext) immediateContext->Release();
+	if (vShader) vShader->Release();
+	if (pShader)pShader->Release();
+	if (VS) VS->Release();
+	if (PS) PS->Release();
+	if (inputLayout)inputLayout->Release();
+	if (constantBuffer)constantBuffer->Release();
+	if (sampler0)sampler0->Release();
+	if (texture)texture->Release();
+}

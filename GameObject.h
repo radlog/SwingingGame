@@ -13,7 +13,7 @@ public:
 	GameObject(std::string name);
 	GameObject(std::string name, Transform transform, Model model, float collision_radius);
 
-
+	Transform transform;
 	
 	virtual void spawn(XMVECTOR position);
 	virtual void render();
@@ -22,9 +22,9 @@ public:
 	virtual void collided(XMVECTOR target);
 	virtual std::string get_name();
 
+	void Cleanup();
 protected:
 	std::string name;
-	Transform transform;
 	Model model;
 	SoundEngine sound;
 	float collision_radius;
