@@ -17,6 +17,8 @@
 #include "Enemy.h"
 #include "Player.h"
 #include "Camera.h"
+#include "objfilemodel.h"
+#include "Model.h"
 
 //using namespace std;
 
@@ -44,17 +46,21 @@ struct POS_COL_TEX_NORM_VERTEX
 struct CONSTANT_BUFFER0
 {
 	XMMATRIX WorldViewProjection; // 64 bytes
+	XMVECTOR directional_light_vector; // 16 bytes
+	XMVECTOR directional_light_colour; // 16 bytes
+	XMVECTOR ambient_light_colour; // 16 bytes
 	float RedAmount; // 4 bytes
 	float GreenAmount; // 4 bytes
 	float BlueAmount; // 4 bytes
 	float scale; // 4 bytes
 	//XMFLOAT3 packing_bytes; // 12 bytes
-}; // 80 bytes
+}; // 128 bytes
 
 
 
 // game objects
 Camera* camera;
+Model *model_test;
 //std::vector<GameObject> gameObjects(2);
 
 bool enable_glowing = false;
@@ -68,6 +74,10 @@ float mouse_y_center = 640.0f;
 float mouse_x = mouse_x_center;
 float mouse_y = mouse_y_center;
 
+XMVECTOR directional_light_shines_from = XMVectorSet(0.0f,0.0f,-1.0f,0.0f);
+XMVECTOR directional_light_colour = XMVectorSet(1.0f, 1.0f, 0.0f, 1.0f); // green
+XMVECTOR ambient_light_colour = XMVectorSet(0.1f, 0.1f, 0.1f, 1.0f); // dark grey
+
 CONSTANT_BUFFER0 cb0;
 
 VGTime* timer;
@@ -77,8 +87,8 @@ HWND g_hWnd = NULL;
 
 D3D_DRIVER_TYPE g_driverType = D3D_DRIVER_TYPE_NULL;
 D3D_FEATURE_LEVEL g_featureLevel = D3D_FEATURE_LEVEL_11_0;
-ID3D11Device* g_pD3DDevice = NULL;
-ID3D11DeviceContext* g_pImmediateContext = NULL;
+ID3D11Device* device = NULL;
+ID3D11DeviceContext* immediateContext = NULL;
 IDXGISwapChain* g_pSwapChain = NULL;
 ID3D11RenderTargetView* g_pBackBufferRTView = NULL;
 ID3D11Buffer* g_pConstantBuffer0;
@@ -321,6 +331,7 @@ POS_COL_VERTEX shape_1[] =
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
+
 	ShowCursor(false);
 	camera = new Camera();
 
@@ -382,7 +393,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 void RenderFrame(void)
 {
 	double delta = timer->deltaTime();
-
+	//enable_glowing = true;
 	if (enable_glowing)
 	{
 		static bool glow;
@@ -410,37 +421,42 @@ void RenderFrame(void)
 		cb0.BlueAmount = 1.0f;
 	}
 
-
-
 	//camera->look_at(XMVectorSet(0.0, 0.0, -4.0, 0.0));
 
 	const auto view_projection = camera->get_view_projection();
 	const auto cube_rotation = XMMatrixRotationQuaternion(XMQuaternionRotationRollPitchYaw(timer->totalTime() * 4, timer->totalTime() * 2, timer->totalTime() * 3));
-	//cb0.WorldViewProjection = world * view_projection;
+	
 	//cb0.WorldViewProjection = cube_rotation * view_projection;
 	cb0.WorldViewProjection = XMMatrixIdentity() * view_projection;
 
-	g_pImmediateContext->UpdateSubresource(g_pConstantBuffer0, 0, nullptr, &cb0, 0, 0);
+	XMMATRIX transpose;
+	transpose = XMMatrixTranspose(cb0.WorldViewProjection);
 
-	g_pImmediateContext->VSSetConstantBuffers(0, 1, &g_pConstantBuffer0);
+	cb0.directional_light_colour = directional_light_colour;
+	cb0.ambient_light_colour = ambient_light_colour;
+	cb0.directional_light_vector = XMVector3Normalize( XMVector3Transform(directional_light_shines_from, transpose));
+
+	//immediateContext->UpdateSubresource(g_pConstantBuffer0, 0, nullptr, &cb0, 0, 0);
+
+	//immediateContext->VSSetConstantBuffers(0, 1, &g_pConstantBuffer0);
 
 	//float rgba_clear_colour[4] = { 0.1f,0.2f,0.6f,1.0f };
 	//float rgba_clear_colour[4] = { 0.1f,0.1f,0.5f,1.0f };
 	float rgba_clear_colour[4] = { 0.0f,0.0f,0.0f,1.0f };
-	g_pImmediateContext->ClearRenderTargetView(g_pBackBufferRTView, rgba_clear_colour);
-	g_pImmediateContext->ClearDepthStencilView(g_pZBuffer, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+	immediateContext->ClearRenderTargetView(g_pBackBufferRTView, rgba_clear_colour);
+	immediateContext->ClearDepthStencilView(g_pZBuffer, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
-	UINT stride = sizeof(POS_COL_TEX_VERTEX);
-	UINT offset = 0;
-	g_pImmediateContext->IASetVertexBuffers(0, 1, &g_pVertexBuffer, &stride, &offset);
+	//UINT stride = sizeof(POS_COL_TEX_NORM_VERTEX);
+	//UINT offset = 0;
+	//immediateContext->IASetVertexBuffers(0, 1, &g_pVertexBuffer, &stride, &offset);
 
-	g_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	immediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	g_pImmediateContext->PSSetSamplers(0, 0, &g_pSampler0);
-	g_pImmediateContext->PSSetShaderResources(0, 1, &texture);
+	immediateContext->PSSetSamplers(0, 0, &g_pSampler0);
+	immediateContext->PSSetShaderResources(0, 1, &texture);
 
-	g_pImmediateContext->Draw(36, 0);
-
+	//immediateContext->Draw(36, 0);
+	model_test->Draw(view_projection);
 
 	// RENDER HERE
 
@@ -451,6 +467,12 @@ void RenderFrame(void)
 HRESULT InitialiseGraphics()
 {
 	HRESULT hr = S_OK;
+	
+	char filename[] = "assets/Sphere.obj";
+	model_test = new Model(device, immediateContext,filename);	
+	
+
+
 
 	// create constant buffer
 	D3D11_BUFFER_DESC constant_buffer_desc;
@@ -460,7 +482,7 @@ HRESULT InitialiseGraphics()
 	constant_buffer_desc.ByteWidth = sizeof(cb0); // MUST be a multiple of 16, calculate from CB struct
 	constant_buffer_desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 
-	hr = g_pD3DDevice->CreateBuffer(&constant_buffer_desc, NULL, &g_pConstantBuffer0);
+	hr = device->CreateBuffer(&constant_buffer_desc, NULL, &g_pConstantBuffer0);
 
 	if (FAILED(hr))
 		return hr;
@@ -469,10 +491,10 @@ HRESULT InitialiseGraphics()
 	D3D11_BUFFER_DESC bufferDesc;
 	ZeroMemory(&bufferDesc, sizeof(bufferDesc));
 	bufferDesc.Usage = D3D11_USAGE_DYNAMIC; //Dynamic -> used by CPU and GPU
-	bufferDesc.ByteWidth = sizeof(textured_cube); // Size of the buffer, 3 vertices
+	bufferDesc.ByteWidth = sizeof(textured_normal_cube); // Size of the buffer, 3 vertices
 	bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER; // use as a vertex buffer
 	bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE; // allow cpu access
-	hr = g_pD3DDevice->CreateBuffer(&bufferDesc, NULL, &g_pVertexBuffer); // create buffer
+	hr = device->CreateBuffer(&bufferDesc, NULL, &g_pVertexBuffer); // create buffer
 
 	if (FAILED(hr)) {
 		return hr;
@@ -486,13 +508,13 @@ HRESULT InitialiseGraphics()
 
 
 	// Lock the buffer to allow writing
-	g_pImmediateContext->Map(g_pVertexBuffer, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms);
+	immediateContext->Map(g_pVertexBuffer, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms);
 
 	// copy the data
-	memcpy(ms.pData, textured_cube, sizeof(textured_cube));
+	memcpy(ms.pData, textured_normal_cube, sizeof(textured_normal_cube));
 
 	// unlock the buffer
-	g_pImmediateContext->Unmap(g_pVertexBuffer, NULL);
+	immediateContext->Unmap(g_pVertexBuffer, NULL);
 
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -502,12 +524,12 @@ HRESULT InitialiseGraphics()
 	hr = D3DX11CompileFromFile("shaders.hlsl", 0, 0, "PShader", "ps_4_0", 0, 0, 0, &PS, &error, 0);
 
 	// create shader objects
-	hr = g_pD3DDevice->CreateVertexShader(VS->GetBufferPointer(), VS->GetBufferSize(), NULL, &g_pVertexShader);
-	hr = g_pD3DDevice->CreatePixelShader(PS->GetBufferPointer(), PS->GetBufferSize(), NULL, &g_pPixelShader);
+	hr = device->CreateVertexShader(VS->GetBufferPointer(), VS->GetBufferSize(), NULL, &g_pVertexShader);
+	hr = device->CreatePixelShader(PS->GetBufferPointer(), PS->GetBufferSize(), NULL, &g_pPixelShader);
 
 	// set the shader objects as active
-	g_pImmediateContext->VSSetShader(g_pVertexShader, 0, 0);
-	g_pImmediateContext->PSSetShader(g_pPixelShader, 0, 0);
+	immediateContext->VSSetShader(g_pVertexShader, 0, 0);
+	immediateContext->PSSetShader(g_pPixelShader, 0, 0);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -517,15 +539,16 @@ HRESULT InitialiseGraphics()
 	{
 		{"POSITION", 0,DXGI_FORMAT_R32G32B32_FLOAT,0,0,D3D11_INPUT_PER_VERTEX_DATA,0},
 		{"COLOR",0,DXGI_FORMAT_R32G32B32A32_FLOAT,0,D3D11_APPEND_ALIGNED_ELEMENT,D3D11_INPUT_PER_VERTEX_DATA,0},
-		{"TEXCOORD",0,DXGI_FORMAT_R32G32_FLOAT,0,D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA,0}
+		{"TEXCOORD",0,DXGI_FORMAT_R32G32_FLOAT,0,D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA,0},
+		{"NORMAL",0,DXGI_FORMAT_R32G32B32_FLOAT,0,D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA,0}
 	};
 
-	hr = g_pD3DDevice->CreateInputLayout(iedesc, ARRAYSIZE(iedesc), VS->GetBufferPointer(), VS->GetBufferSize(), &g_pInputLayout);
+	hr = device->CreateInputLayout(iedesc, ARRAYSIZE(iedesc), VS->GetBufferPointer(), VS->GetBufferSize(), &g_pInputLayout);
 
-	g_pImmediateContext->IASetInputLayout(g_pInputLayout);
+	immediateContext->IASetInputLayout(g_pInputLayout);
 
 
-	D3DX11CreateShaderResourceViewFromFile(g_pD3DDevice, "assets/crate.jpg", nullptr, nullptr, &texture, nullptr);
+	D3DX11CreateShaderResourceViewFromFile(device, "assets/crate.jpg", nullptr, nullptr, &texture, nullptr);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -700,7 +723,7 @@ HRESULT InitialiseD3D() {
 		hr = D3D11CreateDeviceAndSwapChain(NULL, g_driverType, NULL,
 			createDeviceFlags, featureLevels, numFeatureLevels,
 			D3D11_SDK_VERSION, &sd, &g_pSwapChain,
-			&g_pD3DDevice, &g_featureLevel, &g_pImmediateContext);
+			&device, &g_featureLevel, &immediateContext);
 		if (SUCCEEDED(hr))
 			break;
 	}
@@ -716,7 +739,7 @@ HRESULT InitialiseD3D() {
 
 	if (FAILED(hr)) return hr;
 
-	hr = g_pD3DDevice->CreateRenderTargetView(pBackBufferTexture, NULL, &g_pBackBufferRTView);
+	hr = device->CreateRenderTargetView(pBackBufferTexture, NULL, &g_pBackBufferRTView);
 
 	pBackBufferTexture->Release();
 
@@ -736,7 +759,7 @@ HRESULT InitialiseD3D() {
 	tex2dDesc.Usage = D3D11_USAGE_DEFAULT;
 
 	ID3D11Texture2D *pZBufferTexture;
-	hr = g_pD3DDevice->CreateTexture2D(&tex2dDesc, NULL, &pZBufferTexture);
+	hr = device->CreateTexture2D(&tex2dDesc, NULL, &pZBufferTexture);
 
 	if (FAILED(hr)) return hr;
 
@@ -747,10 +770,10 @@ HRESULT InitialiseD3D() {
 	dsvDesc.Format = tex2dDesc.Format;
 	dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 
-	g_pD3DDevice->CreateDepthStencilView(pZBufferTexture, &dsvDesc, &g_pZBuffer);
+	device->CreateDepthStencilView(pZBufferTexture, &dsvDesc, &g_pZBuffer);
 	pZBufferTexture->Release();
 
-	g_pImmediateContext->OMSetRenderTargets(1, &g_pBackBufferRTView, g_pZBuffer);
+	immediateContext->OMSetRenderTargets(1, &g_pBackBufferRTView, g_pZBuffer);
 
 	D3D11_VIEWPORT viewport;
 
@@ -761,7 +784,7 @@ HRESULT InitialiseD3D() {
 	viewport.MinDepth = 0.0f;
 	viewport.MaxDepth = 1.0f;
 
-	g_pImmediateContext->RSSetViewports(1, &viewport);
+	immediateContext->RSSetViewports(1, &viewport);
 
 
 	return S_OK;
@@ -777,8 +800,8 @@ void ShutdownD3D()
 	if (g_pVertexBuffer) g_pVertexBuffer->Release();
 	if (g_pConstantBuffer0) g_pConstantBuffer0->Release();
 	if (g_pSwapChain) g_pSwapChain->Release();
-	if (g_pImmediateContext) g_pImmediateContext->Release();
-	if (g_pD3DDevice) g_pD3DDevice->Release();
+	if (immediateContext) immediateContext->Release();
+	if (device) device->Release();
 	if (g_pBackBufferRTView) g_pBackBufferRTView->Release();
 	if (g_keyboard_device) {
 		g_keyboard_device->Unacquire();
