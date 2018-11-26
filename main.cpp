@@ -21,29 +21,11 @@
 #include "Model.h"
 #include "d3dfw.h"
 #include "Input.h"
+#include "Geometry.h"
 
 //using namespace std;
 
-struct POS_COL_VERTEX
-{
-	XMFLOAT3 Pos;
-	XMFLOAT4 Col;
-};
 
-struct POS_COL_TEX_VERTEX
-{
-	XMFLOAT3 Pos;
-	XMFLOAT4 Col;
-	XMFLOAT2 Texture0;
-};
-
-struct POS_COL_TEX_NORM_VERTEX
-{
-	XMFLOAT3 Pos;
-	XMFLOAT4 Col;
-	XMFLOAT2 Texture0;
-	XMFLOAT3 Normal;
-};
 
 struct CONSTANT_BUFFER0
 {
@@ -62,7 +44,7 @@ struct CONSTANT_BUFFER0
 
 // game objects
 Camera* camera;
-const int upperPlatformCount = 500;
+const int upperPlatformCount = 100; // 3000 * 3312 vertices seems to slow down the prozess when rotating -> consider optimizations for rotations
 const int middlePlatformCount = 100;
 const int lowerPlatformCount = 100;
 GameObject upperPlatforms[upperPlatformCount];
@@ -71,7 +53,6 @@ GameObject lowerPlatforms[lowerPlatformCount];
 
 Model *model_test;
 Input input;
-//std::vector<GameObject> gameObjects(2);
 
 bool enable_glowing = false;
 
@@ -110,6 +91,9 @@ void LoadContent();
 
 //void MoveCamera();
 const float cube_scale = 1.0f;
+
+TexturedCube geo_cube;
+
 
 POS_COL_VERTEX cube[] =
 {
@@ -311,6 +295,8 @@ d3dfw* dx_handle;
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
+	Geometry::create_cube(1.0f, &geo_cube);
+
 	dx_handle = d3dfw::getInstance();
 	ShowCursor(false);
 	camera = new Camera();
@@ -370,7 +356,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 void RenderFrame(void)
 {
-	const XMMATRIX view_projection = camera->get_view_projection();
+	const XMMATRIX view_projection = camera->calculate_view_projection();
 	
 	// clear the render target view
 	dx_handle->ClearRTV();

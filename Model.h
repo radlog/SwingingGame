@@ -25,6 +25,7 @@ public:
 	ObjFileModel* objFileModel;
 
 	HRESULT LoadObjModel(char* filename);
+	HRESULT LoadGeoModel();
 	HRESULT CompileShaders();
 	HRESULT SetDefaultInputLayout();
 	HRESULT SetInputLayout(D3D11_INPUT_ELEMENT_DESC iedesc[], int size);
@@ -37,9 +38,11 @@ public:
 	void UpdateConstantBufferValues();
 
 	void Cleanup() const;
-private:
+
+protected:
 	MODEL_CONSTANT_BUFFER cb;
 	string shader_file = "model_shaders.hlsl";
+	string objfile;
 	ID3D11Device* device;
 	ID3D11DeviceContext* immediateContext;
 
@@ -61,5 +64,6 @@ private:
 	void CalculateOrigin();
 	void InitializeCollider();
 	bool recalcOrigin = false;
+
 };
 

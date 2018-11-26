@@ -20,8 +20,6 @@ Model::Model(ID3D11Device * device, ID3D11DeviceContext * context)
 	SetDefaultInputLayout();
 	CreateDefaultSamplerForTexture();
 	LoadTexture();
-
-	
 }
 
 Model::~Model()
@@ -31,13 +29,16 @@ Model::~Model()
 HRESULT Model::LoadObjModel(char * filename)
 {
 	objFileModel = new ObjFileModel(filename, device, immediateContext);
-
+	objfile = filename;
 	if (objFileModel->filename == "FILE NOT LOADED") return S_FALSE;
 
-
-	if(recalcOrigin)
+	
+#ifdef RELEASE
+	//OutputDebugString("Calc origin");
 	CalculateOrigin();
 	InitializeCollider();
+#endif
+
 }
 
 HRESULT Model::CompileShaders()

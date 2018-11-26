@@ -25,12 +25,12 @@ GameObject::GameObject(std::string name, Transform transform, Model model)
 
 void GameObject::Draw(XMMATRIX view_projection)
 {
-	model.Draw(transform.get_world_transform()* view_projection);
+	model.Draw(transform.world * view_projection);
 }
 
 void GameObject::Draw(XMMATRIX view_projection, D3D11_PRIMITIVE_TOPOLOGY mode)
 {
-	model.Draw(transform.get_world_transform()* view_projection, mode);
+	model.Draw(transform.world* view_projection, mode);
 }
 
 void GameObject::spawn(XMVECTOR position)

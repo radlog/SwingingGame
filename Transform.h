@@ -9,7 +9,7 @@ public:
 	Transform(XMVECTOR world_scale, XMVECTOR world_rotation, XMVECTOR world_position);
 	~Transform();
 
-	XMMATRIX get_world_transform();
+	XMMATRIX calculate_world_transform();
 	XMVECTOR local_up = XMVectorSet(0.0, 1.0, 0.0, 0.0);
 	XMVECTOR local_down = -local_up;
 	XMVECTOR local_right = XMVectorSet(1.0, 0.0, 0.0, 0.0);

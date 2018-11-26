@@ -11,7 +11,7 @@ Geometry::~Geometry()
 {
 }
 
-void Geometry::create_cube(float scale, Cube* cube)
+void Geometry::create_cube(float scale, TexturedCube* cube)
 {
 	// back face 
 	cube->quads[0].vertices[0] = { XMFLOAT3(-scale, scale, scale), XMFLOAT4(1.0f,0.0f,0.0f,1.0f) };

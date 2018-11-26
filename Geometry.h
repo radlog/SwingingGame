@@ -4,25 +4,48 @@
 #include <xnamath.h>
 #include "Transform.h"
 
-struct Vertex {
-	XMFLOAT3 pos;
-	XMFLOAT4 col;
+
+
+struct POS_COL_VERTEX
+{
+	XMFLOAT3 Pos;
+	XMFLOAT4 Col;
+};
+
+struct POS_COL_TEX_VERTEX
+{
+	XMFLOAT3 Pos;
+	XMFLOAT4 Col;
+	XMFLOAT2 Texture0;
+};
+
+struct POS_COL_TEX_NORM_VERTEX
+{
+	XMFLOAT3 Pos;
+	XMFLOAT4 Col;
+	XMFLOAT2 Texture0;
+	XMFLOAT3 Normal;
+};
+
+struct Plane
+{
+	POS_COL_TEX_NORM_VERTEX vertices[];
 };
 
 struct Polygon {
 
 };
 
-struct Triangle {
-	Vertex vertices[3];
+struct TexturedTriangle {
+	POS_COL_TEX_NORM_VERTEX vertices[3];
 };
 
-struct Quad {
-	Vertex vertices[6];
+struct TexturedQuad {
+	POS_COL_TEX_NORM_VERTEX vertices[6];
 };
 
-struct Cube {
-	Quad quads[6];
+struct TexturedCube {
+	TexturedQuad quads[6];
 };
 
 static class Geometry
@@ -34,11 +57,13 @@ public:
 
 
 	
-	void create_tri(Vertex one[], Vertex two[], Vertex three[]);	
-	Quad create_quad(Vertex one[], Vertex two[], Vertex three[], Vertex four[]);
+	void create_tri(POS_COL_TEX_NORM_VERTEX one[], POS_COL_TEX_NORM_VERTEX two[], POS_COL_TEX_NORM_VERTEX three[]);
+	TexturedQuad create_quad(POS_COL_TEX_NORM_VERTEX one[], POS_COL_TEX_NORM_VERTEX two[], POS_COL_TEX_NORM_VERTEX three[], POS_COL_TEX_NORM_VERTEX four[]);
+
+	void generate_plane(Plane plane);
 
 	void pyramid();
-	void create_cube(float scale, Cube* cube);
+	static void create_cube(float scale, TexturedCube* cube);
 	void cone();
 	void cylinder();
 	void sphere();

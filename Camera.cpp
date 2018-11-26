@@ -6,7 +6,7 @@ Camera::Camera()
 {
 	transform = Transform();
 	transform.local_position = XMVectorSet(0.0, 0.0, -5.0, 0.0);
-	//XMStoreFloat4x4(&world, transform.get_world_transform());
+	//XMStoreFloat4x4(&world, transform.calculate_world_transform());
 	view_ = XMMatrixIdentity();
 	projection_ = XMMatrixPerspectiveFovLH(XMConvertToRadians(default_fov_), default_aspect_ratio_, default_near_plane_, default_far_plane_);
 }
@@ -82,12 +82,12 @@ float Camera::get_far_plane() const
 	return this->far_plane_;
 }
 
-XMMATRIX Camera::get_view_projection()
+XMMATRIX Camera::calculate_view_projection()
 {
 	XMVECTOR determinant;
-	view_ = XMMatrixInverse(&determinant, transform.get_world_transform());
-	view_projection_ = XMMatrixMultiply(view_, projection_);
-	return view_projection_;
+	view_ = XMMatrixInverse(&determinant, transform.calculate_world_transform());
+	view_projection = XMMatrixMultiply(view_, projection_);
+	return view_projection;
 }
 
 void Camera::look_at(XMVECTOR target)

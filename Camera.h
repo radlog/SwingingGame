@@ -18,8 +18,9 @@ public:
 	float get_aspect_ratio() const;
 	float get_near_plane() const;
 	float get_far_plane() const;
-	
-	XMMATRIX get_view_projection();
+
+	XMMATRIX view_projection;
+	XMMATRIX calculate_view_projection();
 
 	void look_at(XMVECTOR target);
 
@@ -33,7 +34,6 @@ private:
 	float far_plane_;
 
 	XMVECTOR look_at_;
-	XMMATRIX view_projection_;
 	XMMATRIX projection_, view_;
 
 

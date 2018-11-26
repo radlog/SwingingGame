@@ -18,9 +18,6 @@ void ObjFileModel::getVertexPositions(vector<XMVECTOR> positions)
 	for(size_t i = 0; i < numverts; i++)
 	{
 		positions[i] = XMLoadFloat3(&vertices[i].Pos);
-		/*positions[i]->x = vertices[i].Pos.x;
-		positions[i]->y = vertices[i].Pos.y;
-		positions[i]->z = vertices[i].Pos.z;*/
 	}
 
 }
