@@ -68,6 +68,8 @@ public:
 
 	MODEL_POS_TEX_NORM_VERTEX* vertices;
 	unsigned int numverts;
+
+	void getVertexPositions(vector<XMVECTOR> positions);
 };
 
 

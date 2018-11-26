@@ -1,15 +1,39 @@
-﻿  main.cpp
+﻿  Camera.cpp
+d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\camera.h(46): warning C4305: 'initializing': truncation from 'double' to 'const float'
+d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\camera.h(47): warning C4305: 'initializing': truncation from 'double' to 'const float'
+  Character.cpp
+  Command.cpp
+  Enemy.cpp
+  GameObject.cpp
+  Input.cpp
+d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\input.h(2): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\player.h(3): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\input.h(3): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\input.cpp(146): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\input.cpp(147): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\input.cpp(148): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\input.cpp(149): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\input.cpp(152): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\input.cpp(153): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\input.cpp(154): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\input.cpp(155): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\input.cpp(165): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\input.cpp(169): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+  Obstacle.cpp
+  Player.cpp
+d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\player.h(3): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\input.h(2): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\input.h(3): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+  d3dfw.cpp
+d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\input.h(2): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\player.h(3): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\input.h(3): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+  main.cpp
 d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\player.h(3): warning C4067: unexpected tokens following preprocessor directive - expected a newline
 d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\input.h(2): warning C4067: unexpected tokens following preprocessor directive - expected a newline
 d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\input.h(3): warning C4067: unexpected tokens following preprocessor directive - expected a newline
 d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\camera.h(46): warning C4305: 'initializing': truncation from 'double' to 'const float'
 d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\camera.h(47): warning C4305: 'initializing': truncation from 'double' to 'const float'
-d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\main.cpp(399): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
-d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\main.cpp(400): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
-d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\main.cpp(401): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
-d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\main.cpp(405): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
-d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\main.cpp(406): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
-d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\main.cpp(407): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
-d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\main.cpp(420): warning C4244: 'argument': conversion from 'double' to 'FLOAT', possible loss of data
-d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\main.cpp(467): warning C4715: 'WndProc': not all control paths return a value
+  Generating Code...
+d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\main.cpp(432): warning C4715: 'WndProc': not all control paths return a value
   SwingingGame.vcxproj -> D:\JohnsLair\JohsGoogleDrive\AdvancedGameProgramming\Projects\SwingingGame\Debug\SwingingGame.exe

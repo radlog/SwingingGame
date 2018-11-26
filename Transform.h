@@ -33,6 +33,8 @@ public:
 	void right(float speed);
 	void up(float speed);
 
+	void look_at(XMVECTOR target);
+
 
 	static const XMVECTOR world_up;
 	static const XMVECTOR world_down;

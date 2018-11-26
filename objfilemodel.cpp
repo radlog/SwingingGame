@@ -13,6 +13,17 @@ void ObjFileModel::Draw(void)
 	pImmediateContext->Draw(numverts, 0);
 }
 
+void ObjFileModel::getVertexPositions(vector<XMVECTOR> positions)
+{		
+	for(size_t i = 0; i < numverts; i++)
+	{
+		positions[i] = XMLoadFloat3(&vertices[i].Pos);
+		/*positions[i]->x = vertices[i].Pos.x;
+		positions[i]->y = vertices[i].Pos.y;
+		positions[i]->z = vertices[i].Pos.z;*/
+	}
+
+}
 
 // load object from obj file in constructor
 ObjFileModel::ObjFileModel(char* fname, ID3D11Device* device, ID3D11DeviceContext* context)

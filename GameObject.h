@@ -11,7 +11,7 @@ public:
 	virtual ~GameObject();
 
 	GameObject(std::string name);
-	GameObject(std::string name, Transform transform, Model model, float collision_radius);
+	GameObject(std::string name, Transform transform, Model model);
 
 	Transform transform;
 	

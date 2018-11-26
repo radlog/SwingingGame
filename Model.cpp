@@ -6,8 +6,8 @@ Model::Model()
 {
 }
 
-Model::Model(ID3D11Device * device, ID3D11DeviceContext * context, char * filename) : Model(device,context)
-{	
+Model::Model(ID3D11Device * device, ID3D11DeviceContext * context, char * filename) : Model(device, context)
+{
 	LoadObjModel(filename);
 }
 
@@ -15,11 +15,13 @@ Model::Model(ID3D11Device * device, ID3D11DeviceContext * context)
 {
 	this->device = device;
 	this->immediateContext = context;
-	CreateConstantBuffer();
+	CreateDefaultConstantBuffer();
 	CompileShaders();
 	SetDefaultInputLayout();
 	CreateDefaultSamplerForTexture();
 	LoadTexture();
+
+	
 }
 
 Model::~Model()
@@ -28,9 +30,14 @@ Model::~Model()
 
 HRESULT Model::LoadObjModel(char * filename)
 {
-	objFileModel = new ObjFileModel(filename,device,immediateContext);
-	
-	if(objFileModel->filename == "FILE NOT LOADED") return S_FALSE;
+	objFileModel = new ObjFileModel(filename, device, immediateContext);
+
+	if (objFileModel->filename == "FILE NOT LOADED") return S_FALSE;
+
+
+	if(recalcOrigin)
+	CalculateOrigin();
+	InitializeCollider();
 }
 
 HRESULT Model::CompileShaders()
@@ -77,7 +84,7 @@ void Model::set_shader_file(char * shader_file)
 	this->shader_file = shader_file;
 }
 
-HRESULT Model::CreateConstantBuffer()
+HRESULT Model::CreateDefaultConstantBuffer()
 {
 	HRESULT hr;
 	// create constant buffer
@@ -116,6 +123,49 @@ HRESULT Model::LoadTexture()
 	return hr;
 }
 
+void Model::UpdateConstantBufferValues()
+{
+	//enable_glowing = true;
+	//if (enable_glowing)
+	//{
+	//	static bool glow;
+	//	delta *= 10;
+	//	if (constantBuffer.RedAmount <= 0.01f || constantBuffer.GreenAmount <= 0.01f || constantBuffer.BlueAmount <= 0.01f) glow = true;
+	//	else if (constantBuffer.RedAmount >= 0.99f || constantBuffer.GreenAmount >= 0.99f || constantBuffer.BlueAmount >= 0.99f) glow = false;
+
+	//	if (glow)
+	//	{
+	//		constantBuffer.RedAmount += 0.1f * delta;
+	//		constantBuffer.GreenAmount += 0.1f * delta;
+	//		constantBuffer.BlueAmount += 0.1f * delta;
+	//	}
+	//	else
+	//	{
+	//		constantBuffer.RedAmount -= 0.1f * delta;
+	//		constantBuffer.GreenAmount -= 0.1f * delta;
+	//		constantBuffer.BlueAmount -= 0.1f * delta;
+	//	}
+	//}
+	//else
+	//{
+	//	constantBuffer.RedAmount = 1.0f;
+	//	constantBuffer.GreenAmount = 1.0f;
+	//	constantBuffer.BlueAmount = 1.0f;
+	//}
+
+	//camera->look_at(XMVectorSet(0.0, 0.0, -4.0, 0.0));
+	//const auto cube_rotation = XMMatrixRotationQuaternion(XMQuaternionRotationRollPitchYaw(timer->totalTime() * 4, timer->totalTime() * 2, timer->totalTime() * 3));
+	//constantBuffer.WorldViewProjection = XMMatrixIdentity() * view_projection;
+
+	//XMMATRIX transpose;
+	//transpose = XMMatrixTranspose(constantBuffer.WorldViewProjection);
+
+	//constantBuffer.directional_light_colour = directional_light_colour;
+	//constantBuffer.ambient_light_colour = ambient_light_colour;
+	//constantBuffer.directional_light_vector = XMVector3Normalize(XMVector3Transform(directional_light_shines_from, transpose));
+
+}
+
 void Model::Draw(XMMATRIX view_projection, D3D11_PRIMITIVE_TOPOLOGY mode)
 {
 	XMMATRIX world = XMMatrixMultiply(
@@ -138,10 +188,10 @@ void Model::Draw(XMMATRIX view_projection, D3D11_PRIMITIVE_TOPOLOGY mode)
 	immediateContext->IASetPrimitiveTopology(mode);
 
 	objFileModel->Draw();
-	
+
 }
 
-void Model::Cleanup()
+void Model::Cleanup() const
 {
 	if (device) device->Release();
 	if (immediateContext) immediateContext->Release();
@@ -153,4 +203,39 @@ void Model::Cleanup()
 	if (constantBuffer)constantBuffer->Release();
 	if (sampler0)sampler0->Release();
 	if (texture)texture->Release();
+}
+
+void Model::CalculateOrigin()
+{
+	vector<XMVECTOR> positions(objFileModel->numverts);
+	objFileModel->getVertexPositions(positions);
+	minOuterVector = positions[0];
+	maxOuterVector = positions[1];
+
+	float distance = 0;
+
+	
+	for (size_t i = 0; i < positions.size(); i++)
+	{
+		const auto a = positions[i];
+		for (auto j = i; j < positions.size(); j++)
+		{
+			const auto b = positions[j];
+			if (pow(b.x - a.x, 2) + pow(b.y - a.y, 2) + pow(b.z - a.z, 2) > distance)
+			{
+				minOuterVector = b;
+				maxOuterVector = a;
+				distance = pow(b.x - a.x, 2) + pow(b.y - a.y, 2) + pow(b.z - a.z, 2);
+			}
+		}
+	}
+	
+
+	origin = minOuterVector - maxOuterVector;
+}
+
+void Model::InitializeCollider()
+{
+	sphereCollider.localPosition = origin;
+	sphereCollider.collisionRadius = sqrt(pow(minOuterVector.x - maxOuterVector.x, 2) + pow(minOuterVector.y - maxOuterVector.y, 2) + pow(minOuterVector.z - maxOuterVector.z, 2));
 }

@@ -15,8 +15,12 @@ GameObject::GameObject(std::string name)
 {
 }
 
-GameObject::GameObject(std::string name, Transform transform, Model model, float collision_radius)
+GameObject::GameObject(std::string name, Transform transform, Model model)
 {
+	this->name = name;
+	this->transform = transform;
+	this->model = model;
+
 }
 
 void GameObject::spawn(XMVECTOR position)

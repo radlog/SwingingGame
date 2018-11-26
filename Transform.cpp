@@ -85,4 +85,9 @@ void Transform::up(const float speed)
 	local_position += local_up * speed;
 }
 
+void Transform::look_at(XMVECTOR target)
+{
+
+}
+
 

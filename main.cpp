@@ -62,6 +62,12 @@ struct CONSTANT_BUFFER0
 
 // game objects
 Camera* camera;
+unsigned int upperPlatformCount = 100;
+unsigned int middlePlatformCount = 100;
+unsigned int lowerPlatformCount = 100;
+GameObject upperPlatforms[];
+GameObject middlePlatforms[];
+GameObject lowerPlatforms[];
 Model *model_test;
 Input input;
 //std::vector<GameObject> gameObjects(2);
@@ -385,55 +391,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 void RenderFrame(void)
 {
-	double delta = timer->deltaTime();
-	//enable_glowing = true;
-	if (enable_glowing)
-	{
-		static bool glow;
-		delta *= 10;
-		if (cb0.RedAmount <= 0.01f || cb0.GreenAmount <= 0.01f || cb0.BlueAmount <= 0.01f) glow = true;
-		else if (cb0.RedAmount >= 0.99f || cb0.GreenAmount >= 0.99f || cb0.BlueAmount >= 0.99f) glow = false;
-
-		if (glow)
-		{
-			cb0.RedAmount += 0.1f * delta;
-			cb0.GreenAmount += 0.1f * delta;
-			cb0.BlueAmount += 0.1f * delta;
-		}
-		else
-		{
-			cb0.RedAmount -= 0.1f * delta;
-			cb0.GreenAmount -= 0.1f * delta;
-			cb0.BlueAmount -= 0.1f * delta;
-		}
-	}
-	else
-	{
-		cb0.RedAmount = 1.0f;
-		cb0.GreenAmount = 1.0f;
-		cb0.BlueAmount = 1.0f;
-	}
-
-	//camera->look_at(XMVectorSet(0.0, 0.0, -4.0, 0.0));
-
-	const auto view_projection = camera->get_view_projection();
-	const auto cube_rotation = XMMatrixRotationQuaternion(XMQuaternionRotationRollPitchYaw(timer->totalTime() * 4, timer->totalTime() * 2, timer->totalTime() * 3));
-	
-	//cb0.WorldViewProjection = cube_rotation * view_projection;
-	cb0.WorldViewProjection = XMMatrixIdentity() * view_projection;
-
-	XMMATRIX transpose;
-	transpose = XMMatrixTranspose(cb0.WorldViewProjection);
-
-	cb0.directional_light_colour = directional_light_colour;
-	cb0.ambient_light_colour = ambient_light_colour;
-	cb0.directional_light_vector = XMVector3Normalize( XMVector3Transform(directional_light_shines_from, transpose));
+	XMMATRIX view_projection = camera->get_view_projection();
 
 	dx_handle->ClearRTV();
-	
-	model_test->Draw(cube_rotation * view_projection);
 
-	// RENDER HERE
+	// draw here
+	model_test->Draw(/*cube_rotation */ view_projection);
+
+
 
 	dx_handle->swapChain->Present(0, 0);
 }
