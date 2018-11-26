@@ -6,6 +6,7 @@ class Transform
 {
 public:
 	Transform();
+	Transform(XMVECTOR world_scale, XMVECTOR world_rotation, XMVECTOR world_position);
 	~Transform();
 
 	XMMATRIX get_world_transform();

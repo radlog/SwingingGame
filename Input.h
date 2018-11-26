@@ -49,8 +49,7 @@ private:
 	DIMOUSESTATE mouseState;
 
 	const float rot_speed = 10.0f;
-	const float move_speed = 10.0f;
-	const float look_speed = 10.0f;
+	const float move_speed = 30.0f;
 
 	float mouse_x_center = 480.0f;
 	float mouse_y_center = 640.0f;

@@ -62,12 +62,13 @@ struct CONSTANT_BUFFER0
 
 // game objects
 Camera* camera;
-unsigned int upperPlatformCount = 100;
-unsigned int middlePlatformCount = 100;
-unsigned int lowerPlatformCount = 100;
-GameObject upperPlatforms[];
-GameObject middlePlatforms[];
-GameObject lowerPlatforms[];
+const int upperPlatformCount = 500;
+const int middlePlatformCount = 100;
+const int lowerPlatformCount = 100;
+GameObject upperPlatforms[upperPlatformCount];
+GameObject middlePlatforms[middlePlatformCount];
+GameObject lowerPlatforms[lowerPlatformCount];
+
 Model *model_test;
 Input input;
 //std::vector<GameObject> gameObjects(2);
@@ -86,28 +87,6 @@ VGTime* timer;
 HINSTANCE g_hInst = NULL;
 HWND g_hWnd = NULL;
 
-D3D_DRIVER_TYPE g_driverType = D3D_DRIVER_TYPE_NULL;
-D3D_FEATURE_LEVEL g_featureLevel = D3D_FEATURE_LEVEL_11_0;
-ID3D11Device* device = NULL;
-ID3D11DeviceContext* immediateContext = NULL;
-IDXGISwapChain* g_pSwapChain = NULL;
-ID3D11RenderTargetView* g_pBackBufferRTView = NULL;
-ID3D11Buffer* g_pConstantBuffer0;
-
-ID3D11Buffer* g_pVertexBuffer;
-ID3D11VertexShader* g_pVertexShader;
-ID3D11PixelShader* g_pPixelShader;
-ID3D11InputLayout* g_pInputLayout;
-ID3D11DepthStencilView* g_pZBuffer;
-ID3D11SamplerState * g_pSampler0;
-IDirectInput8 *g_direct_input;
-IDirectInputDevice8 *g_keyboard_device;
-unsigned char g_keyboard_keys_state[256];
-
-IDirectInputDevice8 *mouse_input;
-DIMOUSESTATE mouse_state;
-
-ID3D11ShaderResourceView *texture;
 
 
 //g_Title is a replace for g_TutorialName
@@ -116,9 +95,7 @@ char g_Title[100] = "Swing to Win(g)";
 
 HRESULT InitialiseWindow(HINSTANCE hInstance, int nCmdShow);
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
-HRESULT InitialiseD3D();
-HRESULT InitialiseGraphics(void);
-HRESULT InitialiseInput();
+
 void Cleanup();
 void RenderFrame(void);
 //void AlterVertices(POS_COL_VERTEX* vert, WPARAM message);
@@ -126,11 +103,10 @@ void RenderFrame(void);
 
 // methods
 void UpdateAI();
-HRESULT UpdateInput();
 void UpdateSound();
 void UpdateGraphics();
-bool IsKeyPressed(unsigned char DI_keycode);
-void MouseMoved();
+
+void LoadContent();
 
 //void MoveCamera();
 const float cube_scale = 1.0f;
@@ -366,6 +342,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	char filename[] = "assets/Sphere.obj";
 	model_test = new Model(dx_handle->device, dx_handle->immediateContext, filename);
 
+
+	LoadContent();
+
 	timer->start();
 
 	while (msg.message != WM_QUIT)
@@ -391,15 +370,18 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 void RenderFrame(void)
 {
-	XMMATRIX view_projection = camera->get_view_projection();
-
+	const XMMATRIX view_projection = camera->get_view_projection();
+	
+	// clear the render target view
 	dx_handle->ClearRTV();
 
 	// draw here
-	model_test->Draw(/*cube_rotation */ view_projection);
+	for (size_t i = 0; i < upperPlatformCount; i++)
+	{
+		upperPlatforms[i].Draw(view_projection/*,D3D11_PRIMITIVE_TOPOLOGY_POINTLIST*/);
+	}
 
-
-
+	// swap back buffer with front buffer
 	dx_handle->swapChain->Present(0, 0);
 }
 
@@ -457,14 +439,26 @@ void UpdateGraphics()
 
 }
 
+void LoadContent()
+{
+	XMVECTOR scale = XMVectorSet(1.0f, 1.0f, 1.0f, 0.0f);
+	XMVECTOR rotation = XMQuaternionIdentity();
+//	XMVECTOR position = XMVectorSet(1.0f, 1.0f, 1.0f, 0.0f);
+	for (size_t i = 0; i < upperPlatformCount; i++)
+	{
+		upperPlatforms[i] = GameObject("upperPlatform" + i, Transform(scale, rotation, XMVectorSet(i, i, 1.0f, 0.0f)), *model_test);	
+	}
 
+	for (size_t i = 0; i < middlePlatformCount; i++)
+	{
 
+	}
 
+	for (size_t i = 0; i < lowerPlatformCount; i++)
+	{
 
-
-
-
-
+	}
+}
 
 
 //void AlterVertices(POS_COL_VERTEX* vert, WPARAM message) {

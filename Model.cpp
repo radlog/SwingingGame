@@ -168,11 +168,6 @@ void Model::UpdateConstantBufferValues()
 
 void Model::Draw(XMMATRIX view_projection, D3D11_PRIMITIVE_TOPOLOGY mode)
 {
-	XMMATRIX world = XMMatrixMultiply(
-		XMMatrixScalingFromVector(XMVECTOR(XMVectorSet(1.0f, 1.0f, 1.0f, 0.0f))),
-		XMMatrixRotationQuaternion(XMQuaternionIdentity()))
-		* XMMatrixIdentity();
-
 	cb.WorldViewProjection = view_projection;
 
 	immediateContext->UpdateSubresource(constantBuffer, 0, nullptr, &cb, 0, 0);

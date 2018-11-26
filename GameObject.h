@@ -4,6 +4,7 @@
 #include "Model.h"
 #include "SoundEngine.h"
 #include "GameData.h"
+//#include "Camera.h"
 
 class GameObject {
 public:
@@ -12,6 +13,9 @@ public:
 
 	GameObject(std::string name);
 	GameObject(std::string name, Transform transform, Model model);
+	void Draw(XMMATRIX view_projection);
+	void Draw(XMMATRIX view_projection, D3D11_PRIMITIVE_TOPOLOGY mode);
+
 
 	Transform transform;
 	
@@ -29,5 +33,5 @@ protected:
 	SoundEngine sound;
 	float collision_radius;
 	GameData game_data;
-
+	//Camera camera;
 };

@@ -14,6 +14,13 @@ Transform::Transform() : local_scale(XMVectorSet(1.0, 1.0, 1.0, 0.0)), local_rot
 {	
 }
 
+Transform::Transform(XMVECTOR scale, XMVECTOR rotation, XMVECTOR position)
+{
+	local_scale = scale;
+	local_rotation = rotation;
+	local_position = position;
+}
+
 
 Transform::~Transform()
 {

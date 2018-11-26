@@ -13,7 +13,7 @@ struct SphereCollider
 	float collisionRadius;
 };
 
-class Model
+class Model 
 {
 public:
 	Model();
@@ -21,6 +21,8 @@ public:
 	
 	Model(ID3D11Device* device, ID3D11DeviceContext* context);
 	~Model();
+
+	ObjFileModel* objFileModel;
 
 	HRESULT LoadObjModel(char* filename);
 	HRESULT CompileShaders();
@@ -41,7 +43,7 @@ private:
 	ID3D11Device* device;
 	ID3D11DeviceContext* immediateContext;
 
-	ObjFileModel* objFileModel;
+
 	ID3D11VertexShader* vShader;
 	ID3D11PixelShader* pShader;
 	ID3DBlob *VS, *PS;
@@ -50,8 +52,6 @@ private:
 
 	ID3D11SamplerState * sampler0;
 	ID3D11ShaderResourceView *texture;
-
-	Transform transform;
 
 	SphereCollider sphereCollider;
 	XMVECTOR minOuterVector;

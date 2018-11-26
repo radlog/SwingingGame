@@ -149,10 +149,10 @@ HRESULT Input::UpdateInput(GameObject* actor, VGTime* gameTime)
 	if (IsKeyPressed(DIK_S)) actor->transform.horizontal_forward(-gameTime->deltaTime()*move_speed);
 
 
-	if (IsKeyPressed(DIK_LEFT)) actor->transform.rotate_fixed(0, -gameTime->deltaTime() * look_speed, 0);
-	if (IsKeyPressed(DIK_RIGHT)) actor->transform.rotate_fixed(0, gameTime->deltaTime() * look_speed, 0);
-	if (IsKeyPressed(DIK_UP)) actor->transform.rotate_fixed(-gameTime->deltaTime() * look_speed, 0, 0);
-	if (IsKeyPressed(DIK_DOWN)) actor->transform.rotate_fixed(gameTime->deltaTime() * look_speed, 0, 0);
+	if (IsKeyPressed(DIK_LEFT)) actor->transform.rotate_fixed(0, -gameTime->deltaTime() * rot_speed, 0);
+	if (IsKeyPressed(DIK_RIGHT)) actor->transform.rotate_fixed(0, gameTime->deltaTime() * rot_speed, 0);
+	if (IsKeyPressed(DIK_UP)) actor->transform.rotate_fixed(-gameTime->deltaTime() * rot_speed, 0, 0);
+	if (IsKeyPressed(DIK_DOWN)) actor->transform.rotate_fixed(gameTime->deltaTime() * rot_speed, 0, 0);
 
 	return S_OK;
 }
@@ -162,7 +162,7 @@ void Input::MouseMoved(GameObject* actor, VGTime* gameTime)
 	mouse_x += mouseState.lX;
 	mouse_y += mouseState.lY;
 
-	actor->transform.rotate_fixed(mouseState.lY * gameTime->deltaTime() * move_speed, mouseState.lX * gameTime->deltaTime() * move_speed, 0);
+	actor->transform.rotate_fixed(mouseState.lY * gameTime->deltaTime() * rot_speed, mouseState.lX * gameTime->deltaTime() * rot_speed, 0);
 
 	mouse_x = mouse_x_center;
 	mouse_y = mouse_y_center;
