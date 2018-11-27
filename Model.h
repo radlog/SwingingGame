@@ -25,7 +25,7 @@ public:
 	ObjFileModel* objFileModel;
 
 	HRESULT LoadObjModel(char* filename);
-	HRESULT LoadGeoModel(void* vertices, UINT numverts, UINT size);
+	HRESULT LoadGeoModel(void* vertices, UINT numverts, UINT size, unsigned int *indices, UINT numIndices);
 	HRESULT CompileShaders();
 	HRESULT SetDefaultInputLayout();
 	HRESULT SetInputLayout(D3D11_INPUT_ELEMENT_DESC iedesc[], int size);
@@ -35,7 +35,7 @@ public:
 	HRESULT CreateDefaultSamplerForTexture();
 	HRESULT LoadTexture();
 	HRESULT UpdateDefaultVertexBuffer(void* vertices, UINT byteWidth);
-
+	HRESULT CreateIndexBuffer();
 	void UpdateConstantBufferValues();
 	void Cleanup() const;
 
@@ -53,6 +53,7 @@ protected:
 	ID3D11InputLayout* inputLayout;
 	ID3D11Buffer* constantBuffer;
 	ID3D11Buffer* vertexBuffer;
+	ID3D11Buffer* indexBuffer;
 
 	ID3D11SamplerState * sampler0;
 	ID3D11ShaderResourceView *texture;
@@ -64,7 +65,9 @@ protected:
 
 	UINT numverts;
 	UINT vertSize;
-	void* vertices;
+	void *vertices;
+	UINT numIndices;
+	unsigned int *indices;
 
 	void CalculateOrigin();
 	void InitializeCollider();

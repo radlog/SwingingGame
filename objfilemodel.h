@@ -62,6 +62,7 @@ public:
 	vector <int> pindices, tindices, nindices; // lists of indicies into above lists derived from faces
 
 	MODEL_POS_TEX_NORM_VERTEX* vertices;
+	unsigned int *indices;
 	unsigned int numverts;
 
 	void getVertexPositions(vector<XMVECTOR> positions);

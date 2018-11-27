@@ -1,5 +1,5 @@
 #include "Model.h"
-
+#include <minwinbase.h>
 
 
 Model::Model()
@@ -35,8 +35,12 @@ HRESULT Model::LoadObjModel(char * filename)
 	numverts = objFileModel->numverts;
 	vertices = objFileModel->vertices;
 	vertSize = sizeof(objFileModel->vertices[0]);
+	indices = objFileModel->indices;
+	numIndices = numverts;
 
 	UpdateDefaultVertexBuffer(vertices, vertSize  * numverts);
+	CreateIndexBuffer();
+
 #ifdef RELEASE
 	//OutputDebugString("Calc origin");
 	CalculateOrigin();
@@ -45,12 +49,15 @@ HRESULT Model::LoadObjModel(char * filename)
 
 }
 
-HRESULT Model::LoadGeoModel(void* vertices, UINT numverts, UINT size)
+HRESULT Model::LoadGeoModel(void* vertices, UINT numverts, UINT size, unsigned int *indices, UINT numIndices)
 {
 	HRESULT hr = S_OK;
 	vertSize = size;
 	this->vertices = vertices;
 	this->numverts = numverts;
+	this->indices = indices;
+	this->numIndices = numIndices;
+	CreateIndexBuffer();
 	UpdateDefaultVertexBuffer(vertices, vertSize  * numverts);
 
 #ifdef RELEASE
@@ -207,11 +214,12 @@ void Model::Draw(XMMATRIX view_projection, D3D11_PRIMITIVE_TOPOLOGY mode)
 	immediateContext->IASetPrimitiveTopology(mode);
 
 	UINT stride = vertSize;
-	UINT offset = 0;
+	UINT offset = 0;	
 	immediateContext->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
-	immediateContext->Draw(numverts, 0);
-	//objFileModel->Draw();
 
+	immediateContext->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);
+
+	immediateContext->DrawIndexed(numIndices+1,0, 0);
 }
 
 void Model::Cleanup() const
@@ -281,6 +289,27 @@ HRESULT Model::UpdateDefaultVertexBuffer(void *vertices, UINT byteWidth)
 	memcpy(ms.pData, vertices, byteWidth);
 	immediateContext->Unmap(vertexBuffer, NULL);
 
+
+	return hr;
+}
+
+HRESULT Model::CreateIndexBuffer()
+{
+	HRESULT hr = S_OK;
+	D3D11_BUFFER_DESC desc;
+	ZeroMemory(&desc, sizeof(desc));
+	desc.Usage = D3D11_USAGE_DEFAULT;
+	desc.ByteWidth = numIndices * sizeof(unsigned int);
+	desc.CPUAccessFlags = 0;
+	desc.MiscFlags = 0;
+	desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+
+	D3D11_SUBRESOURCE_DATA indexData;
+	indexData.pSysMem = indices;
+	indexData.SysMemPitch = 0;
+	indexData.SysMemSlicePitch = 0;
+
+	hr = device->CreateBuffer(&desc, &indexData, &indexBuffer);
 
 	return hr;
 }

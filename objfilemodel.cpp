@@ -275,6 +275,12 @@ bool ObjFileModel::createVB()
         return false;
     }
 
+	indices = new unsigned int[numverts];
+	for (size_t i = 0; i < numverts; i++)
+	{
+		indices[i] = i;
+	}
+
 	// Copy the vertices into the buffer
 	D3D11_MAPPED_SUBRESOURCE ms;
 	pImmediateContext->Map(pVertexBuffer, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms);	// Lock the buffer to allow writing

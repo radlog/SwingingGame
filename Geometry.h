@@ -4,7 +4,11 @@
 #include <xnamath.h>
 #include "Transform.h"
 
-
+struct POS_TEX_VERTEX
+{
+	XMFLOAT3 Pos;	
+	XMFLOAT2 Texture0;
+};
 
 struct POS_COL_VERTEX
 {

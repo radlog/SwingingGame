@@ -44,7 +44,7 @@ struct CONSTANT_BUFFER0
 GameObject test;
 // game objects
 Camera* camera;
-const int upperPlatformCount = 100; // 3000 * 3312 vertices seems to slow down the prozess when rotating -> consider optimizations for rotations
+const int upperPlatformCount = 100; // 3000 * 3312 plane_vertices seems to slow down the prozess when rotating -> consider optimizations for rotations
 const int middlePlatformCount = 100;
 const int lowerPlatformCount = 100;
 GameObject upperPlatforms[upperPlatformCount];
@@ -90,7 +90,7 @@ void UpdateGraphics();
 void LoadContent();
 
 //void MoveCamera();
-const float cube_scale = 1.0f;
+const float cube_scale = 100.0f;
 
 TexturedCube geo_cube;
 
@@ -289,9 +289,61 @@ POS_COL_VERTEX cube[] =
 };
 
 d3dfw* dx_handle;
+const int n = 30;
+POS_TEX_NORM_COL_VERTEX *plane_vertices;
+unsigned int *plane_indices;
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
+
+	/*
+	 *
+	 *Testing area
+	 *
+	 *
+	 *
+	 *
+	 */
+
+
+	plane_vertices = new POS_TEX_NORM_COL_VERTEX[(n + 1)*(n + 1)];
+	plane_indices = new unsigned int[n*n*6];
+	for (size_t z = 0; z < (n + 1); z++)
+	{
+		for (size_t x = 0; x < (n+1); x++)
+		{
+			plane_vertices[z*(n + 1) + x].Pos = XMFLOAT3(x * cube_scale,0.0f,z * cube_scale);
+			plane_vertices[z*(n + 1) + x].Texture0 = XMFLOAT2((float)x, (float)z);
+			plane_vertices[z*(n + 1) + x].Normal = XMFLOAT3(0.0f, 1.0f, 0.0f);
+			plane_vertices[z*(n + 1) + x].Col = XMFLOAT4(1.0f, 1.0f, 1.0f,1.0f);
+		}
+	}
+
+	for (size_t z = 0; z < n; z++)
+	{
+		for (size_t x = 0; x < n; x++)
+		{
+			plane_indices[z*n * 6 + x * 6 + 0] = (z + 0) * (n + 1) + x + 0;
+			plane_indices[z*n * 6 + x * 6 + 1] = (z + 1) * (n + 1) + x + 0;
+			plane_indices[z*n * 6 + x * 6 + 2] = (z + 1) * (n + 1) + x + 1;
+			plane_indices[z*n * 6 + x * 6 + 3] = (z + 0) * (n + 1) + x + 0;
+			plane_indices[z*n * 6 + x * 6 + 4] = (z + 1) * (n + 1) + x + 1;
+			plane_indices[z*n * 6 + x * 6 + 5] = (z + 0) * (n + 1) + x + 1;
+		}
+	}
+
+
+	 /*
+  *
+  *Testing area
+  *
+  *
+  *
+  *
+  */
+
+
+
 	dx_handle = d3dfw::getInstance();
 	ShowCursor(false);
 	camera = new Camera();
@@ -427,9 +479,10 @@ void LoadContent()
 	XMVECTOR scale = XMVectorSet(1.0f, 1.0f, 1.0f, 0.0f);
 	XMVECTOR rotation = XMQuaternionIdentity();
 
-	Model cube_model = Model(dx_handle->device, dx_handle->immediateContext);
-	cube_model.LoadGeoModel(textured_normal_cube,ARRAYSIZE(textured_normal_cube),sizeof(textured_normal_cube[0]));
-	test = GameObject("test", Transform(scale, rotation, XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f)), cube_model);
+	Model plane = Model(dx_handle->device, dx_handle->immediateContext);
+	plane.LoadGeoModel(plane_vertices, (n+1)*(n+1), sizeof(POS_TEX_NORM_COL_VERTEX), plane_indices, n*n*6);
+	//plane.LoadGeoModel(textured_normal_cube,ARRAYSIZE(textured_normal_cube),sizeof(textured_normal_cube[0]));
+	test = GameObject("test", Transform(scale, rotation, XMVectorSet(0.0f, -1.0f, 0.0f, 0.0f)), plane);
 
 	for (size_t i = 0; i < upperPlatformCount; i++)
 	{
