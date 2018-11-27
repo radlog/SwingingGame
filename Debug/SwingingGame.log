@@ -1,6 +1,0 @@
-﻿  Model.cpp
-d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\geometry.h(44): warning C4200: nonstandard extension used: zero-sized array in struct/union
-  d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\geometry.h(44): note: This member will be ignored by a defaulted constructor or copy/move assignment operator
-d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\geometry.h(82): warning C4091: 'static ': ignored on left of 'Geometry' when no variable is declared
-d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\model.cpp(50): warning C4715: 'Model::LoadObjModel': not all control paths return a value
-  SwingingGame.vcxproj -> D:\JohnsLair\JohsGoogleDrive\AdvancedGameProgramming\Projects\SwingingGame\Debug\SwingingGame.exe
