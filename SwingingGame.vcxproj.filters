@@ -75,13 +75,11 @@
     <ClCompile Include="Floor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GeoModel.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="shaders.hlsl" />
-    <FxCompile Include="model_shaders.hlsl" />
+    <FxCompile Include="simple_shader.hlsl" />
+    <FxCompile Include="default_shader.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h">
@@ -141,7 +139,7 @@
     <ClInclude Include="Floor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GeoModel.h">
+    <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -160,5 +158,10 @@
     <Object Include="assets\cube.obj">
       <Filter>Resource Files</Filter>
     </Object>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="SwingingGame.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

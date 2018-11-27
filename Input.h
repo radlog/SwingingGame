@@ -15,12 +15,14 @@ public:
 	Input(GameObject* actor);
 	void handle_input(WPARAM key);
 	HRESULT InitialiseInput(HINSTANCE hInstance, HWND hWnd);
+
 	HRESULT UpdateInput(GameObject* actor, VGTime* gameTime);
 	void MouseMoved(GameObject* actor, VGTime* gameTime);
 	bool IsKeyPressed(unsigned char DI_keycode);
-
+	bool IsKeyReleased(unsigned char DI_keycode);
 	void Cleanup();
 private:
+	bool paused = false;
 	bool fps = true; // first person view
 	GameObject* actor;
 	Command* w_button;
@@ -44,6 +46,7 @@ private:
 	IDirectInput8 *directInput;
 	IDirectInputDevice8 *keyboard;
 	unsigned char keyboardKeysState[256];
+	bool pressed[256];
 
 	IDirectInputDevice8 *mouseInput;
 	DIMOUSESTATE mouseState;

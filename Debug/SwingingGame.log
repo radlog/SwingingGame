@@ -1,53 +1,18 @@
-﻿  Camera.cpp
-d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\camera.h(46): warning C4305: 'initializing': truncation from 'double' to 'const float'
-d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\camera.h(47): warning C4305: 'initializing': truncation from 'double' to 'const float'
-  Character.cpp
-  Command.cpp
-  Enemy.cpp
-  Floor.cpp
-  GameObject.cpp
-  GeoModel.cpp
-d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\geometry.h(32): warning C4200: nonstandard extension used: zero-sized array in struct/union
-  d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\geometry.h(32): note: This member will be ignored by a defaulted constructor or copy/move assignment operator
-d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\geometry.h(70): warning C4091: 'static ': ignored on left of 'Geometry' when no variable is declared
-  Input.cpp
+﻿  Input.cpp
 d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\input.h(2): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\geometry.h(40): warning C4200: nonstandard extension used: zero-sized array in struct/union
+  d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\geometry.h(40): note: This member will be ignored by a defaulted constructor or copy/move assignment operator
+d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\geometry.h(78): warning C4091: 'static ': ignored on left of 'Geometry' when no variable is declared
 d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\player.h(3): warning C4067: unexpected tokens following preprocessor directive - expected a newline
 d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\input.h(3): warning C4067: unexpected tokens following preprocessor directive - expected a newline
-d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\input.cpp(146): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\input.cpp(147): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\input.cpp(148): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\input.cpp(149): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\input.cpp(151): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
 d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\input.cpp(152): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
 d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\input.cpp(153): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
 d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\input.cpp(154): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\input.cpp(155): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\input.cpp(165): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\input.cpp(169): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-  Model.cpp
-  Obstacle.cpp
-  Player.cpp
-d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\player.h(3): warning C4067: unexpected tokens following preprocessor directive - expected a newline
-d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\input.h(2): warning C4067: unexpected tokens following preprocessor directive - expected a newline
-d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\input.h(3): warning C4067: unexpected tokens following preprocessor directive - expected a newline
-  d3dfw.cpp
-d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\input.h(2): warning C4067: unexpected tokens following preprocessor directive - expected a newline
-d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\player.h(3): warning C4067: unexpected tokens following preprocessor directive - expected a newline
-d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\input.h(3): warning C4067: unexpected tokens following preprocessor directive - expected a newline
-  main.cpp
-d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\player.h(3): warning C4067: unexpected tokens following preprocessor directive - expected a newline
-d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\input.h(2): warning C4067: unexpected tokens following preprocessor directive - expected a newline
-d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\input.h(3): warning C4067: unexpected tokens following preprocessor directive - expected a newline
-d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\camera.h(46): warning C4305: 'initializing': truncation from 'double' to 'const float'
-d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\camera.h(47): warning C4305: 'initializing': truncation from 'double' to 'const float'
-d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\geometry.h(32): warning C4200: nonstandard extension used: zero-sized array in struct/union
-  d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\geometry.h(32): note: This member will be ignored by a defaulted constructor or copy/move assignment operator
-d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\geometry.h(70): warning C4091: 'static ': ignored on left of 'Geometry' when no variable is declared
-d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\main.cpp(435): warning C4244: 'argument': conversion from 'size_t' to 'FLOAT', possible loss of data
-  objfilemodel.cpp
-d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\objfilemodel.cpp(2): warning C4005: '_CRT_SECURE_NO_WARNINGS': macro redefinition
-  d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\pch.cpp: note: see previous definition of '_CRT_SECURE_NO_WARNINGS'
-  Generating Code...
-d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\main.cpp(400): warning C4715: 'WndProc': not all control paths return a value
-d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\model.cpp(42): warning C4715: 'Model::LoadObjModel': not all control paths return a value
+d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\input.cpp(157): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\input.cpp(158): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\input.cpp(159): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\input.cpp(160): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\input.cpp(170): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+d:\johnslair\johsgoogledrive\advancedgameprogramming\projects\swinginggame\input.cpp(174): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
   SwingingGame.vcxproj -> D:\JohnsLair\JohsGoogleDrive\AdvancedGameProgramming\Projects\SwingingGame\Debug\SwingingGame.exe

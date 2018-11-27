@@ -32,7 +32,11 @@ HRESULT Model::LoadObjModel(char * filename)
 	objfile = filename;
 	if (objFileModel->filename == "FILE NOT LOADED") return S_FALSE;
 
-	
+	numverts = objFileModel->numverts;
+	vertices = objFileModel->vertices;
+	vertSize = sizeof(objFileModel->vertices[0]);
+
+	UpdateDefaultVertexBuffer(vertices, vertSize  * numverts);
 #ifdef RELEASE
 	//OutputDebugString("Calc origin");
 	CalculateOrigin();
@@ -41,14 +45,32 @@ HRESULT Model::LoadObjModel(char * filename)
 
 }
 
+HRESULT Model::LoadGeoModel(void* vertices, UINT numverts, UINT size)
+{
+	HRESULT hr = S_OK;
+	vertSize = size;
+	this->vertices = vertices;
+	this->numverts = numverts;
+	UpdateDefaultVertexBuffer(vertices, vertSize  * numverts);
+
+#ifdef RELEASE
+	//OutputDebugString("Calc origin");
+	CalculateOrigin();
+	InitializeCollider();
+#endif
+
+	return hr;
+}
+
+
 HRESULT Model::CompileShaders()
 {
 	HRESULT hr;
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// load and compile pixel and vertex shaders - use vs_5_0 to target DX11 hardware only
 	ID3DBlob *error;
-	hr = D3DX11CompileFromFile(shader_file.c_str(), 0, 0, "ModelVS", "vs_4_0", 0, 0, 0, &VS, &error, 0);
-	hr = D3DX11CompileFromFile(shader_file.c_str(), 0, 0, "ModelPS", "ps_4_0", 0, 0, 0, &PS, &error, 0);
+	hr = D3DX11CompileFromFile(shader_file.c_str(), 0, 0, "VShader", "vs_4_0", 0, 0, 0, &VS, &error, 0);
+	hr = D3DX11CompileFromFile(shader_file.c_str(), 0, 0, "PShader", "ps_4_0", 0, 0, 0, &PS, &error, 0);
 
 	// create shader objects
 	hr = device->CreateVertexShader(VS->GetBufferPointer(), VS->GetBufferSize(), NULL, &vShader);
@@ -67,7 +89,8 @@ HRESULT Model::SetDefaultInputLayout()
 	{
 		{"POSITION", 0,DXGI_FORMAT_R32G32B32_FLOAT,0,0,D3D11_INPUT_PER_VERTEX_DATA,0},
 		{"TEXCOORD",0,DXGI_FORMAT_R32G32_FLOAT,0,D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA,0},
-		{"NORMAL",0,DXGI_FORMAT_R32G32B32_FLOAT,0,D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA,0}
+		{"NORMAL",0,DXGI_FORMAT_R32G32B32_FLOAT,0,D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA,0},
+		{"COLOR",0,DXGI_FORMAT_R32G32B32_FLOAT,0,D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA,0}
 	};
 	return SetInputLayout(iedesc, ARRAYSIZE(iedesc));
 }
@@ -183,7 +206,11 @@ void Model::Draw(XMMATRIX view_projection, D3D11_PRIMITIVE_TOPOLOGY mode)
 
 	immediateContext->IASetPrimitiveTopology(mode);
 
-	objFileModel->Draw();
+	UINT stride = vertSize;
+	UINT offset = 0;
+	immediateContext->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
+	immediateContext->Draw(numverts, 0);
+	//objFileModel->Draw();
 
 }
 
@@ -210,7 +237,7 @@ void Model::CalculateOrigin()
 
 	float distance = 0;
 
-	
+
 	for (size_t i = 0; i < positions.size(); i++)
 	{
 		const auto a = positions[i];
@@ -225,7 +252,6 @@ void Model::CalculateOrigin()
 			}
 		}
 	}
-	
 
 	origin = minOuterVector - maxOuterVector;
 }
@@ -234,4 +260,27 @@ void Model::InitializeCollider()
 {
 	sphereCollider.localPosition = origin;
 	sphereCollider.collisionRadius = sqrt(pow(minOuterVector.x - maxOuterVector.x, 2) + pow(minOuterVector.y - maxOuterVector.y, 2) + pow(minOuterVector.z - maxOuterVector.z, 2));
+}
+
+HRESULT Model::UpdateDefaultVertexBuffer(void *vertices, UINT byteWidth)
+{
+	// Set up and create vertex buffer
+	D3D11_BUFFER_DESC bufferDesc;
+	ZeroMemory(&bufferDesc, sizeof(bufferDesc));
+	bufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+	bufferDesc.ByteWidth = byteWidth;
+	bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	HRESULT hr = device->CreateBuffer(&bufferDesc, NULL, &vertexBuffer);
+
+	if (FAILED(hr)) return hr;
+
+
+	D3D11_MAPPED_SUBRESOURCE ms;
+	immediateContext->Map(vertexBuffer, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms);
+	memcpy(ms.pData, vertices, byteWidth);
+	immediateContext->Unmap(vertexBuffer, NULL);
+
+
+	return hr;
 }

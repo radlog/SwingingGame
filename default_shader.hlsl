@@ -15,7 +15,7 @@ struct VOut
 	float2 texcoord : TEXCOORD;
 };
 
-VOut ModelVS(float4 position: POSITION, float2 texcoord : TEXCOORD, float3 normal : NORMAL)
+VOut VShader(float4 position: POSITION, float2 texcoord : TEXCOORD, float3 normal : NORMAL)
 {
 	VOut output;
 
@@ -27,7 +27,7 @@ VOut ModelVS(float4 position: POSITION, float2 texcoord : TEXCOORD, float3 norma
 	return output;
 }
 
-float4 ModelPS(float4 position: SV_POSITION, float4 color : COLOR, float2 texcoord : TEXCOORD) : SV_TARGET
+float4 PShader(float4 position : SV_POSITION, float4 color : COLOR, float2 texcoord : TEXCOORD) : SV_TARGET
 {
 	return color * texture0.Sample(sampler0,texcoord);
 }

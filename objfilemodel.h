@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <string>
 #include <vector>
+#include "Geometry.h"
 using namespace std;
 
 
@@ -45,13 +46,7 @@ public:
 	struct xyz { float x, y, z; };	//used for vertices and normals during file parse
 	struct xy { float x, y; };		//used for texture coordinates during file parse
 
-	// Define model vertex structure
-	struct MODEL_POS_TEX_NORM_VERTEX
-	{
-		XMFLOAT3 Pos;
-		XMFLOAT2 TexCoord;
-		XMFLOAT3 Normal;
-	};
+
 
 
 	string filename;

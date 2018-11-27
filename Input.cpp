@@ -119,8 +119,8 @@ HRESULT Input::InitialiseInput(HINSTANCE hInstance, HWND hWnd)
 
 HRESULT Input::UpdateInput(GameObject* actor, VGTime* gameTime)
 {
-	HRESULT hr;
-
+	
+	HRESULT hr = NULL;
 	hr = keyboard->GetDeviceState(sizeof(keyboardKeysState), (LPVOID)&keyboardKeysState);
 
 	if (FAILED(hr)) {
@@ -138,6 +138,11 @@ HRESULT Input::UpdateInput(GameObject* actor, VGTime* gameTime)
 			mouseInput->Acquire();
 		}
 	}
+
+	if (IsKeyReleased(DIK_L)) 
+		paused = !paused;
+
+	if (paused) return S_OK;
 
 	if(fps)	MouseMoved(actor, gameTime);
 
@@ -172,6 +177,20 @@ void Input::MouseMoved(GameObject* actor, VGTime* gameTime)
 bool Input::IsKeyPressed(unsigned char DI_keycode)
 {
 	return keyboardKeysState[DI_keycode] & 0x80;
+}
+
+bool Input::IsKeyReleased(unsigned char DI_keycode)
+{
+	if (!IsKeyPressed(DI_keycode) && pressed[DI_keycode])
+	{
+#ifdef DEBUG
+		OutputDebugString("released");
+#endif
+		return !(pressed[DI_keycode] = !pressed[DI_keycode]);
+	}
+	if (IsKeyPressed(DI_keycode)) pressed[DI_keycode] = true;
+
+	return false;
 }
 
 void Input::Cleanup()

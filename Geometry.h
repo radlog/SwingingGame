@@ -19,17 +19,25 @@ struct POS_COL_TEX_VERTEX
 	XMFLOAT2 Texture0;
 };
 
-struct POS_COL_TEX_NORM_VERTEX
+struct POS_TEX_NORM_COL_VERTEX
+{
+	XMFLOAT3 Pos;	
+	XMFLOAT2 Texture0;
+	XMFLOAT3 Normal;
+	XMFLOAT4 Col;
+};
+
+// Define model vertex structure
+struct MODEL_POS_TEX_NORM_VERTEX
 {
 	XMFLOAT3 Pos;
-	XMFLOAT4 Col;
-	XMFLOAT2 Texture0;
+	XMFLOAT2 TexCoord;
 	XMFLOAT3 Normal;
 };
 
 struct Plane
 {
-	POS_COL_TEX_NORM_VERTEX vertices[];
+	POS_TEX_NORM_COL_VERTEX vertices[];
 };
 
 struct Polygon {
@@ -37,11 +45,11 @@ struct Polygon {
 };
 
 struct TexturedTriangle {
-	POS_COL_TEX_NORM_VERTEX vertices[3];
+	POS_TEX_NORM_COL_VERTEX vertices[3];
 };
 
 struct TexturedQuad {
-	POS_COL_TEX_NORM_VERTEX vertices[6];
+	POS_TEX_NORM_COL_VERTEX vertices[6];
 };
 
 struct TexturedCube {
@@ -57,8 +65,8 @@ public:
 
 
 	
-	void create_tri(POS_COL_TEX_NORM_VERTEX one[], POS_COL_TEX_NORM_VERTEX two[], POS_COL_TEX_NORM_VERTEX three[]);
-	TexturedQuad create_quad(POS_COL_TEX_NORM_VERTEX one[], POS_COL_TEX_NORM_VERTEX two[], POS_COL_TEX_NORM_VERTEX three[], POS_COL_TEX_NORM_VERTEX four[]);
+	void create_tri(POS_TEX_NORM_COL_VERTEX one[], POS_TEX_NORM_COL_VERTEX two[], POS_TEX_NORM_COL_VERTEX three[]);
+	TexturedQuad create_quad(POS_TEX_NORM_COL_VERTEX one[], POS_TEX_NORM_COL_VERTEX two[], POS_TEX_NORM_COL_VERTEX three[], POS_TEX_NORM_COL_VERTEX four[]);
 
 	void generate_plane(Plane plane);
 

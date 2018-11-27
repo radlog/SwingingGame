@@ -25,7 +25,7 @@ public:
 	ObjFileModel* objFileModel;
 
 	HRESULT LoadObjModel(char* filename);
-	HRESULT LoadGeoModel();
+	HRESULT LoadGeoModel(void* vertices, UINT numverts, UINT size);
 	HRESULT CompileShaders();
 	HRESULT SetDefaultInputLayout();
 	HRESULT SetInputLayout(D3D11_INPUT_ELEMENT_DESC iedesc[], int size);
@@ -34,14 +34,14 @@ public:
 	HRESULT CreateDefaultConstantBuffer();
 	HRESULT CreateDefaultSamplerForTexture();
 	HRESULT LoadTexture();
+	HRESULT UpdateDefaultVertexBuffer(void* vertices, UINT byteWidth);
 
 	void UpdateConstantBufferValues();
-
 	void Cleanup() const;
 
 protected:
 	MODEL_CONSTANT_BUFFER cb;
-	string shader_file = "model_shaders.hlsl";
+	string shader_file = "default_shader.hlsl";
 	string objfile;
 	ID3D11Device* device;
 	ID3D11DeviceContext* immediateContext;
@@ -52,6 +52,7 @@ protected:
 	ID3DBlob *VS, *PS;
 	ID3D11InputLayout* inputLayout;
 	ID3D11Buffer* constantBuffer;
+	ID3D11Buffer* vertexBuffer;
 
 	ID3D11SamplerState * sampler0;
 	ID3D11ShaderResourceView *texture;
@@ -61,8 +62,13 @@ protected:
 	XMVECTOR maxOuterVector;
 	XMVECTOR origin;
 
+	UINT numverts;
+	UINT vertSize;
+	void* vertices;
+
 	void CalculateOrigin();
 	void InitializeCollider();
+
 	bool recalcOrigin = false;
 
 };
