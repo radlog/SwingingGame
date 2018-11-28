@@ -148,16 +148,19 @@ HRESULT Input::UpdateInput(GameObject* actor, VGTime* gameTime)
 
 	if (IsKeyPressed(DIK_ESCAPE)) DestroyWindow(d3dfw::getInstance()->hWnd);
 
-	if (IsKeyPressed(DIK_A)) actor->transform.right(-gameTime->deltaTime() * move_speed);
-	if (IsKeyPressed(DIK_D)) actor->transform.right(gameTime->deltaTime() * move_speed);
-	if (IsKeyPressed(DIK_W)) actor->transform.horizontal_forward(gameTime->deltaTime()*move_speed);
-	if (IsKeyPressed(DIK_S)) actor->transform.horizontal_forward(-gameTime->deltaTime()*move_speed);
+	// TODO:spawn gameobject
+	//if (IsKeyPressed(DIK_P)) GameObject();
+
+	if (IsKeyPressed(DIK_A)) actor->transform.right(static_cast<float> (-gameTime->deltaTime() * move_speed));
+	if (IsKeyPressed(DIK_D)) actor->transform.right(static_cast<float>(gameTime->deltaTime() * move_speed));
+	if (IsKeyPressed(DIK_W)) actor->transform.horizontal_forward(static_cast<float>(gameTime->deltaTime()*move_speed));
+	if (IsKeyPressed(DIK_S)) actor->transform.horizontal_forward(static_cast<float>(-gameTime->deltaTime()*move_speed));
 
 
-	if (IsKeyPressed(DIK_LEFT)) actor->transform.rotate_fixed(0, -gameTime->deltaTime() * rot_speed, 0);
-	if (IsKeyPressed(DIK_RIGHT)) actor->transform.rotate_fixed(0, gameTime->deltaTime() * rot_speed, 0);
-	if (IsKeyPressed(DIK_UP)) actor->transform.rotate_fixed(-gameTime->deltaTime() * rot_speed, 0, 0);
-	if (IsKeyPressed(DIK_DOWN)) actor->transform.rotate_fixed(gameTime->deltaTime() * rot_speed, 0, 0);
+	if (IsKeyPressed(DIK_LEFT)) actor->transform.rotate_fixed(0, static_cast<float>(-gameTime->deltaTime() * rot_speed), 0);
+	if (IsKeyPressed(DIK_RIGHT)) actor->transform.rotate_fixed(0, static_cast<float>(gameTime->deltaTime() * rot_speed), 0);
+	if (IsKeyPressed(DIK_UP)) actor->transform.rotate_fixed(static_cast<float>(-gameTime->deltaTime() * rot_speed), 0, 0);
+	if (IsKeyPressed(DIK_DOWN)) actor->transform.rotate_fixed(static_cast<float>(gameTime->deltaTime() * rot_speed), 0, 0);
 
 	return S_OK;
 }
@@ -167,7 +170,7 @@ void Input::MouseMoved(GameObject* actor, VGTime* gameTime)
 	mouse_x += mouseState.lX;
 	mouse_y += mouseState.lY;
 
-	actor->transform.rotate_fixed(mouseState.lY * gameTime->deltaTime() * rot_speed, mouseState.lX * gameTime->deltaTime() * rot_speed, 0);
+	actor->transform.rotate_fixed(static_cast<float> (mouseState.lY * gameTime->deltaTime() * rot_speed), static_cast<float> (mouseState.lX * gameTime->deltaTime() * rot_speed), 0);
 
 	mouse_x = mouse_x_center;
 	mouse_y = mouse_y_center;

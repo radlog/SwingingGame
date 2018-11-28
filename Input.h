@@ -1,6 +1,6 @@
 #pragma once
-#include "Player.h";
-#include "Command.h";
+#include "Player.h"
+#include "Command.h"
 #include "VGTime.h"
 #include "GameObject.h"
 class Player;
@@ -51,14 +51,14 @@ private:
 	IDirectInputDevice8 *mouseInput;
 	DIMOUSESTATE mouseState;
 
-	const float rot_speed = 10.0f;
-	const float move_speed = 30.0f;
+	const double rot_speed = 10.0;
+	const double move_speed = 30.0;
 
-	float mouse_x_center = 480.0f;
-	float mouse_y_center = 640.0f;
+	long mouse_x_center = 480;
+	long mouse_y_center = 640;
 
-	float mouse_x = mouse_x_center;
-	float mouse_y = mouse_y_center;
+	long mouse_x = mouse_x_center;
+	long mouse_y = mouse_y_center;
 
 
 };

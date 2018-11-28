@@ -104,7 +104,7 @@ void VGTime::stop()
 {
 	if (!_is_paused)
 	{
-		_total = (_current - _start) - _idle;
+		_total = static_cast<double> (_current - _start) - _idle;
 		_is_paused = true;
 	}
 	else {

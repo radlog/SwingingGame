@@ -1,6 +1,6 @@
 #pragma once
 #include "Character.h"
-#include "Input.h";
+#include "Input.h"
 #include <string>
 class Input;
 

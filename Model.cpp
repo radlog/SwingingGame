@@ -49,6 +49,7 @@ HRESULT Model::LoadObjModel(char * filename)
 
 }
 
+// loads primitive topology shapes using indices
 HRESULT Model::LoadGeoModel(void* vertices, UINT numverts, UINT single_vertex_bytesize, unsigned int *indices, UINT numIndices)
 {
 	HRESULT hr = S_OK;
@@ -61,7 +62,7 @@ HRESULT Model::LoadGeoModel(void* vertices, UINT numverts, UINT single_vertex_by
 	return hr;
 }
 
-
+// loads primitive topology shapes using only vertices
 HRESULT Model::LoadGeoModel(void* vertices, UINT numverts, UINT single_vertex_bytesize)
 {
 	HRESULT hr = S_OK;

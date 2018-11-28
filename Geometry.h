@@ -1,6 +1,5 @@
 #pragma once
 #include <d3d11.h>
-#include <D3DX11.h>
 #include <xnamath.h>
 #include "Transform.h"
 
@@ -39,28 +38,9 @@ struct MODEL_POS_TEX_NORM_VERTEX
 	XMFLOAT3 Normal;
 };
 
-struct Plane
-{
-	POS_TEX_NORM_COL_VERTEX vertices[];
-};
 
-struct Polygon {
 
-};
-
-struct TexturedTriangle {
-	POS_TEX_NORM_COL_VERTEX vertices[3];
-};
-
-struct TexturedQuad {
-	POS_TEX_NORM_COL_VERTEX vertices[6];
-};
-
-struct TexturedCube {
-	TexturedQuad quads[6];
-};
-
-static class Geometry
+class Geometry
 {
 public:
 	Geometry();
@@ -68,22 +48,13 @@ public:
 
 	const float scale = 100.0f;
 
-
 	static void create_textured_normal_cube(POS_TEX_NORM_COL_VERTEX* cube[], float scale);
 	static POS_TEX_VERTEX* create_textured_skybox(float scale);
-	static void create_tex_col_pos_norm_skybox(POS_TEX_NORM_COL_VERTEX * cube[], float scale);
+	static POS_COL_TEX_VERTEX* create_pos_col_tex_cube(float scale);
+	static POS_TEX_NORM_COL_VERTEX* pos_tex_norm_col_cube(float scale);
 	static void create_indexed_tiled_textured_normal_plane(POS_TEX_NORM_COL_VERTEX **plane, unsigned int **indices, UINT tiles, float scale);
 	static POS_COL_VERTEX* create_color_cube(float scale);
 	
-	void create_tri(POS_TEX_NORM_COL_VERTEX one[], POS_TEX_NORM_COL_VERTEX two[], POS_TEX_NORM_COL_VERTEX three[]);
-	TexturedQuad create_quad(POS_TEX_NORM_COL_VERTEX one[], POS_TEX_NORM_COL_VERTEX two[], POS_TEX_NORM_COL_VERTEX three[], POS_TEX_NORM_COL_VERTEX four[]);
 
-	void generate_plane(Plane plane);
-
-	void pyramid();
-	static void create_cube(float scale, TexturedCube* cube);
-	void cone();
-	void cylinder();
-	void sphere();
 };
 

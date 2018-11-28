@@ -2,6 +2,7 @@
 #include "GameObject.h"
 #include "Collectable.h"
 
+
 enum State {
 	Standing,
 	Crouching,
