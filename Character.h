@@ -3,6 +3,9 @@
 #include "Collectable.h"
 
 
+#ifndef CHARACTER_H
+#define CHARACTER_H
+
 enum State {
 	Standing,
 	Crouching,
@@ -43,3 +46,4 @@ protected:
 
 };
 
+#endif

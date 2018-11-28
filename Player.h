@@ -1,8 +1,5 @@
 #pragma once
 #include "Character.h"
-#include "Input.h"
-#include <string>
-class Input;
 
 class Player : public Character
 {
@@ -16,7 +13,5 @@ public:
 
 	void update();
 
-private:
-	Input* input;
 };
 

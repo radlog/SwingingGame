@@ -1,7 +1,5 @@
 #pragma once
-#include "Character.h"
-
-class Enemy
+class Enemy : public Character
 {
 
 	enum Enemy_Type {

@@ -6,3 +6,4 @@
 #include <dxerr.h>
 #include <xnamath.h>
 #include <dinput.h>
+#include "d3dfw.h"

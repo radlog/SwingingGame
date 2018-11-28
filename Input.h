@@ -1,10 +1,11 @@
 #pragma once
-#include "Player.h"
-#include "Command.h"
 #include "VGTime.h"
-#include "GameObject.h"
-class Player;
+#include "Character.h"
 
+#ifndef INPUT_H
+#define INPUT_H
+class GameObject;
+class Character;
 
 class Input
 {
@@ -12,7 +13,7 @@ public:
 	Input();
 	~Input();
 
-	Input(GameObject* actor);
+	Input(Character* actor);
 	void handle_input(WPARAM key);
 	HRESULT InitialiseInput(HINSTANCE hInstance, HWND hWnd);
 
@@ -22,17 +23,11 @@ public:
 	bool IsKeyReleased(unsigned char DI_keycode);
 	void Cleanup();
 private:
+	HWND hWnd;
 	bool paused = false;
 	bool fps = true; // first person view
 	GameObject* actor;
-	Command* w_button;
-	Command* a_button;
-	Command* s_button;
-	Command* d_button;
-	Command* c_button;
-	Command* jump_button;
-	Command* shoot_button;
-	Command* hook_button;
+
 
 	WPARAM* forward;
 	WPARAM left = 0x41;
@@ -60,6 +55,5 @@ private:
 	long mouse_x = mouse_x_center;
 	long mouse_y = mouse_y_center;
 
-
 };
-
+#endif

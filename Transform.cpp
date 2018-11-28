@@ -1,6 +1,5 @@
 #include "Transform.h"
-#include <valarray>
-#include <string>
+
 
 const XMVECTOR Transform::world_up = XMVectorSet(0.0, 1.0, 0.0, 0.0);
 const XMVECTOR Transform::world_down = -world_up;

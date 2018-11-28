@@ -9,12 +9,11 @@ Player::Player()
 
 Player::~Player()
 {
-	input = new Input(this);
 }
 
-Player::Player(std::string name)
+Player::Player(std::string name): Character(name)
 {
-	Character::Character(name);
+	
 }
 
 void Player::update_input()

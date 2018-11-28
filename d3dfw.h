@@ -1,6 +1,6 @@
 #pragma once
-#include "Input.h"
-class Input;
+#include "InputHandler.h"
+
 class d3dfw
 {
 public:
@@ -44,4 +44,3 @@ private:
 
 
 };
-

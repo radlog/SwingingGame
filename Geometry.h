@@ -1,6 +1,4 @@
 #pragma once
-#include <d3d11.h>
-#include <xnamath.h>
 #include "Transform.h"
 
 struct POS_TEX_VERTEX

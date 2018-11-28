@@ -1,6 +1,5 @@
-#include "pch.h"
 #include "d3dfw.h"
-#include "Model.h"
+
 
 
 d3dfw* d3dfw::instance = nullptr;

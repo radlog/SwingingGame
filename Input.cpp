@@ -1,5 +1,5 @@
 #include "Input.h"
-#include "d3dfw.h"
+
 
 
 Input::Input()
@@ -12,7 +12,7 @@ Input::~Input()
 {
 }
 
-Input::Input(GameObject * actor)
+Input::Input(Character * actor)
 {
 	this->actor = actor;
 }
@@ -65,6 +65,7 @@ void Input::handle_input(WPARAM key)
 
 HRESULT Input::InitialiseInput(HINSTANCE hInstance, HWND hWnd)
 {
+	this->hWnd = hWnd;
 	HRESULT hr;
 	ZeroMemory(keyboardKeysState, sizeof(keyboardKeysState));
 
@@ -146,7 +147,7 @@ HRESULT Input::UpdateInput(GameObject* actor, VGTime* gameTime)
 
 	if(fps)	MouseMoved(actor, gameTime);
 
-	if (IsKeyPressed(DIK_ESCAPE)) DestroyWindow(d3dfw::getInstance()->hWnd);
+	if (IsKeyPressed(DIK_ESCAPE)) DestroyWindow(hWnd);
 
 	// TODO:spawn gameobject
 	//if (IsKeyPressed(DIK_P)) GameObject();

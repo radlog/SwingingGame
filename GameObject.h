@@ -4,9 +4,10 @@
 #include "Model.h"
 #include "SoundEngine.h"
 #include "GameData.h"
-//#include "d3dfw.h"
+#include "d3dfw.h"
 
 //#include "Camera.h"
+class d3dfw;
 
 class GameObject 
 {
@@ -37,6 +38,6 @@ protected:
 	SoundEngine sound;
 	float collision_radius;
 	GameData game_data;
-	//d3dfw* dx_handle;
+	d3dfw* dx_handle;
 	//Camera camera;
 };

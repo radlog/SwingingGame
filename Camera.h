@@ -1,6 +1,4 @@
 #pragma once
-#include "Transform.h"
-#include "GameObject.h"
 class Camera : public GameObject
 {
 public:

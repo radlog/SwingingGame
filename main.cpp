@@ -1,27 +1,11 @@
 #include <Windows.h>
-#include <d3d11.h>
 #include <dxgi.h>
-#include <d3dx11.h>
 #include <dxerr.h>
 #include <xnamath.h>
-#include <dinput.h>
-//#include <Xinput.h>
-//#include <iostream>
-//#include <vector>
-//#include <typeinfo>
-//#include <io.h>
 
-
-#include "VGTime.h"
-#include "GameObject.h"
-#include "Enemy.h"
-#include "Player.h"
 #include "Camera.h"
-#include "objfilemodel.h"
-#include "Model.h"
-#include "d3dfw.h"
-#include "Input.h"
-#include "Geometry.h"
+#include "GameObject.h"
+
 
 //using namespace std;
 

@@ -1,6 +1,4 @@
 #include "Model.h"
-#include <minwinbase.h>
-
 
 Model::Model()
 {

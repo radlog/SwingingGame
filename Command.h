@@ -1,6 +1,6 @@
 #pragma once
-#include "GameData.h"
 #include "Character.h"
+
 class Command
 {
 public:
