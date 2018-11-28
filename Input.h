@@ -1,8 +1,8 @@
 #pragma once
 #include "Player.h";
 #include "Command.h";
-#include "d3dfw.h"
 #include "VGTime.h"
+#include "GameObject.h"
 class Player;
 
 

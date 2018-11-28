@@ -66,8 +66,14 @@ public:
 	Geometry();
 	~Geometry();
 
+	const float scale = 100.0f;
 
 
+	static void create_textured_normal_cube(POS_TEX_NORM_COL_VERTEX* cube[], float scale);
+	static POS_TEX_VERTEX* create_textured_skybox(float scale);
+	static void create_tex_col_pos_norm_skybox(POS_TEX_NORM_COL_VERTEX * cube[], float scale);
+	static void create_indexed_tiled_textured_normal_plane(POS_TEX_NORM_COL_VERTEX **plane, unsigned int **indices, UINT tiles, float scale);
+	static POS_COL_VERTEX* create_color_cube(float scale);
 	
 	void create_tri(POS_TEX_NORM_COL_VERTEX one[], POS_TEX_NORM_COL_VERTEX two[], POS_TEX_NORM_COL_VERTEX three[]);
 	TexturedQuad create_quad(POS_TEX_NORM_COL_VERTEX one[], POS_TEX_NORM_COL_VERTEX two[], POS_TEX_NORM_COL_VERTEX three[], POS_TEX_NORM_COL_VERTEX four[]);

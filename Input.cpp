@@ -1,5 +1,5 @@
 #include "Input.h"
-
+#include "d3dfw.h"
 
 
 Input::Input()

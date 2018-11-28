@@ -184,6 +184,7 @@
     </ClCompile>
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Geometry.cpp" />
+    <ClCompile Include="Skybox.cpp" />
     <ClCompile Include="SoundEngine.cpp" />
     <ClCompile Include="Transform.cpp" />
     <ClCompile Include="VGTime.cpp" />
@@ -215,6 +216,7 @@
     <ClInclude Include="Collectable.h" />
     <ClInclude Include="Command.h" />
     <ClInclude Include="d3dfw.h" />
+    <ClInclude Include="d3dInputLayouts.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="Floor.h" />
     <ClInclude Include="GameData.h" />
@@ -227,6 +229,7 @@
     <ClInclude Include="Player.h" />
     <ClInclude Include="Geometry.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="Skybox.h" />
     <ClInclude Include="SoundEngine.h" />
     <ClInclude Include="Transform.h" />
     <ClInclude Include="VGTime.h" />

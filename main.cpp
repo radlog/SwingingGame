@@ -51,13 +51,17 @@ GameObject upperPlatforms[upperPlatformCount];
 GameObject middlePlatforms[middlePlatformCount];
 GameObject lowerPlatforms[lowerPlatformCount];
 
+GameObject skybox;
+POS_TEX_VERTEX* skybox_desc;
+Model sky_model;
+
 Model *model_test;
 Input input;
 
 bool enable_glowing = false;
 
 
-XMVECTOR directional_light_shines_from = XMVectorSet(0.0f,0.0f,-1.0f,0.0f);
+XMVECTOR directional_light_shines_from = XMVectorSet(0.0f, 0.0f, -1.0f, 0.0f);
 XMVECTOR directional_light_colour = XMVectorSet(1.0f, 1.0f, 0.0f, 1.0f); // green
 XMVECTOR ambient_light_colour = XMVectorSet(0.1f, 0.1f, 0.1f, 1.0f); // dark grey
 
@@ -90,212 +94,161 @@ void UpdateGraphics();
 void LoadContent();
 
 //void MoveCamera();
-const float cube_scale = 100.0f;
 
+float obj_scale = 10.0f;
 TexturedCube geo_cube;
 
 POS_COL_TEX_VERTEX textured_cube[] =
 {
 	// back face 
-	{XMFLOAT3(-cube_scale, cube_scale, cube_scale), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f), XMFLOAT2(0.0f,0.0f)},
-	{XMFLOAT3(-cube_scale, -cube_scale, cube_scale), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f), XMFLOAT2(0.0f,1.0f)},
-	{XMFLOAT3(cube_scale, cube_scale, cube_scale), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f), XMFLOAT2(1.0f,0.0f)},
-	{XMFLOAT3(cube_scale, cube_scale, cube_scale), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f), XMFLOAT2(1.0f,0.0f)},
-	{XMFLOAT3(-cube_scale, -cube_scale, cube_scale),XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f), XMFLOAT2(0.0f,1.0f)},
-	{XMFLOAT3(cube_scale, -cube_scale, cube_scale), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f), XMFLOAT2(1.0f,1.0f)},
+	{XMFLOAT3(-obj_scale, obj_scale, obj_scale), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f), XMFLOAT2(0.0f,0.0f)},
+	{XMFLOAT3(-obj_scale, -obj_scale, obj_scale), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f), XMFLOAT2(0.0f,1.0f)},
+	{XMFLOAT3(obj_scale, obj_scale, obj_scale), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f), XMFLOAT2(1.0f,0.0f)},
+	{XMFLOAT3(obj_scale, obj_scale, obj_scale), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f), XMFLOAT2(1.0f,0.0f)},
+	{XMFLOAT3(-obj_scale, -obj_scale, obj_scale),XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f), XMFLOAT2(0.0f,1.0f)},
+	{XMFLOAT3(obj_scale, -obj_scale, obj_scale), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f), XMFLOAT2(1.0f,1.0f)},
 	// front face
-	{XMFLOAT3(-cube_scale, -cube_scale, -cube_scale), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f), XMFLOAT2(0.0f,1.0f)},
-	{XMFLOAT3(-cube_scale, cube_scale, -cube_scale), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f), XMFLOAT2(0.0f,0.0f)},
-	{XMFLOAT3(cube_scale, cube_scale, -cube_scale),  XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f), XMFLOAT2(1.0f,0.0f)},
-	{XMFLOAT3(-cube_scale, -cube_scale, -cube_scale),  XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f),XMFLOAT2(0.0f,1.0f)},
-	{XMFLOAT3(cube_scale, cube_scale, -cube_scale),  XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f), XMFLOAT2(1.0f,0.0f)},
-	{XMFLOAT3(cube_scale, -cube_scale, -cube_scale),  XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f), XMFLOAT2(1.0f,1.0f)},
+	{XMFLOAT3(-obj_scale, -obj_scale, -obj_scale), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f), XMFLOAT2(0.0f,1.0f)},
+	{XMFLOAT3(-obj_scale, obj_scale, -obj_scale), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f), XMFLOAT2(0.0f,0.0f)},
+	{XMFLOAT3(obj_scale, obj_scale, -obj_scale),  XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f), XMFLOAT2(1.0f,0.0f)},
+	{XMFLOAT3(-obj_scale, -obj_scale, -obj_scale),  XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f),XMFLOAT2(0.0f,1.0f)},
+	{XMFLOAT3(obj_scale, obj_scale, -obj_scale),  XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f), XMFLOAT2(1.0f,0.0f)},
+	{XMFLOAT3(obj_scale, -obj_scale, -obj_scale),  XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f), XMFLOAT2(1.0f,1.0f)},
 	// left face
-	{XMFLOAT3(-cube_scale, -cube_scale, -cube_scale), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f), XMFLOAT2(0.0f,1.0f)},
-	{XMFLOAT3(-cube_scale, -cube_scale, cube_scale), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f), XMFLOAT2(0.0f,0.0f)},
-	{XMFLOAT3(-cube_scale, cube_scale, -cube_scale), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f), XMFLOAT2(1.0f,1.0f)},
-	{XMFLOAT3(-cube_scale, -cube_scale, cube_scale), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f), XMFLOAT2(0.0f,0.0f)},
-	{XMFLOAT3(-cube_scale, cube_scale, cube_scale), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f), XMFLOAT2(1.0f,0.0f)},
-	{XMFLOAT3(-cube_scale, cube_scale, -cube_scale), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f), XMFLOAT2(1.0f,1.0f)},
+	{XMFLOAT3(-obj_scale, -obj_scale, -obj_scale), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f), XMFLOAT2(0.0f,1.0f)},
+	{XMFLOAT3(-obj_scale, -obj_scale, obj_scale), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f), XMFLOAT2(0.0f,0.0f)},
+	{XMFLOAT3(-obj_scale, obj_scale, -obj_scale), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f), XMFLOAT2(1.0f,1.0f)},
+	{XMFLOAT3(-obj_scale, -obj_scale, obj_scale), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f), XMFLOAT2(0.0f,0.0f)},
+	{XMFLOAT3(-obj_scale, obj_scale, obj_scale), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f), XMFLOAT2(1.0f,0.0f)},
+	{XMFLOAT3(-obj_scale, obj_scale, -obj_scale), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f), XMFLOAT2(1.0f,1.0f)},
 	// right face
-	{XMFLOAT3(cube_scale, -cube_scale, cube_scale),  XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f), XMFLOAT2(0.0f,0.0f)},
-	{XMFLOAT3(cube_scale, -cube_scale, -cube_scale),  XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f), XMFLOAT2(0.0f,1.0f)},
-	{XMFLOAT3(cube_scale, cube_scale, -cube_scale),  XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f), XMFLOAT2(1.0f,1.0f)},
-	{XMFLOAT3(cube_scale, cube_scale, cube_scale), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f), XMFLOAT2(1.0f,0.0f)},
-	{XMFLOAT3(cube_scale, -cube_scale, cube_scale),  XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f), XMFLOAT2(0.0f,0.0f)},
-	{XMFLOAT3(cube_scale, cube_scale, -cube_scale),  XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f), XMFLOAT2(1.0f,1.0f)},
+	{XMFLOAT3(obj_scale, -obj_scale, obj_scale),  XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f), XMFLOAT2(0.0f,0.0f)},
+	{XMFLOAT3(obj_scale, -obj_scale, -obj_scale),  XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f), XMFLOAT2(0.0f,1.0f)},
+	{XMFLOAT3(obj_scale, obj_scale, -obj_scale),  XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f), XMFLOAT2(1.0f,1.0f)},
+	{XMFLOAT3(obj_scale, obj_scale, obj_scale), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f), XMFLOAT2(1.0f,0.0f)},
+	{XMFLOAT3(obj_scale, -obj_scale, obj_scale),  XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f), XMFLOAT2(0.0f,0.0f)},
+	{XMFLOAT3(obj_scale, obj_scale, -obj_scale),  XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f), XMFLOAT2(1.0f,1.0f)},
 	// bottom face
-	{XMFLOAT3(cube_scale, -cube_scale, -cube_scale), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f), XMFLOAT2(1.0f,1.0f)},
-	{XMFLOAT3(cube_scale, -cube_scale, cube_scale), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f), XMFLOAT2(1.0f,0.0f)},
-	{XMFLOAT3(-cube_scale, -cube_scale, -cube_scale), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f),XMFLOAT2(0.0f,1.0f)},
-	{XMFLOAT3(cube_scale, -cube_scale, cube_scale), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f),XMFLOAT2(1.0f,0.0f)},
-	{XMFLOAT3(-cube_scale, -cube_scale, cube_scale), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f),XMFLOAT2(0.0f,0.0f)},
-	{XMFLOAT3(-cube_scale, -cube_scale, -cube_scale), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f),XMFLOAT2(0.0f,1.0f)},
+	{XMFLOAT3(obj_scale, -obj_scale, -obj_scale), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f), XMFLOAT2(1.0f,1.0f)},
+	{XMFLOAT3(obj_scale, -obj_scale, obj_scale), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f), XMFLOAT2(1.0f,0.0f)},
+	{XMFLOAT3(-obj_scale, -obj_scale, -obj_scale), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f),XMFLOAT2(0.0f,1.0f)},
+	{XMFLOAT3(obj_scale, -obj_scale, obj_scale), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f),XMFLOAT2(1.0f,0.0f)},
+	{XMFLOAT3(-obj_scale, -obj_scale, obj_scale), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f),XMFLOAT2(0.0f,0.0f)},
+	{XMFLOAT3(-obj_scale, -obj_scale, -obj_scale), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f),XMFLOAT2(0.0f,1.0f)},
 	// top face
-	{XMFLOAT3(cube_scale, cube_scale, cube_scale), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f), XMFLOAT2(1.0f,0.0f)},
-	{XMFLOAT3(cube_scale, cube_scale, -cube_scale),XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f), XMFLOAT2(1.0f,1.0f)},
-	{XMFLOAT3(-cube_scale, cube_scale, -cube_scale), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f), XMFLOAT2(0.0f,1.0f)},
-	{XMFLOAT3(-cube_scale, cube_scale, cube_scale), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f), XMFLOAT2(0.0f,0.0f)},
-	{XMFLOAT3(cube_scale, cube_scale, cube_scale), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f), XMFLOAT2(1.0f,0.0f)},
-	{XMFLOAT3(-cube_scale, cube_scale, -cube_scale), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f), XMFLOAT2(0.0f,1.0f)}
+	{XMFLOAT3(obj_scale, obj_scale, obj_scale), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f), XMFLOAT2(1.0f,0.0f)},
+	{XMFLOAT3(obj_scale, obj_scale, -obj_scale),XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f), XMFLOAT2(1.0f,1.0f)},
+	{XMFLOAT3(-obj_scale, obj_scale, -obj_scale), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f), XMFLOAT2(0.0f,1.0f)},
+	{XMFLOAT3(-obj_scale, obj_scale, obj_scale), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f), XMFLOAT2(0.0f,0.0f)},
+	{XMFLOAT3(obj_scale, obj_scale, obj_scale), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f), XMFLOAT2(1.0f,0.0f)},
+	{XMFLOAT3(-obj_scale, obj_scale, -obj_scale), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f), XMFLOAT2(0.0f,1.0f)}
 };
 
 POS_TEX_NORM_COL_VERTEX textured_normal_cube[] =
 {
 	// back face 
-	{XMFLOAT3(-cube_scale, cube_scale, cube_scale),   XMFLOAT2(0.0f,0.0f), XMFLOAT3(0.0f,0.0f,1.0f),  XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(-cube_scale, -cube_scale, cube_scale),  XMFLOAT2(0.0f,1.0f), XMFLOAT3(0.0f,0.0f,1.0f),  XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(cube_scale, cube_scale, cube_scale),    XMFLOAT2(1.0f,0.0f), XMFLOAT3(0.0f,0.0f,1.0f),  XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(cube_scale, cube_scale, cube_scale),    XMFLOAT2(1.0f,0.0f), XMFLOAT3(0.0f,0.0f,1.0f),  XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(-cube_scale, -cube_scale, cube_scale),  XMFLOAT2(0.0f,1.0f), XMFLOAT3(0.0f,0.0f,1.0f),  XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(cube_scale, -cube_scale, cube_scale),   XMFLOAT2(1.0f,1.0f), XMFLOAT3(0.0f,0.0f,1.0f),  XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(-obj_scale, obj_scale, obj_scale),   XMFLOAT2(0.0f,0.0f), XMFLOAT3(0.0f,0.0f,1.0f),  XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(-obj_scale, -obj_scale, obj_scale),  XMFLOAT2(0.0f,1.0f), XMFLOAT3(0.0f,0.0f,1.0f),  XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(obj_scale, obj_scale, obj_scale),    XMFLOAT2(1.0f,0.0f), XMFLOAT3(0.0f,0.0f,1.0f),  XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(obj_scale, obj_scale, obj_scale),    XMFLOAT2(1.0f,0.0f), XMFLOAT3(0.0f,0.0f,1.0f),  XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(-obj_scale, -obj_scale, obj_scale),  XMFLOAT2(0.0f,1.0f), XMFLOAT3(0.0f,0.0f,1.0f),  XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(obj_scale, -obj_scale, obj_scale),   XMFLOAT2(1.0f,1.0f), XMFLOAT3(0.0f,0.0f,1.0f),  XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
 	// front face																				   
-	{XMFLOAT3(-cube_scale, -cube_scale, -cube_scale), XMFLOAT2(0.0f,1.0f), XMFLOAT3(0.0f,0.0f,-1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(-cube_scale, cube_scale, -cube_scale),  XMFLOAT2(0.0f,0.0f), XMFLOAT3(0.0f,0.0f,-1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(cube_scale, cube_scale, -cube_scale),   XMFLOAT2(1.0f,0.0f), XMFLOAT3(0.0f,0.0f,-1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(-cube_scale, -cube_scale, -cube_scale), XMFLOAT2(0.0f,1.0f), XMFLOAT3(0.0f,0.0f,-1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(cube_scale, cube_scale, -cube_scale),   XMFLOAT2(1.0f,0.0f), XMFLOAT3(0.0f,0.0f,-1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(cube_scale, -cube_scale, -cube_scale),  XMFLOAT2(1.0f,1.0f), XMFLOAT3(0.0f,0.0f,-1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(-obj_scale, -obj_scale, -obj_scale), XMFLOAT2(0.0f,1.0f), XMFLOAT3(0.0f,0.0f,-1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(-obj_scale, obj_scale, -obj_scale),  XMFLOAT2(0.0f,0.0f), XMFLOAT3(0.0f,0.0f,-1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(obj_scale, obj_scale, -obj_scale),   XMFLOAT2(1.0f,0.0f), XMFLOAT3(0.0f,0.0f,-1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(-obj_scale, -obj_scale, -obj_scale), XMFLOAT2(0.0f,1.0f), XMFLOAT3(0.0f,0.0f,-1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(obj_scale, obj_scale, -obj_scale),   XMFLOAT2(1.0f,0.0f), XMFLOAT3(0.0f,0.0f,-1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(obj_scale, -obj_scale, -obj_scale),  XMFLOAT2(1.0f,1.0f), XMFLOAT3(0.0f,0.0f,-1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
 	// left face														,					   
-	{XMFLOAT3(-cube_scale, -cube_scale, -cube_scale), XMFLOAT2(0.0f,1.0f), XMFLOAT3(-1.0f,0.0f,0.0f), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
-	{XMFLOAT3(-cube_scale, -cube_scale, cube_scale),  XMFLOAT2(0.0f,0.0f), XMFLOAT3(-1.0f,0.0f,0.0f), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
-	{XMFLOAT3(-cube_scale, cube_scale, -cube_scale),  XMFLOAT2(1.0f,1.0f), XMFLOAT3(-1.0f,0.0f,0.0f), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
-	{XMFLOAT3(-cube_scale, -cube_scale, cube_scale),  XMFLOAT2(0.0f,0.0f), XMFLOAT3(-1.0f,0.0f,0.0f), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
-	{XMFLOAT3(-cube_scale, cube_scale, cube_scale),   XMFLOAT2(1.0f,0.0f), XMFLOAT3(-1.0f,0.0f,0.0f), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
-	{XMFLOAT3(-cube_scale, cube_scale, -cube_scale),  XMFLOAT2(1.0f,1.0f), XMFLOAT3(-1.0f,0.0f,0.0f), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
+	{XMFLOAT3(-obj_scale, -obj_scale, -obj_scale), XMFLOAT2(0.0f,1.0f), XMFLOAT3(-1.0f,0.0f,0.0f), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
+	{XMFLOAT3(-obj_scale, -obj_scale, obj_scale),  XMFLOAT2(0.0f,0.0f), XMFLOAT3(-1.0f,0.0f,0.0f), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
+	{XMFLOAT3(-obj_scale, obj_scale, -obj_scale),  XMFLOAT2(1.0f,1.0f), XMFLOAT3(-1.0f,0.0f,0.0f), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
+	{XMFLOAT3(-obj_scale, -obj_scale, obj_scale),  XMFLOAT2(0.0f,0.0f), XMFLOAT3(-1.0f,0.0f,0.0f), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
+	{XMFLOAT3(-obj_scale, obj_scale, obj_scale),   XMFLOAT2(1.0f,0.0f), XMFLOAT3(-1.0f,0.0f,0.0f), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
+	{XMFLOAT3(-obj_scale, obj_scale, -obj_scale),  XMFLOAT2(1.0f,1.0f), XMFLOAT3(-1.0f,0.0f,0.0f), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
 	// right face														,					   		  
-	{XMFLOAT3(cube_scale, -cube_scale, cube_scale),   XMFLOAT2(0.0f,0.0f), XMFLOAT3(1.0f,0.0f,0.0f) , XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
-	{XMFLOAT3(cube_scale, -cube_scale, -cube_scale),  XMFLOAT2(0.0f,1.0f), XMFLOAT3(1.0f,0.0f,0.0f) , XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
-	{XMFLOAT3(cube_scale, cube_scale, -cube_scale),   XMFLOAT2(1.0f,1.0f), XMFLOAT3(1.0f,0.0f,0.0f) , XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
-	{XMFLOAT3(cube_scale, cube_scale, cube_scale),    XMFLOAT2(1.0f,0.0f), XMFLOAT3(1.0f,0.0f,0.0f) , XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
-	{XMFLOAT3(cube_scale, -cube_scale, cube_scale),   XMFLOAT2(0.0f,0.0f), XMFLOAT3(1.0f,0.0f,0.0f) , XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
-	{XMFLOAT3(cube_scale, cube_scale, -cube_scale),   XMFLOAT2(1.0f,1.0f), XMFLOAT3(1.0f,0.0f,0.0f) , XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
+	{XMFLOAT3(obj_scale, -obj_scale, obj_scale),   XMFLOAT2(0.0f,0.0f), XMFLOAT3(1.0f,0.0f,0.0f) , XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
+	{XMFLOAT3(obj_scale, -obj_scale, -obj_scale),  XMFLOAT2(0.0f,1.0f), XMFLOAT3(1.0f,0.0f,0.0f) , XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
+	{XMFLOAT3(obj_scale, obj_scale, -obj_scale),   XMFLOAT2(1.0f,1.0f), XMFLOAT3(1.0f,0.0f,0.0f) , XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
+	{XMFLOAT3(obj_scale, obj_scale, obj_scale),    XMFLOAT2(1.0f,0.0f), XMFLOAT3(1.0f,0.0f,0.0f) , XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
+	{XMFLOAT3(obj_scale, -obj_scale, obj_scale),   XMFLOAT2(0.0f,0.0f), XMFLOAT3(1.0f,0.0f,0.0f) , XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
+	{XMFLOAT3(obj_scale, obj_scale, -obj_scale),   XMFLOAT2(1.0f,1.0f), XMFLOAT3(1.0f,0.0f,0.0f) , XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
 	// bottom face														,					   
-	{XMFLOAT3(cube_scale, -cube_scale, -cube_scale),  XMFLOAT2(1.0f,1.0f), XMFLOAT3(0.0f,-1.0f,0.0f), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(cube_scale, -cube_scale, cube_scale),   XMFLOAT2(1.0f,0.0f), XMFLOAT3(0.0f,-1.0f,0.0f), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(-cube_scale, -cube_scale, -cube_scale), XMFLOAT2(0.0f,1.0f), XMFLOAT3(0.0f,-1.0f,0.0f), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(cube_scale, -cube_scale, cube_scale),   XMFLOAT2(1.0f,0.0f), XMFLOAT3(0.0f,-1.0f,0.0f), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(-cube_scale, -cube_scale, cube_scale),  XMFLOAT2(0.0f,0.0f), XMFLOAT3(0.0f,-1.0f,0.0f), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(-cube_scale, -cube_scale, -cube_scale), XMFLOAT2(0.0f,1.0f), XMFLOAT3(0.0f,-1.0f,0.0f), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(obj_scale, -obj_scale, -obj_scale),  XMFLOAT2(1.0f,1.0f), XMFLOAT3(0.0f,-1.0f,0.0f), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(obj_scale, -obj_scale, obj_scale),   XMFLOAT2(1.0f,0.0f), XMFLOAT3(0.0f,-1.0f,0.0f), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(-obj_scale, -obj_scale, -obj_scale), XMFLOAT2(0.0f,1.0f), XMFLOAT3(0.0f,-1.0f,0.0f), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(obj_scale, -obj_scale, obj_scale),   XMFLOAT2(1.0f,0.0f), XMFLOAT3(0.0f,-1.0f,0.0f), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(-obj_scale, -obj_scale, obj_scale),  XMFLOAT2(0.0f,0.0f), XMFLOAT3(0.0f,-1.0f,0.0f), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(-obj_scale, -obj_scale, -obj_scale), XMFLOAT2(0.0f,1.0f), XMFLOAT3(0.0f,-1.0f,0.0f), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)},
 	// top face										 					,					   		  
-	{XMFLOAT3(cube_scale, cube_scale, cube_scale),    XMFLOAT2(1.0f,0.0f), XMFLOAT3(0.0f,1.0f,0.0f) , XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(cube_scale, cube_scale, -cube_scale),   XMFLOAT2(1.0f,1.0f), XMFLOAT3(0.0f,1.0f,0.0f) , XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(-cube_scale, cube_scale, -cube_scale),  XMFLOAT2(0.0f,1.0f), XMFLOAT3(0.0f,1.0f,0.0f) , XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(-cube_scale, cube_scale, cube_scale),   XMFLOAT2(0.0f,0.0f), XMFLOAT3(0.0f,1.0f,0.0f) , XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(cube_scale, cube_scale, cube_scale),    XMFLOAT2(1.0f,0.0f), XMFLOAT3(0.0f,1.0f,0.0f) , XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(-cube_scale, cube_scale, -cube_scale),  XMFLOAT2(0.0f,1.0f), XMFLOAT3(0.0f,1.0f,0.0f) , XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)}
+	{XMFLOAT3(obj_scale, obj_scale, obj_scale),    XMFLOAT2(1.0f,0.0f), XMFLOAT3(0.0f,1.0f,0.0f) , XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(obj_scale, obj_scale, -obj_scale),   XMFLOAT2(1.0f,1.0f), XMFLOAT3(0.0f,1.0f,0.0f) , XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(-obj_scale, obj_scale, -obj_scale),  XMFLOAT2(0.0f,1.0f), XMFLOAT3(0.0f,1.0f,0.0f) , XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(-obj_scale, obj_scale, obj_scale),   XMFLOAT2(0.0f,0.0f), XMFLOAT3(0.0f,1.0f,0.0f) , XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(obj_scale, obj_scale, obj_scale),    XMFLOAT2(1.0f,0.0f), XMFLOAT3(0.0f,1.0f,0.0f) , XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)},
+	{XMFLOAT3(-obj_scale, obj_scale, -obj_scale),  XMFLOAT2(0.0f,1.0f), XMFLOAT3(0.0f,1.0f,0.0f) , XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)}
 };
 
-const float skyboxScale = 20.0f;
-POS_COL_VERTEX skybox[] =
-{
-	// back face 
-	{XMFLOAT3(-skyboxScale, -skyboxScale, skyboxScale), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(-skyboxScale, skyboxScale, skyboxScale), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(skyboxScale, skyboxScale, skyboxScale), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(-skyboxScale, -skyboxScale, skyboxScale),XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(skyboxScale, skyboxScale, skyboxScale), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(skyboxScale, -skyboxScale, skyboxScale), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
-	// front face
-	{XMFLOAT3(-skyboxScale, skyboxScale, -skyboxScale), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(-skyboxScale, -skyboxScale, -skyboxScale), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(skyboxScale, skyboxScale, -skyboxScale),  XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(skyboxScale, skyboxScale, -skyboxScale),  XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(-skyboxScale, -skyboxScale, -skyboxScale),  XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(skyboxScale, -skyboxScale, -skyboxScale),  XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
-	// left face
-	{XMFLOAT3(-skyboxScale, -skyboxScale, skyboxScale), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
-	{XMFLOAT3(-skyboxScale, -skyboxScale, -skyboxScale), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
-	{XMFLOAT3(-skyboxScale, skyboxScale, -skyboxScale), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
-	{XMFLOAT3(-skyboxScale, skyboxScale, skyboxScale), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
-	{XMFLOAT3(-skyboxScale, -skyboxScale, skyboxScale), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
-	{XMFLOAT3(-skyboxScale, skyboxScale, -skyboxScale), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
-	// right face
-	{XMFLOAT3(skyboxScale, -skyboxScale, -skyboxScale),  XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
-	{XMFLOAT3(skyboxScale, -skyboxScale, skyboxScale),  XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
-	{XMFLOAT3(skyboxScale, skyboxScale, -skyboxScale),  XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
-	{XMFLOAT3(skyboxScale, -skyboxScale, skyboxScale),  XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
-	{XMFLOAT3(skyboxScale, skyboxScale, skyboxScale), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
-	{XMFLOAT3(skyboxScale, skyboxScale, -skyboxScale),  XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
-	// bottom face
-	{XMFLOAT3(skyboxScale, -skyboxScale, skyboxScale), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(skyboxScale, -skyboxScale, -skyboxScale), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(-skyboxScale, -skyboxScale, -skyboxScale), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(-skyboxScale, -skyboxScale, skyboxScale), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(skyboxScale, -skyboxScale, skyboxScale), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(-skyboxScale, -skyboxScale, -skyboxScale), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)},
-	// top face
-	{XMFLOAT3(skyboxScale, skyboxScale, -skyboxScale),XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(skyboxScale, skyboxScale, skyboxScale), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(-skyboxScale, skyboxScale, -skyboxScale), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(skyboxScale, skyboxScale, skyboxScale), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(-skyboxScale, skyboxScale, skyboxScale), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(-skyboxScale, skyboxScale, -skyboxScale), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)}
 
-};
 
-POS_COL_VERTEX shape_1[] =
-{
-	{XMFLOAT3(0.2f,0.2f,0.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(0.9f,-0.9f,0.0f), XMFLOAT4(0.2f, 0.0f, 1.0f, 1.0f)},
-	{XMFLOAT3(-0.9f,-0.9f,0.0f), XMFLOAT4(0.0f, 0.5f, 0.2f, 0.5f)}
-};
-
-POS_COL_VERTEX cube[] =
-{
-	// back face 
-	{XMFLOAT3(-1.0f, 1.0f, 1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(-1.0f, -1.0f, 1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(-1.0f, -1.0f, 1.0f),XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(1.0f, -1.0f, 1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
-	// front face
-	{XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(-1.0f, 1.0f, -1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(1.0f, 1.0f, -1.0f),  XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(-1.0f, -1.0f, -1.0f),  XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(1.0f, 1.0f, -1.0f),  XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(1.0f, -1.0f, -1.0f),  XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f)},
-	// left face
-	{XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
-	{XMFLOAT3(-1.0f, -1.0f, 1.0f), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
-	{XMFLOAT3(-1.0f, 1.0f, -1.0f), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
-	{XMFLOAT3(-1.0f, -1.0f, 1.0f), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
-	{XMFLOAT3(-1.0f, 1.0f, 1.0f), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
-	{XMFLOAT3(-1.0f, 1.0f, -1.0f), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
-	// right face
-	{XMFLOAT3(1.0f, -1.0f, 1.0f),  XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
-	{XMFLOAT3(1.0f, -1.0f, -1.0f),  XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
-	{XMFLOAT3(1.0f, 1.0f, -1.0f),  XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
-	{XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
-	{XMFLOAT3(1.0f, -1.0f, 1.0f),  XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
-	{XMFLOAT3(1.0f, 1.0f, -1.0f),  XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f)},
-	// bottom face
-	{XMFLOAT3(1.0f, -1.0f, -1.0f), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(1.0f, -1.0f, 1.0f), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(1.0f, -1.0f, 1.0f), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(-1.0f, -1.0f, 1.0f), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)},
-	// top face
-	{XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(1.0f, 1.0f, -1.0f),XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(-1.0f, 1.0f, -1.0f), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(-1.0f, 1.0f, 1.0f), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)},
-	{XMFLOAT3(-1.0f, 1.0f, -1.0f), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f)}
-
-};
+float s = 1.0f;
 
 d3dfw* dx_handle;
-const int n = 30;
+const int n = 5;
+
+
+
+//POS_TEX_VERTEX skybox[] =
+//{
+//	// back face 
+//	{XMFLOAT3(-obj_scale, -obj_scale, obj_scale),   XMFLOAT2(0.0f,0.0f)},
+//	{XMFLOAT3(-obj_scale, obj_scale, obj_scale), 	XMFLOAT2(0.0f,1.0f)},
+//	{XMFLOAT3(obj_scale, obj_scale, obj_scale),		XMFLOAT2(1.0f,0.0f)},
+//	{XMFLOAT3(-obj_scale, -obj_scale, obj_scale),	XMFLOAT2(1.0f,0.0f)},
+//	{XMFLOAT3(obj_scale, obj_scale, obj_scale),  	XMFLOAT2(0.0f,1.0f)},
+//	{XMFLOAT3(obj_scale, -obj_scale, obj_scale), 	XMFLOAT2(1.0f,1.0f)},
+//	// front face
+//	{XMFLOAT3(-obj_scale, obj_scale, -obj_scale), 	XMFLOAT2(0.0f,1.0f)},
+//	{XMFLOAT3(-obj_scale, -obj_scale, -obj_scale),	XMFLOAT2(0.0f,0.0f)},
+//	{XMFLOAT3(obj_scale, obj_scale, -obj_scale),  	XMFLOAT2(1.0f,0.0f)},
+//	{XMFLOAT3(obj_scale, obj_scale, -obj_scale),  	XMFLOAT2(0.0f,1.0f)},
+//	{XMFLOAT3(-obj_scale, -obj_scale, -obj_scale),	XMFLOAT2(1.0f,0.0f)},
+//	{XMFLOAT3(obj_scale, -obj_scale, -obj_scale), 	XMFLOAT2(1.0f,1.0f)},
+//	// left face
+//	{XMFLOAT3(-obj_scale, -obj_scale, obj_scale), 	XMFLOAT2(0.0f,1.0f)},
+//	{XMFLOAT3(-obj_scale, -obj_scale, -obj_scale),	XMFLOAT2(0.0f,0.0f)},
+//	{XMFLOAT3(-obj_scale, obj_scale, -obj_scale), 	XMFLOAT2(1.0f,1.0f)},
+//	{XMFLOAT3(-obj_scale, obj_scale, obj_scale), 	XMFLOAT2(0.0f,0.0f)},
+//	{XMFLOAT3(-obj_scale, -obj_scale, obj_scale), 	XMFLOAT2(1.0f,0.0f)},
+//	{XMFLOAT3(-obj_scale, obj_scale, -obj_scale), 	XMFLOAT2(1.0f,1.0f)},
+//	// right face
+//	{XMFLOAT3(obj_scale, -obj_scale, -obj_scale), 	XMFLOAT2(0.0f,0.0f)},
+//	{XMFLOAT3(obj_scale, -obj_scale, obj_scale),  	XMFLOAT2(0.0f,1.0f)},
+//	{XMFLOAT3(obj_scale, obj_scale, -obj_scale),  	XMFLOAT2(1.0f,1.0f)},
+//	{XMFLOAT3(obj_scale, -obj_scale, obj_scale),  	XMFLOAT2(1.0f,0.0f)},
+//	{XMFLOAT3(obj_scale, obj_scale, obj_scale), 	XMFLOAT2(0.0f,0.0f)},
+//	{XMFLOAT3(obj_scale, obj_scale, -obj_scale),  	XMFLOAT2(1.0f,1.0f)},
+//	// bottom face
+//	{XMFLOAT3(obj_scale, -obj_scale, obj_scale), 	XMFLOAT2(1.0f,1.0f)},
+//	{XMFLOAT3(obj_scale, -obj_scale, -obj_scale), 	XMFLOAT2(1.0f,0.0f)},
+//	{XMFLOAT3(-obj_scale, -obj_scale, -obj_scale),	XMFLOAT2(0.0f,1.0f)},
+//	{XMFLOAT3(-obj_scale, -obj_scale, obj_scale), 	XMFLOAT2(1.0f,0.0f)},
+//	{XMFLOAT3(obj_scale, -obj_scale, obj_scale), 	XMFLOAT2(0.0f,0.0f)},
+//	{XMFLOAT3(-obj_scale, -obj_scale, -obj_scale),	XMFLOAT2(0.0f,1.0f)},
+//	// top face
+//	{XMFLOAT3(obj_scale, obj_scale, -obj_scale),	XMFLOAT2(1.0f,0.0f)},
+//	{XMFLOAT3(obj_scale, obj_scale, obj_scale), 	XMFLOAT2(1.0f,1.0f)},
+//	{XMFLOAT3(-obj_scale, obj_scale, -obj_scale), 	XMFLOAT2(0.0f,1.0f)},
+//	{XMFLOAT3(obj_scale, obj_scale, obj_scale), 	XMFLOAT2(0.0f,0.0f)},
+//	{XMFLOAT3(-obj_scale, obj_scale, obj_scale), 	XMFLOAT2(1.0f,0.0f)},
+//	{XMFLOAT3(-obj_scale, obj_scale, -obj_scale), 	XMFLOAT2(0.0f,1.0f)}
+//
+//};
 POS_TEX_NORM_COL_VERTEX *plane_vertices;
 unsigned int *plane_indices;
-
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
-
 	/*
 	 *
 	 *Testing area
@@ -304,18 +257,19 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	 *
 	 *
 	 */
+	 // GENERATE PLANE WITH n * n tiles
 
+	 plane_vertices = new POS_TEX_NORM_COL_VERTEX[(n + 1)*(n + 1)];
+	 plane_indices = new unsigned int[n* n * 6];
 
-	plane_vertices = new POS_TEX_NORM_COL_VERTEX[(n + 1)*(n + 1)];
-	plane_indices = new unsigned int[n*n*6];
 	for (size_t z = 0; z < (n + 1); z++)
 	{
-		for (size_t x = 0; x < (n+1); x++)
+		for (size_t x = 0; x < (n + 1); x++)
 		{
-			plane_vertices[z*(n + 1) + x].Pos = XMFLOAT3(x * cube_scale,0.0f,z * cube_scale);
+			plane_vertices[z*(n + 1) + x].Pos = XMFLOAT3(x * 10, 0.0f, z * 10);
 			plane_vertices[z*(n + 1) + x].Texture0 = XMFLOAT2((float)x, (float)z);
 			plane_vertices[z*(n + 1) + x].Normal = XMFLOAT3(0.0f, 1.0f, 0.0f);
-			plane_vertices[z*(n + 1) + x].Col = XMFLOAT4(1.0f, 1.0f, 1.0f,1.0f);
+			plane_vertices[z*(n + 1) + x].Col = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 		}
 	}
 
@@ -333,16 +287,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	}
 
 
-	 /*
-  *
-  *Testing area
-  *
-  *
-  *
-  *
-  */
-
-
+	/*
+ *
+ *Testing area
+ *
+ *
+ *
+ *
+ */
 
 	dx_handle = d3dfw::getInstance();
 	ShowCursor(false);
@@ -371,7 +323,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		DXTRACE_MSG("Failed to initialise Input");
 		return 0;
 	}
-	
+
 	char filename[] = "assets/Sphere.obj";
 	model_test = new Model(dx_handle->device, dx_handle->immediateContext, filename);
 
@@ -390,7 +342,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		}
 		else {
 			//UpdateAI();
-			dx_handle->input->UpdateInput(camera,timer);
+			dx_handle->input->UpdateInput(camera, timer);
 			//UpdateSound();
 			//UpdateGraphics();
 			RenderFrame();
@@ -404,7 +356,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 void RenderFrame(void)
 {
 	const XMMATRIX view_projection = camera->calculate_view_projection();
-	
+
 	// clear the render target view
 	dx_handle->ClearRTV();
 
@@ -479,14 +431,23 @@ void LoadContent()
 	XMVECTOR scale = XMVectorSet(1.0f, 1.0f, 1.0f, 0.0f);
 	XMVECTOR rotation = XMQuaternionIdentity();
 
+
+	//sky.LoadGeoModel(textured_normal_cube, ARRAYSIZE(textured_normal_cube), sizeof(textured_normal_cube[0]));
+	//test = GameObject("test", Transform(scale, rotation, XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f)), sky);
+	
+	//plane_indices = new unsigned int[5 * 5 * 6];
+	//Geometry::create_indexed_tiled_textured_normal_plane(&plane_vertices, plane_indices, 5, 1);
+
 	Model plane = Model(dx_handle->device, dx_handle->immediateContext);
-	plane.LoadGeoModel(plane_vertices, (n+1)*(n+1), sizeof(POS_TEX_NORM_COL_VERTEX), plane_indices, n*n*6);
-	//plane.LoadGeoModel(textured_normal_cube,ARRAYSIZE(textured_normal_cube),sizeof(textured_normal_cube[0]));
+	Geometry::create_indexed_tiled_textured_normal_plane(&plane_vertices,&plane_indices, 5, 1.0f);
+	plane.LoadGeoModel(plane_vertices, (5 + 1)*(5 + 1), sizeof(POS_TEX_NORM_COL_VERTEX), plane_indices, 5 * 5 * 6);
+
+
 	test = GameObject("test", Transform(scale, rotation, XMVectorSet(0.0f, -1.0f, 0.0f, 0.0f)), plane);
 
 	for (size_t i = 0; i < upperPlatformCount; i++)
 	{
-		upperPlatforms[i] = GameObject("upperPlatform" + i, Transform(scale, rotation, XMVectorSet(i, i, 1.0f, 0.0f)), *model_test);	
+		upperPlatforms[i] = GameObject("upperPlatform" + i, Transform(scale, rotation, XMVectorSet(i, i, 1.0f, 0.0f)), *model_test);
 	}
 
 	for (size_t i = 0; i < middlePlatformCount; i++)

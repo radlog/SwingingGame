@@ -47,7 +47,7 @@ private:
 	const float min_aspect_ratio_ = 0.1;
 	const float max_aspect_ratio_ = 1.0;
 	//NEAR_PLANE
-	const float default_near_plane_ = 1.0;
+	const float default_near_plane_ = 0.1;
 	const float min_near_plane_ = 1.0;
 	const float max_near_plane_ = 15.0;
 	//FAR_PLANE

@@ -49,15 +49,25 @@ HRESULT Model::LoadObjModel(char * filename)
 
 }
 
-HRESULT Model::LoadGeoModel(void* vertices, UINT numverts, UINT size, unsigned int *indices, UINT numIndices)
+HRESULT Model::LoadGeoModel(void* vertices, UINT numverts, UINT single_vertex_bytesize, unsigned int *indices, UINT numIndices)
 {
 	HRESULT hr = S_OK;
-	vertSize = size;
-	this->vertices = vertices;
-	this->numverts = numverts;
+	
+	LoadGeoModel(vertices, numverts, single_vertex_bytesize);
 	this->indices = indices;
 	this->numIndices = numIndices;
 	CreateIndexBuffer();
+
+	return hr;
+}
+
+
+HRESULT Model::LoadGeoModel(void* vertices, UINT numverts, UINT single_vertex_bytesize)
+{
+	HRESULT hr = S_OK;
+	vertSize = single_vertex_bytesize;
+	this->vertices = vertices;
+	this->numverts = numverts;
 	UpdateDefaultVertexBuffer(vertices, vertSize  * numverts);
 
 #ifdef RELEASE
@@ -68,7 +78,6 @@ HRESULT Model::LoadGeoModel(void* vertices, UINT numverts, UINT size, unsigned i
 
 	return hr;
 }
-
 
 HRESULT Model::CompileShaders()
 {
@@ -113,6 +122,8 @@ HRESULT Model::SetInputLayout(D3D11_INPUT_ELEMENT_DESC iedesc[], int size)
 void Model::set_shader_file(char * shader_file)
 {
 	this->shader_file = shader_file;
+	CompileShaders();
+	//UpdateModel();
 }
 
 HRESULT Model::CreateDefaultConstantBuffer()
@@ -148,9 +159,9 @@ HRESULT Model::CreateDefaultSamplerForTexture()
 	return hr;
 }
 
-HRESULT Model::LoadTexture()
+HRESULT Model::LoadTexture(LPCSTR filename)
 {
-	HRESULT hr = D3DX11CreateShaderResourceViewFromFile(device, "assets/crate.jpg", nullptr, nullptr, &texture, nullptr);
+	HRESULT hr = D3DX11CreateShaderResourceViewFromFile(device, filename, nullptr, nullptr, &texture, nullptr);
 	return hr;
 }
 
@@ -214,12 +225,18 @@ void Model::Draw(XMMATRIX view_projection, D3D11_PRIMITIVE_TOPOLOGY mode)
 	immediateContext->IASetPrimitiveTopology(mode);
 
 	UINT stride = vertSize;
-	UINT offset = 0;	
+	UINT offset = 0;
 	immediateContext->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
 
-	immediateContext->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);
+	if (numIndices)
+	{
+		immediateContext->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);
+		immediateContext->DrawIndexed(numIndices, 0, 0);
+	}else
+	{
+		immediateContext->Draw(numverts, 0);		
+	}
 
-	immediateContext->DrawIndexed(numIndices+1,0, 0);
 }
 
 void Model::Cleanup() const
@@ -311,5 +328,16 @@ HRESULT Model::CreateIndexBuffer()
 
 	hr = device->CreateBuffer(&desc, &indexData, &indexBuffer);
 
+	return hr;
+}
+
+HRESULT Model::UpdateModel()
+{
+	HRESULT hr = NULL;
+	CreateDefaultConstantBuffer();
+	CompileShaders();
+	SetDefaultInputLayout();
+	CreateDefaultSamplerForTexture();
+	LoadTexture();
 	return hr;
 }

@@ -25,7 +25,8 @@ public:
 	ObjFileModel* objFileModel;
 
 	HRESULT LoadObjModel(char* filename);
-	HRESULT LoadGeoModel(void* vertices, UINT numverts, UINT size, unsigned int *indices, UINT numIndices);
+	HRESULT LoadGeoModel(void* vertices, UINT numverts, UINT single_vertex_bytesize, unsigned int *indices, UINT numIndices);
+	HRESULT LoadGeoModel(void* vertices, UINT numverts, UINT single_vertex_bytesize);
 	HRESULT CompileShaders();
 	HRESULT SetDefaultInputLayout();
 	HRESULT SetInputLayout(D3D11_INPUT_ELEMENT_DESC iedesc[], int size);
@@ -33,9 +34,10 @@ public:
 	void Draw(XMMATRIX view_projection, D3D11_PRIMITIVE_TOPOLOGY mode = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	HRESULT CreateDefaultConstantBuffer();
 	HRESULT CreateDefaultSamplerForTexture();
-	HRESULT LoadTexture();
+	HRESULT LoadTexture(LPCSTR filename = "assets/crate.jpg" );
 	HRESULT UpdateDefaultVertexBuffer(void* vertices, UINT byteWidth);
 	HRESULT CreateIndexBuffer();
+	HRESULT UpdateModel();
 	void UpdateConstantBufferValues();
 	void Cleanup() const;
 
