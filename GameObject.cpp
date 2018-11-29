@@ -4,6 +4,9 @@
 
 GameObject::GameObject()
 {
+	dx_handle = d3dfw::getInstance();
+	device = dx_handle->device;
+	immediateContext = dx_handle->immediateContext;
 }
 
 
@@ -13,13 +16,12 @@ GameObject::~GameObject()
 
 GameObject::GameObject(std::string name)
 {
-	//dx_handle = d3dfw::getInstance();
+	dx_handle = d3dfw::getInstance();
 	this->name = name;
 }
 
-GameObject::GameObject(std::string name, Transform transform, Model model)
+GameObject::GameObject(std::string name, Transform transform, Model model) : GameObject(name)
 {
-	//dx_handle = d3dfw::getInstance();
 	this->name = name;
 	this->transform = transform;
 	this->model = model;
