@@ -14,6 +14,8 @@ Skybox::Skybox(LPCSTR texturename) : GameObject(name)
 {
 	POS_TEX_VERTEX* skybox_desc = Geometry::create_textured_skybox(20.0f);
 	model = Model(dx_handle->device, dx_handle->immediateContext);
+	char filename[] = "skybox_shader.hlsl";
+	model.set_shader_file(filename);
 	model.LoadTexture(texturename);
 	model.LoadGeoModel(skybox_desc, 36, sizeof(POS_TEX_VERTEX));
 	InitDepthStencilStates();
@@ -28,9 +30,11 @@ Skybox::Skybox(LPCSTR name, Transform transform, Model model)
 
 void Skybox::Draw(XMMATRIX view_projection, D3D11_PRIMITIVE_TOPOLOGY mode)
 {
+	//immediateContext->RSSetState(rasterizerSky);
 	immediateContext->OMSetDepthStencilState(depthWriteSky,0);
 	model.Draw(transform.world* view_projection, mode);
 	immediateContext->OMSetDepthStencilState(depthWriteSolid, 0);
+	//immediateContext->RSSetState(rasterizerSolid);
 }
 
 // using the Rasterizer results in weird outcome i.e. the sphere rotating when i move the camera
@@ -42,11 +46,11 @@ HRESULT Skybox::InitRasterizer()
 	
 	desc.FillMode = D3D11_FILL_SOLID;
 	desc.CullMode = D3D11_CULL_BACK;
-	hr = device->CreateRasterizerState(&desc, &rasterizerSolid);
+	hr = device->CreateRasterizerState(&desc, &rasterizerSky);
 
 	desc.FillMode = D3D11_FILL_SOLID;
 	desc.CullMode = D3D11_CULL_FRONT;
-	hr = device->CreateRasterizerState(&desc, &rasterizerSky);
+	hr = device->CreateRasterizerState(&desc, &rasterizerSolid);
 
 	return hr;
 }

@@ -116,9 +116,10 @@ void RenderFrame(void)
 	dx_handle->ClearRTV();
 
 	// draw here
+	skybox.Draw(XMMatrixTranslationFromVector(camera->transform.local_position) * view_projection);
 	test.Draw(view_projection);
 	upperPlatforms[10].Draw(view_projection);
-	skybox.Draw(view_projection);
+
 	DrawMap();
 
 
@@ -192,7 +193,7 @@ void LoadContent()
 	XMVECTOR rotation = XMQuaternionIdentity();
 	camera = new Camera();
 	timer = new VGTime();
-	skybox = Skybox("assets/crate.jpg");
+	skybox = Skybox("assets/purple_nebular.dds");
 
 	char filename[] = "assets/Sphere.obj";
 	model_test = new Model(dx_handle->device, dx_handle->immediateContext, filename);

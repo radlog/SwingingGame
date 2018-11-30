@@ -86,6 +86,7 @@
     <FxCompile Include="shaders.hlsl" />
     <FxCompile Include="simple_shader.hlsl" />
     <FxCompile Include="default_shader.hlsl" />
+    <FxCompile Include="skybox_shader.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h">
@@ -169,6 +170,18 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="assets\crate.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="assets\green_nebular.dds">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="assets\purple_nebular.dds">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="assets\test_sky.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="assets\rapture_skybx.dds">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

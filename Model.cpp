@@ -18,6 +18,7 @@ Model::Model(ID3D11Device * device, ID3D11DeviceContext * context)
 	SetDefaultInputLayout();
 	CreateDefaultSamplerForTexture();
 	LoadTexture();
+
 }
 
 Model::~Model()
@@ -123,6 +124,7 @@ void Model::set_shader_file(char * shader_file)
 {
 	this->shader_file = shader_file;
 	CompileShaders();
+	SetDefaultInputLayout();
 	//UpdateModel();
 }
 
