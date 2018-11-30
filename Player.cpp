@@ -11,7 +11,7 @@ Player::~Player()
 {
 }
 
-Player::Player(std::string name): Character(name)
+Player::Player(LPCSTR name): Character(name)
 {
 	
 }

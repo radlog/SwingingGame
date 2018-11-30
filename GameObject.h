@@ -16,10 +16,9 @@ public:
 	GameObject();
 	virtual ~GameObject();
 
-	GameObject(std::string name);
-	GameObject(std::string name, Transform transform, Model model);
-	void Draw(XMMATRIX view_projection);
-	void Draw(XMMATRIX view_projection, D3D11_PRIMITIVE_TOPOLOGY mode);
+	GameObject(LPCSTR name);
+	GameObject(LPCSTR name, Transform transform, Model model);
+	void Draw(XMMATRIX view_projection, D3D11_PRIMITIVE_TOPOLOGY mode = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 
 	Transform transform;
@@ -29,11 +28,11 @@ public:
 	virtual void start();
 	virtual void update();
 	virtual void collided(XMVECTOR target);
-	virtual std::string get_name();
+	virtual LPCSTR get_name();
 
 	void Cleanup();
 protected:
-	std::string name;
+	LPCSTR name;
 	Model model;
 	SoundEngine sound;
 	float collision_radius;

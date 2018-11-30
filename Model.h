@@ -32,6 +32,7 @@ public:
 	HRESULT SetInputLayout(D3D11_INPUT_ELEMENT_DESC iedesc[], int size);
 	void set_shader_file(char* shader_file);
 	void Draw(XMMATRIX view_projection, D3D11_PRIMITIVE_TOPOLOGY mode = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	void Cleanup() const;
 	HRESULT CreateDefaultConstantBuffer();
 	HRESULT CreateDefaultSamplerForTexture();
 	HRESULT LoadTexture(LPCSTR filename = "assets/crate.jpg" );
@@ -39,7 +40,6 @@ public:
 	HRESULT CreateIndexBuffer();
 	HRESULT UpdateModel();
 	void UpdateConstantBufferValues();
-	void Cleanup() const;
 
 protected:
 	MODEL_CONSTANT_BUFFER cb;

@@ -26,8 +26,8 @@ class Character : public GameObject
 
 public:
 	Character();
-	Character(std::string name);
-	Character(std::string name, Transform transform, Model model, float collision_radius, int life, State state);
+	Character(LPCSTR name);
+	Character(LPCSTR name, Transform transform, Model model, float collision_radius, int life, State state);
 	~Character();
 
 	Character(int life, State state);

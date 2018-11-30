@@ -1,6 +1,6 @@
 Texture2D texture0;
 SamplerState sampler0;
-
+TextureCube skybox;
 
 cbuffer CB0
 {

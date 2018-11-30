@@ -5,26 +5,16 @@
 
 #include "Camera.h"
 #include "GameObject.h"
+#include "Skybox.h"
+#include "main.h"
 
 
 //using namespace std;
-
-struct CONSTANT_BUFFER0
-{
-	XMMATRIX WorldViewProjection; // 64 bytes
-	XMVECTOR directional_light_vector; // 16 bytes
-	XMVECTOR directional_light_colour; // 16 bytes
-	XMVECTOR ambient_light_colour; // 16 bytes
-	float RedAmount; // 4 bytes
-	float GreenAmount; // 4 bytes
-	float BlueAmount; // 4 bytes
-	float scale; // 4 bytes
-	//XMFLOAT3 packing_bytes; // 12 bytes
-}; // 128 bytes
+d3dfw* dx_handle = d3dfw::getInstance();
 
 
-GameObject test;
 // game objects
+GameObject test;
 Camera* camera;
 const int upperPlatformCount = 100; // 3000 * 3312 plane_vertices seems to slow down the process when rotating -> consider optimizations for rotations
 const int middlePlatformCount = 100;
@@ -33,7 +23,6 @@ GameObject upperPlatforms[upperPlatformCount];
 GameObject middlePlatforms[middlePlatformCount];
 GameObject lowerPlatforms[lowerPlatformCount];
 
-GameObject skybox;
 POS_TEX_VERTEX* skybox_desc;
 Model sky_model;
 
@@ -47,12 +36,11 @@ XMVECTOR directional_light_shines_from = XMVectorSet(0.0f, 0.0f, -1.0f, 0.0f);
 XMVECTOR directional_light_colour = XMVectorSet(1.0f, 1.0f, 0.0f, 1.0f); // green
 XMVECTOR ambient_light_colour = XMVectorSet(0.1f, 0.1f, 0.1f, 1.0f); // dark grey
 
-CONSTANT_BUFFER0 cb0;
+
 
 VGTime* timer;
 
-HINSTANCE g_hInst = NULL;
-HWND g_hWnd = NULL;
+
 
 
 
@@ -60,85 +48,42 @@ HWND g_hWnd = NULL;
 char g_Title[100] = "Swing to Win(g)";
 
 
+// methods
+HRESULT InitD3D(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow);
 HRESULT InitialiseWindow(HINSTANCE hInstance, int nCmdShow);
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
-
-void Cleanup();
+void LoadContent();
 void RenderFrame(void);
-//void AlterVertices(POS_COL_VERTEX* vert, WPARAM message);
-
-// methods
+void DrawMap();
 void UpdateAI();
 void UpdateSound();
 void UpdateGraphics();
+void EndGame();
+//void AlterVertices(POS_COL_VERTEX* vert, WPARAM message);
 
-void LoadContent();
+
+
+
+
 
 float s = 1.0f;
-
-d3dfw* dx_handle;
 const int n = 5;
 
+
+Skybox skybox;
 
 POS_TEX_NORM_COL_VERTEX *plane_vertices;
 unsigned int *plane_indices;
 
+
+
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
-	/*
-	 *
-	 *Testing area
-	 *
-	 *
-	 *
-	 *
-	 */
-	 // GENERATE PLANE WITH n * n tiles
 
-
-
-	/*
- *
- *Testing area
- *
- *
- *
- *
- */
-
-	dx_handle = d3dfw::getInstance();
-	ShowCursor(false);
-	camera = new Camera();
-
-	timer = new VGTime();
-	UNREFERENCED_PARAMETER(hPrevInstance);
-	UNREFERENCED_PARAMETER(lpCmdLine);
-
-	if (FAILED(dx_handle->InitialiseWindow(hInstance, nCmdShow, WndProc)))
-	{
-		DXTRACE_MSG("Failed to create Window");
-		return 0;
-	}
-
-	MSG msg = { 0 };
-
-	if (FAILED(dx_handle->InitialiseD3D()))
-	{
-		DXTRACE_MSG("Failed to initialise DirectX");
-		return 0;
-	}
-
-	if (FAILED(dx_handle->InitialiseInput()))
-	{
-		DXTRACE_MSG("Failed to initialise Input");
-		return 0;
-	}
-
-
-
+	InitD3D(hInstance, hPrevInstance, lpCmdLine, nCmdShow);
 	LoadContent();
 
-	timer->start();
+	MSG msg = { 0 };
 
 	while (msg.message != WM_QUIT)
 	{
@@ -157,9 +102,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		}
 	}
 
-	Cleanup();
+	EndGame();
 	return (int)msg.wParam;
 }
+
+
 
 void RenderFrame(void)
 {
@@ -168,16 +115,16 @@ void RenderFrame(void)
 	// clear the render target view
 	dx_handle->ClearRTV();
 
-	test.Draw(view_projection);
-	//upperPlatforms[10].Draw(view_projection);
 	// draw here
-	for (size_t i = 0; i < upperPlatformCount; i++)
-	{
-		upperPlatforms[i].Draw(view_projection/*,D3D11_PRIMITIVE_TOPOLOGY_POINTLIST*/);
-	}
+	test.Draw(view_projection);
+	upperPlatforms[10].Draw(view_projection);
+	skybox.Draw(view_projection);
+	DrawMap();
+
 
 	// swap back buffer with front buffer
 	dx_handle->swapChain->Present(0, 0);
+
 }
 
 
@@ -209,11 +156,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 }
 
 
-void Cleanup()
+void DrawMap()
 {
-	dx_handle->Cleanup();
-	model_test->Cleanup();
+	//for (size_t i = 0; i < upperPlatformCount; i++)
+//{
+//	upperPlatforms[i].Draw(view_projection/*,D3D11_PRIMITIVE_TOPOLOGY_POINTLIST*/);
+//}
+}
 
+void EndGame()
+{
 	timer->stop();
 }
 
@@ -238,7 +190,9 @@ void LoadContent()
 {
 	XMVECTOR scale = XMVectorSet(1.0f, 1.0f, 1.0f, 0.0f);
 	XMVECTOR rotation = XMQuaternionIdentity();
-
+	camera = new Camera();
+	timer = new VGTime();
+	skybox = Skybox("assets/crate.jpg");
 
 	char filename[] = "assets/Sphere.obj";
 	model_test = new Model(dx_handle->device, dx_handle->immediateContext, filename);
@@ -247,12 +201,12 @@ void LoadContent()
 	//Model sky(dx_handle->device, dx_handle->immediateContext);
 	//sky.LoadGeoModel(, ARRAYSIZE(textured_normal_cube), sizeof(textured_normal_cube[0]));
 	//est = GameObject("test", Transform(scale, rotation, XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f)), sky);
-	
+
 	//plane_indices = new unsigned int[5 * 5 * 6];
 	//Geometry::create_indexed_tiled_textured_normal_plane(&plane_vertices, plane_indices, 5, 1);
 
 	Model plane = Model(dx_handle->device, dx_handle->immediateContext);
-	Geometry::create_indexed_tiled_textured_normal_plane(&plane_vertices,&plane_indices, 5, 1.0f);
+	Geometry::create_indexed_tiled_textured_normal_plane(&plane_vertices, &plane_indices, 5, 1.0f);
 	plane.LoadGeoModel(plane_vertices, (5 + 1)*(5 + 1), sizeof(POS_TEX_NORM_COL_VERTEX), plane_indices, 5 * 5 * 6);
 	test = GameObject("test", Transform(scale, rotation, XMVectorSet(0.0f, -1.0f, 0.0f, 0.0f)), plane);
 
@@ -270,6 +224,37 @@ void LoadContent()
 	{
 
 	}
+
+	timer->start();
+}
+
+HRESULT InitD3D(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
+{
+	HRESULT hr = S_OK;
+	UNREFERENCED_PARAMETER(hPrevInstance);
+	UNREFERENCED_PARAMETER(lpCmdLine);
+
+	if (FAILED(dx_handle->InitialiseWindow(hInstance, nCmdShow, WndProc)))
+	{
+		DXTRACE_MSG("Failed to create Window");
+		return 0;
+	}
+
+	if (FAILED(dx_handle->InitialiseD3D()))
+	{
+		DXTRACE_MSG("Failed to initialise DirectX");
+		return 0;
+	}
+
+	if (FAILED(dx_handle->InitialiseInput()))
+	{
+		DXTRACE_MSG("Failed to initialise Input");
+		return 0;
+	}
+
+	ShowCursor(false);
+
+	return hr;
 }
 
 

@@ -67,6 +67,7 @@ HRESULT Model::LoadGeoModel(void* vertices, UINT numverts, UINT single_vertex_by
 	vertSize = single_vertex_bytesize;
 	this->vertices = vertices;
 	this->numverts = numverts;
+	ZeroMemory(&numIndices, sizeof(numIndices));
 	UpdateDefaultVertexBuffer(vertices, vertSize  * numverts);
 
 #ifdef RELEASE

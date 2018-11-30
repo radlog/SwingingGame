@@ -12,7 +12,6 @@ public:
 	HRESULT InitialiseD3D();
 	HRESULT InitialiseInput();
 	void ClearRTV();
-	void Cleanup();
 	Input* input;
 
 	ID3D11Device* device;
@@ -22,6 +21,7 @@ private:
 	d3dfw();
 	~d3dfw();
 	static d3dfw* instance;
+	void Cleanup();
 	char g_Title[100] = "Swing to Win(g)";
 
 

@@ -4,6 +4,11 @@
 
 d3dfw* d3dfw::instance = nullptr;
 
+d3dfw::~d3dfw()
+{
+
+}
+
 d3dfw::d3dfw()
 {
 }
@@ -15,9 +20,7 @@ d3dfw * d3dfw::getInstance()
 	return instance;
 }
 
-d3dfw::~d3dfw()
-{
-}
+
 
 HRESULT d3dfw::InitialiseWindow(HINSTANCE hInstance, int nCmdShow, WNDPROC wndProc)
 {
@@ -177,7 +180,6 @@ void d3dfw::ClearRTV()
 	immediateContext->ClearRenderTargetView(renderTargetView, rgba_clear_colour);
 	immediateContext->ClearDepthStencilView(zBuffer, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 }
-
 
 void d3dfw::Cleanup()
 {

@@ -7,7 +7,7 @@ public:
 	Player();
 	~Player();
 
-	Player(std::string name);
+	Player(LPCSTR name);
 
 	void update_input();
 
