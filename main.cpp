@@ -212,7 +212,7 @@ void LoadContent()
 	unsigned int tiles = 20;
 	Model plane = Model(dx_handle->device, dx_handle->immediateContext);
 	Geometry::create_indexed_tiled_textured_normal_plane(&plane_vertices, &plane_indices, tiles, 1.0f);
-	plane.LoadGeoModel(plane_vertices, (tiles + 1)*(t + 1), sizeof(POS_TEX_NORM_COL_VERTEX), plane_indices, tiles * tiles * 6);
+	plane.LoadGeoModel(plane_vertices, (tiles + 1)*(tiles + 1), sizeof(POS_TEX_NORM_COL_VERTEX), plane_indices, tiles * tiles * 6);
 	char lava_shader[] = "lava_shader.hlsl";
 	plane.set_shader_file(lava_shader);
 	plane.LoadTexture("assets/lava_selfmade_diffuse.png");
