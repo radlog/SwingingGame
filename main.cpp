@@ -15,6 +15,7 @@ d3dfw* dx_handle = d3dfw::getInstance();
 
 // game objects
 GameObject test;
+GameObject lava;
 Camera* camera;
 const int upperPlatformCount = 100; // 3000 * 3312 plane_vertices seems to slow down the process when rotating -> consider optimizations for rotations
 const int middlePlatformCount = 100;
@@ -116,10 +117,10 @@ void RenderFrame(void)
 	dx_handle->ClearRTV();
 
 	// draw here
+	//test.Draw(view_projection);
 	skybox.Draw(XMMatrixTranslationFromVector(camera->transform.local_position) * view_projection);
-	test.Draw(view_projection);
 	upperPlatforms[10].Draw(view_projection);
-
+	lava.Draw(view_projection);
 	DrawMap();
 
 
@@ -187,9 +188,12 @@ void UpdateGraphics()
 
 }
 
+
+
 void LoadContent()
 {
-	XMVECTOR scale = XMVectorSet(1.0f, 1.0f, 1.0f, 0.0f);
+	XMVECTOR sphere_scale = XMVectorSet(10.0f, 1.0f, 10.0f, 0.0f);
+	XMVECTOR plane_scale = XMVectorSet(10.0f, 1.0f, 10.0f, 0.0f);
 	XMVECTOR rotation = XMQuaternionIdentity();
 	camera = new Camera();
 	timer = new VGTime();
@@ -205,15 +209,18 @@ void LoadContent()
 
 	//plane_indices = new unsigned int[5 * 5 * 6];
 	//Geometry::create_indexed_tiled_textured_normal_plane(&plane_vertices, plane_indices, 5, 1);
-
+	unsigned int tiles = 20;
 	Model plane = Model(dx_handle->device, dx_handle->immediateContext);
-	Geometry::create_indexed_tiled_textured_normal_plane(&plane_vertices, &plane_indices, 5, 1.0f);
-	plane.LoadGeoModel(plane_vertices, (5 + 1)*(5 + 1), sizeof(POS_TEX_NORM_COL_VERTEX), plane_indices, 5 * 5 * 6);
-	test = GameObject("test", Transform(scale, rotation, XMVectorSet(0.0f, -1.0f, 0.0f, 0.0f)), plane);
+	Geometry::create_indexed_tiled_textured_normal_plane(&plane_vertices, &plane_indices, tiles, 1.0f);
+	plane.LoadGeoModel(plane_vertices, (tiles + 1)*(t + 1), sizeof(POS_TEX_NORM_COL_VERTEX), plane_indices, tiles * tiles * 6);
+	char lava_shader[] = "lava_shader.hlsl";
+	plane.set_shader_file(lava_shader);
+	plane.LoadTexture("assets/lava_selfmade_diffuse.png");
+	lava = GameObject("test", Transform(plane_scale, rotation, XMVectorSet(0.0f, -10.0f, 0.0f, 0.0f)), plane);
 
 	for (size_t i = 0; i < upperPlatformCount; i++)
 	{
-		upperPlatforms[i] = GameObject("upperPlatform" + i, Transform(scale, rotation, XMVectorSet(i, i, 1.0f, 0.0f)), *model_test);
+		upperPlatforms[i] = GameObject("upperPlatform" + i, Transform(sphere_scale, rotation, XMVectorSet(i, i, 1.0f, 0.0f)), *model_test);
 	}
 
 	for (size_t i = 0; i < middlePlatformCount; i++)

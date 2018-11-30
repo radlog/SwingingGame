@@ -87,6 +87,7 @@
     <FxCompile Include="simple_shader.hlsl" />
     <FxCompile Include="default_shader.hlsl" />
     <FxCompile Include="skybox_shader.hlsl" />
+    <FxCompile Include="lava_shader.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h">
@@ -182,6 +183,9 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="assets\rapture_skybx.dds">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="assets\lava_selfmade_diffuse.png">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>
