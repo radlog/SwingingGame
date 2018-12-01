@@ -24,10 +24,12 @@ GameObject::GameObject(LPCSTR name, Transform transform, Model model) : GameObje
 	this->model = model;
 }
 
-void GameObject::Draw(XMMATRIX view_projection, D3D11_PRIMITIVE_TOPOLOGY mode)
+
+void GameObject::Draw(XMMATRIX view_projection, bool use_default_cb, D3D11_PRIMITIVE_TOPOLOGY mode)
 {
-	model.Draw(transform.world* view_projection, mode);
+	model.Draw(transform.world* view_projection,use_default_cb, mode);
 }
+
 
 void GameObject::spawn(XMVECTOR position)
 {
@@ -53,6 +55,11 @@ void GameObject::collided(XMVECTOR target)
 LPCSTR GameObject::get_name()
 {
 	return name;
+}
+
+Model* GameObject::get_model()
+{
+	return &model;
 }
 
 void GameObject::Cleanup()

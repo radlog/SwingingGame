@@ -5,6 +5,7 @@ TextureCube skybox;
 cbuffer CB0
 {
 	matrix WVPMatrix; // 64 bytes
+
 }; // total = 64 bytes
 
 

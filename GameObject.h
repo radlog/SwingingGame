@@ -18,7 +18,7 @@ public:
 
 	GameObject(LPCSTR name);
 	GameObject(LPCSTR name, Transform transform, Model model);
-	void Draw(XMMATRIX view_projection, D3D11_PRIMITIVE_TOPOLOGY mode = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	void Draw(XMMATRIX view_projection, bool use_default_cb = true, D3D11_PRIMITIVE_TOPOLOGY mode = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 
 	Transform transform;
@@ -29,6 +29,7 @@ public:
 	virtual void update();
 	virtual void collided(XMVECTOR target);
 	virtual LPCSTR get_name();
+	Model* get_model();
 
 	void Cleanup();
 protected:

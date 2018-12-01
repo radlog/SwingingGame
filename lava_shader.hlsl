@@ -5,9 +5,12 @@ SamplerState sampler0;
 cbuffer CB0
 {
 	matrix WVPMatrix; // 64 bytes
-	float TotalTime; // 4 bytes
+    float4 directional_light; // 16 bytes
+    float4 directional_light_colour; // 16 bytes
+    float4 ambient_light_colour; // 16 bytes
+    float TotalTime; // 4 bytes
 	float3 packing; // 12 bytes
-}; // total = 80 bytes
+}; // 128 bytes
 
 
 struct VOut
@@ -29,21 +32,21 @@ struct VIn
 };
 
 
-VOut VShader(VIn vin)
+VOut VShader(VIn input)
 {
 	VOut output;
 
-	//float4 default_color = { 1.0,1.0,1.0,1.0 };
-	output.position = mul(WVPMatrix, vin.position);
-	output.position.y  = vin.position.y * 2;
-	output.texcoord = vin.texcoord;
-	//output.texcoord.x += 0.1f;
-	output.color = vin.color;
+    output.position = mul(WVPMatrix, input.position);
+    output.texcoord = input.texcoord;
+
+    float diffuse_amount = dot(directional_light, input.normal);
+    diffuse_amount = saturate(diffuse_amount);
+    output.color = ambient_light_colour + (directional_light_colour * diffuse_amount) + input.color;
 
 	return output;
 }
 
-float4 PShader(VOut pin) : SV_TARGET
+float4 PShader(VOut input) : SV_TARGET
 {
-	return pin.color * texture0.Sample(sampler0,pin.texcoord);
+    return input.color * texture0.Sample(sampler0, input.texcoord);
 }

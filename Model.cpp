@@ -1,19 +1,30 @@
 #include "Model.h"
 
+
+// CONSTRUCTOR methods
+
 Model::Model()
 {
 }
 
-Model::Model(ID3D11Device * device, ID3D11DeviceContext * context, char * filename) : Model(device, context)
+Model::Model(ID3D11Device * device, ID3D11DeviceContext * context, char * filename, CB_STATE state) : Model(device, context, state)
 {
 	LoadObjModel(filename);
 }
 
-Model::Model(ID3D11Device * device, ID3D11DeviceContext * context)
+Model::Model(ID3D11Device * device, ID3D11DeviceContext * context, CB_STATE state)
 {
 	this->device = device;
 	this->immediateContext = context;
-	CreateDefaultConstantBuffer();
+	this->state = state;
+	switch (state)
+	{
+	case CB_STATE_FULL: CreateConstantBuffer_SIMPLE(); break;
+	case CB_STATE_LIGHTED: CreateConstantBuffer_LIGHTED(); break;
+	case CB_STATE_TIME_SCALED: CreateConstantBuffer_TIME_SCALED(); break;
+	default: CreateConstantBuffer_SIMPLE(); break;
+	}
+	
 	CompileShaders();
 	SetDefaultInputLayout();
 	CreateDefaultSamplerForTexture();
@@ -52,7 +63,7 @@ HRESULT Model::LoadObjModel(char * filename)
 HRESULT Model::LoadGeoModel(void* vertices, UINT numverts, UINT single_vertex_bytesize, unsigned int *indices, UINT numIndices)
 {
 	HRESULT hr = S_OK;
-	
+
 	LoadGeoModel(vertices, numverts, single_vertex_bytesize);
 	this->indices = indices;
 	this->numIndices = numIndices;
@@ -79,6 +90,66 @@ HRESULT Model::LoadGeoModel(void* vertices, UINT numverts, UINT single_vertex_by
 
 	return hr;
 }
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// DRAW
+
+void Model::Draw(XMMATRIX view_projection, bool use_simple_cb, D3D11_PRIMITIVE_TOPOLOGY mode)
+{
+	if (use_simple_cb) {
+		cb_simple.WorldViewProjection = view_projection;
+		immediateContext->UpdateSubresource(constantBuffer, 0, nullptr, &cb_simple, 0, 0);
+	}else
+	{
+		//cb_time_scaled_lighted.WorldViewProjection = view_projection;
+		immediateContext->UpdateSubresource(constantBuffer, 0, nullptr, get_constant_buffer_state(), 0, 0);
+	}
+
+	immediateContext->VSSetConstantBuffers(0, 1, &constantBuffer);
+
+	// set the shader objects as active
+	immediateContext->VSSetShader(vShader, 0, 0);
+	immediateContext->PSSetShader(pShader, 0, 0);
+
+	immediateContext->PSSetSamplers(0, 1, &sampler0);
+	immediateContext->PSSetShaderResources(0, 1, &texture);
+
+	immediateContext->IASetPrimitiveTopology(mode);
+
+	UINT stride = vertSize;
+	UINT offset = 0;
+	immediateContext->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
+
+	if (numIndices)
+	{
+		immediateContext->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);
+		immediateContext->DrawIndexed(numIndices, 0, 0);
+	}
+	else
+	{
+		immediateContext->Draw(numverts, 0);
+	}
+
+}
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+// INITIALIZATION methods
+
 
 HRESULT Model::CompileShaders()
 {
@@ -128,22 +199,6 @@ void Model::set_shader_file(char * shader_file)
 	//UpdateModel();
 }
 
-HRESULT Model::CreateDefaultConstantBuffer()
-{
-	HRESULT hr;
-	// create constant buffer
-	D3D11_BUFFER_DESC constant_buffer_desc;
-	ZeroMemory(&constant_buffer_desc, sizeof(constant_buffer_desc));
-
-	constant_buffer_desc.Usage = D3D11_USAGE_DEFAULT; // can use UpdateSubresrource() to update
-	constant_buffer_desc.ByteWidth = sizeof(cb); // MUST be a multiple of 16, calculate from CB struct
-	constant_buffer_desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-
-	hr = device->CreateBuffer(&constant_buffer_desc, NULL, &constantBuffer);
-
-	return hr;
-}
-
 HRESULT Model::CreateDefaultSamplerForTexture()
 {
 	HRESULT hr;
@@ -167,8 +222,17 @@ HRESULT Model::LoadTexture(LPCSTR filename)
 	return hr;
 }
 
-void Model::UpdateConstantBufferValues()
+void Model::UpdateConstantBuffer_FULL(XMMATRIX world_view_projection, XMVECTOR directional_light_vector,
+	XMVECTOR directional_light_color, XMVECTOR ambient_light_color, XMVECTOR rgb_amount, float gameTime)
 {
+	cb_full.WorldViewProjection = world_view_projection;
+	cb_full.directional_light_vector = directional_light_vector;
+	cb_full.directional_light_colour = directional_light_color;
+	cb_full.ambient_light_colour = ambient_light_color;
+	cb_full.rgb_amount = rgb_amount;
+	cb_full.gameTime = gameTime;
+
+	cb = &cb_full;
 	//enable_glowing = true;
 	//if (enable_glowing)
 	//{
@@ -210,49 +274,25 @@ void Model::UpdateConstantBufferValues()
 
 }
 
-void Model::Draw(XMMATRIX view_projection, D3D11_PRIMITIVE_TOPOLOGY mode)
+void Model::UpdateConstantBuffer_TIME_SCALED(XMMATRIX world_view_projection, XMVECTOR directional_light_vector,
+	XMVECTOR directional_light_color, XMVECTOR ambient_light_color, float gameTime)
 {
-	cb.WorldViewProjection = view_projection;
+	cb_time_scaled_lighted.WorldViewProjection = world_view_projection;
+	cb_time_scaled_lighted.directional_light_vector = directional_light_vector;
+	cb_time_scaled_lighted.directional_light_colour = directional_light_color;
+	cb_time_scaled_lighted.ambient_light_colour = ambient_light_color;
+	cb_time_scaled_lighted.gameTime = gameTime;
 
-	immediateContext->UpdateSubresource(constantBuffer, 0, nullptr, &cb, 0, 0);
-	immediateContext->VSSetConstantBuffers(0, 1, &constantBuffer);
-
-	// set the shader objects as active
-	immediateContext->VSSetShader(vShader, 0, 0);
-	immediateContext->PSSetShader(pShader, 0, 0);
-
-	immediateContext->PSSetSamplers(0, 1, &sampler0);
-	immediateContext->PSSetShaderResources(0, 1, &texture);
-
-	immediateContext->IASetPrimitiveTopology(mode);
-
-	UINT stride = vertSize;
-	UINT offset = 0;
-	immediateContext->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
-
-	if (numIndices)
-	{
-		immediateContext->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);
-		immediateContext->DrawIndexed(numIndices, 0, 0);
-	}else
-	{
-		immediateContext->Draw(numverts, 0);		
-	}
-
+	cb = &cb_time_scaled_lighted;
 }
 
-void Model::Cleanup() const
+void Model::UpdateConstantBuffer_LIGHTED(XMMATRIX world_view_projection, XMVECTOR directional_light_vector,
+	XMVECTOR directional_light_color, XMVECTOR ambient_light_color)
 {
-	if (device) device->Release();
-	if (immediateContext) immediateContext->Release();
-	if (vShader) vShader->Release();
-	if (pShader)pShader->Release();
-	if (VS) VS->Release();
-	if (PS) PS->Release();
-	if (inputLayout)inputLayout->Release();
-	if (constantBuffer)constantBuffer->Release();
-	if (sampler0)sampler0->Release();
-	if (texture)texture->Release();
+	cb_lighted.WorldViewProjection = world_view_projection;
+	cb_lighted.directional_light_vector = directional_light_vector;
+	cb_lighted.directional_light_colour = directional_light_color;
+	cb_lighted.ambient_light_colour = ambient_light_color;
 }
 
 void Model::CalculateOrigin()
@@ -287,6 +327,45 @@ void Model::InitializeCollider()
 {
 	sphereCollider.localPosition = origin;
 	sphereCollider.collisionRadius = sqrt(pow(minOuterVector.x - maxOuterVector.x, 2) + pow(minOuterVector.y - maxOuterVector.y, 2) + pow(minOuterVector.z - maxOuterVector.z, 2));
+}
+
+HRESULT Model::CreateConstantBuffer_FULL()
+{
+	cb = &cb_full;
+	return CreateConstantBuffer(sizeof(cb_full));
+}
+
+HRESULT Model::CreateConstantBuffer_TIME_SCALED()
+{
+	cb = &cb_time_scaled_lighted;
+	return CreateConstantBuffer(sizeof(cb_time_scaled_lighted));
+}
+
+HRESULT Model::CreateConstantBuffer_LIGHTED()
+{
+	cb = &cb_lighted;
+	return CreateConstantBuffer(sizeof(cb_lighted));
+}
+
+HRESULT Model::CreateConstantBuffer_SIMPLE()
+{
+	cb = &cb_simple;
+	return CreateConstantBuffer(sizeof(cb_simple));
+}
+
+HRESULT Model::CreateConstantBuffer(UINT bytewidth)
+{
+	HRESULT hr = NULL;
+	D3D11_BUFFER_DESC desc;
+	ZeroMemory(&desc, sizeof(desc));
+
+	desc.Usage = D3D11_USAGE_DEFAULT; // can use UpdateSubresrource() to update
+	desc.ByteWidth = bytewidth;
+	desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+
+	hr = device->CreateBuffer(&desc, NULL, &constantBuffer);
+
+	return hr;
 }
 
 HRESULT Model::UpdateDefaultVertexBuffer(void *vertices, UINT byteWidth)
@@ -333,13 +412,28 @@ HRESULT Model::CreateIndexBuffer()
 	return hr;
 }
 
-HRESULT Model::UpdateModel()
+void* Model::get_constant_buffer_state()
 {
-	HRESULT hr = NULL;
-	CreateDefaultConstantBuffer();
-	CompileShaders();
-	SetDefaultInputLayout();
-	CreateDefaultSamplerForTexture();
-	LoadTexture();
-	return hr;
+	switch(state)
+	{		
+		case CB_STATE_FULL: return &cb_full; break;
+		case CB_STATE_LIGHTED: return &cb_lighted;; break;
+		case CB_STATE_TIME_SCALED:return &cb_time_scaled_lighted;; break;
+		default: return &cb_simple;; break;
+	}
 }
+
+void Model::Cleanup() const
+{
+	if (device) device->Release();
+	if (immediateContext) immediateContext->Release();
+	if (vShader) vShader->Release();
+	if (pShader)pShader->Release();
+	if (VS) VS->Release();
+	if (PS) PS->Release();
+	if (inputLayout)inputLayout->Release();
+	if (constantBuffer)constantBuffer->Release();
+	if (sampler0)sampler0->Release();
+	if (texture)texture->Release();
+}
+

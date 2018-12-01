@@ -21,7 +21,8 @@ VOut VShader(float4 position : POSITION, float3 texcoord : TEXCOORD, float3 norm
 
     output.texcoord = position.xyz;
     output.position = mul(WVPMatrix, position);
-
+    //normalize(output.position);
+    //normalize(output.texcoord);
 
     return output;
 }

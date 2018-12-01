@@ -51,7 +51,7 @@ private:
 	const float min_near_plane_ = 1.0;
 	const float max_near_plane_ = 15.0;
 	//FAR_PLANE
-	const float default_far_plane_ = 100.0;
+	const float default_far_plane_ = 300.0;
 	const float min_far_plane_ = 16.0;
 	const float max_far_plane_ = 100.0;
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

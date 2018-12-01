@@ -1,17 +1,7 @@
-#include <Windows.h>
-#include <dxgi.h>
-#include <dxerr.h>
-#include <xnamath.h>
 
-#include "Camera.h"
-#include "GameObject.h"
-#include "Skybox.h"
 #include "main.h"
-
-
 //using namespace std;
 d3dfw* dx_handle = d3dfw::getInstance();
-
 
 // game objects
 GameObject test;
@@ -33,17 +23,13 @@ Input input;
 bool enable_glowing = false;
 
 
-XMVECTOR directional_light_shines_from = XMVectorSet(0.0f, 0.0f, -1.0f, 0.0f);
+XMVECTOR directional_light_shines_from = XMVectorSet(0.0f, 0.5f, -1.0f, 0.0f);
 XMVECTOR directional_light_colour = XMVectorSet(1.0f, 1.0f, 0.0f, 1.0f); // green
 XMVECTOR ambient_light_colour = XMVectorSet(0.1f, 0.1f, 0.1f, 1.0f); // dark grey
 
 
 
 VGTime* timer;
-
-
-
-
 
 //g_Title is a replace for g_TutorialName
 char g_Title[100] = "Swing to Win(g)";
@@ -53,23 +39,18 @@ char g_Title[100] = "Swing to Win(g)";
 HRESULT InitD3D(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow);
 HRESULT InitialiseWindow(HINSTANCE hInstance, int nCmdShow);
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
+
 void LoadContent();
+void LoadLava();
+
 void RenderFrame(void);
 void DrawMap();
 void UpdateAI();
 void UpdateSound();
 void UpdateGraphics();
 void EndGame();
-//void AlterVertices(POS_COL_VERTEX* vert, WPARAM message);
 
-
-
-
-
-
-float s = 1.0f;
-const int n = 5;
-
+void UpdateLava(XMMATRIX view_projection, float time);
 
 Skybox skybox;
 
@@ -120,7 +101,8 @@ void RenderFrame(void)
 	//test.Draw(view_projection);
 	skybox.Draw(XMMatrixTranslationFromVector(camera->transform.local_position) * view_projection);
 	upperPlatforms[10].Draw(view_projection);
-	lava.Draw(view_projection);
+	UpdateLava(view_projection, timer->deltaTime());
+
 	DrawMap();
 
 
@@ -144,14 +126,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_DESTROY:
 		PostQuitMessage(0);
 		break;
-		//case WM_KEYDOWN:
-		//	//AlterVertices(shape_1, wParam);
-		//	//MoveCamera(wParam);
-		//	if (wParam == VK_ESCAPE)
-		//		DestroyWindow(g_hWnd);
-		//case WM_MOUSEMOVE:
-		//	//camera->transform.rotate(0, abs(pos.x) - abs(x), 0);
-		//	return 0;
 	default:
 		return DefWindowProc(hWnd, message, wParam, lParam);
 	}
@@ -188,35 +162,38 @@ void UpdateGraphics()
 
 }
 
+void UpdateLava(XMMATRIX view_projection,float time)
+{
+	lava.get_model()->UpdateConstantBuffer_TIME_SCALED(lava.transform.world* view_projection, directional_light_shines_from, directional_light_colour, ambient_light_colour, time);
+	lava.Draw(view_projection,false);
+}
+
+void LoadLava()
+{
+	XMVECTOR plane_scale = XMVectorSet(100.0f, 1.0f, 100.0f, 0.0f);
+	XMVECTOR rotation = XMQuaternionIdentity();
+	int tiles = 20;
+	Model plane = Model(dx_handle->device, dx_handle->immediateContext,CB_STATE_TIME_SCALED);
+	Geometry::create_indexed_tiled_textured_normal_plane(&plane_vertices, &plane_indices, tiles, 1.0f);
+	plane.LoadGeoModel(plane_vertices, (tiles + 1)*(tiles + 1), sizeof(POS_TEX_NORM_COL_VERTEX), plane_indices, tiles * tiles * 6);
+	char lava_shader[] = "lava_shader.hlsl";
+	plane.set_shader_file(lava_shader);
+	plane.LoadTexture("assets/lava_selfmade_diffuse.png");
+	lava = GameObject("lava", Transform(plane_scale, rotation, XMVectorSet((-tiles * plane_scale.x) / 2, -10.0f, (-tiles * plane_scale.x) / 2, 0.0f)), plane);
+}
 
 
 void LoadContent()
 {
 	XMVECTOR sphere_scale = XMVectorSet(10.0f, 1.0f, 10.0f, 0.0f);
-	XMVECTOR plane_scale = XMVectorSet(10.0f, 1.0f, 10.0f, 0.0f);
 	XMVECTOR rotation = XMQuaternionIdentity();
+
 	camera = new Camera();
 	timer = new VGTime();
 	skybox = Skybox("assets/purple_nebular.dds");
 
 	char filename[] = "assets/Sphere.obj";
 	model_test = new Model(dx_handle->device, dx_handle->immediateContext, filename);
-
-	//Geometry::create_textured_skybox();
-	//Model sky(dx_handle->device, dx_handle->immediateContext);
-	//sky.LoadGeoModel(, ARRAYSIZE(textured_normal_cube), sizeof(textured_normal_cube[0]));
-	//est = GameObject("test", Transform(scale, rotation, XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f)), sky);
-
-	//plane_indices = new unsigned int[5 * 5 * 6];
-	//Geometry::create_indexed_tiled_textured_normal_plane(&plane_vertices, plane_indices, 5, 1);
-	unsigned int tiles = 20;
-	Model plane = Model(dx_handle->device, dx_handle->immediateContext);
-	Geometry::create_indexed_tiled_textured_normal_plane(&plane_vertices, &plane_indices, tiles, 1.0f);
-	plane.LoadGeoModel(plane_vertices, (tiles + 1)*(tiles + 1), sizeof(POS_TEX_NORM_COL_VERTEX), plane_indices, tiles * tiles * 6);
-	char lava_shader[] = "lava_shader.hlsl";
-	plane.set_shader_file(lava_shader);
-	plane.LoadTexture("assets/lava_selfmade_diffuse.png");
-	lava = GameObject("test", Transform(plane_scale, rotation, XMVectorSet(0.0f, -10.0f, 0.0f, 0.0f)), plane);
 
 	for (size_t i = 0; i < upperPlatformCount; i++)
 	{
@@ -232,6 +209,8 @@ void LoadContent()
 	{
 
 	}
+
+	LoadLava();
 
 	timer->start();
 }
@@ -264,50 +243,3 @@ HRESULT InitD3D(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, i
 
 	return hr;
 }
-
-
-//void AlterVertices(POS_COL_VERTEX* vert, WPARAM message) {
-//
-//	int size = sizeof(vert);
-//	//OutputDebugString("" + message);
-//
-//	switch (message)
-//	{
-//	case VK_RIGHT:
-//		for (int i = 0; i < size; i++)
-//		{
-//			vert[i].Pos.x += 0.01f;
-//		}
-//		break;
-//	case VK_LEFT:
-//		for (int i = 0; i < size; i++)
-//		{
-//			vert[i].Pos.x -= 0.01f;
-//		}
-//		break;
-//	case VK_UP:
-//		for (int i = 0; i < size; i++)
-//		{
-//			vert[i].Pos.y += 0.01f;
-//		}
-//		break;
-//	case VK_DOWN:
-//		for (int i = 0; i < size; i++)
-//		{
-//			vert[i].Pos.y -= 0.01f;
-//		}
-//		break;
-//	}
-//
-//
-//	D3D11_MAPPED_SUBRESOURCE ms;
-//
-//	// Lock the buffer to allow writing
-//	g_pImmediateContext->Map(g_pVertexBuffer, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms);
-//
-//	// copy the data
-//	memcpy(ms.pData, cube, sizeof(cube));
-//
-//	// unlock the buffer
-//	g_pImmediateContext->Unmap(g_pVertexBuffer, NULL);
-//}
