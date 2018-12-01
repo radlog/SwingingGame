@@ -1,21 +1,22 @@
 
 #include "main.h"
+#include <sstream>
+#include "LavaFloor.h"
 //using namespace std;
 d3dfw* dx_handle = d3dfw::getInstance();
 
 // game objects
 GameObject test;
 GameObject lava;
+LavaFloor lavaFloor;
 Camera* camera;
-const int upperPlatformCount = 100; // 3000 * 3312 plane_vertices seems to slow down the process when rotating -> consider optimizations for rotations
+const int upperPlatformCount = 100; // 3000 * 3312 vertices seems to slow down the process when rotating -> consider optimizations for rotations
 const int middlePlatformCount = 100;
 const int lowerPlatformCount = 100;
 GameObject upperPlatforms[upperPlatformCount];
 GameObject middlePlatforms[middlePlatformCount];
 GameObject lowerPlatforms[lowerPlatformCount];
 
-POS_TEX_VERTEX* skybox_desc;
-Model sky_model;
 
 Model *model_test;
 Input input;
@@ -57,7 +58,7 @@ Skybox skybox;
 POS_TEX_NORM_COL_VERTEX *plane_vertices;
 unsigned int *plane_indices;
 
-
+void DebugUTIL();
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
@@ -101,7 +102,7 @@ void RenderFrame(void)
 	//test.Draw(view_projection);
 	skybox.Draw(XMMatrixTranslationFromVector(camera->transform.local_position) * view_projection);
 	upperPlatforms[10].Draw(view_projection);
-	UpdateLava(view_projection, timer->deltaTime());
+	UpdateLava(view_projection, timer->totalTime());
 
 	DrawMap();
 
@@ -164,22 +165,22 @@ void UpdateGraphics()
 
 void UpdateLava(XMMATRIX view_projection,float time)
 {
-	lava.get_model()->UpdateConstantBuffer_TIME_SCALED(lava.transform.world* view_projection, directional_light_shines_from, directional_light_colour, ambient_light_colour, time);
-	lava.Draw(view_projection,false);
+
+	lavaFloor.get_model()->UpdateConstantBuffer_TIME_SCALED(lavaFloor.transform.world * view_projection, directional_light_shines_from, directional_light_colour, ambient_light_colour, time);
+	lavaFloor.Draw(view_projection);
+}
+
+void DebugUTIL()
+{
+	//std::ostringstream ss;
+	//ss << time;
+	//string s = ss.str() + "\n";
+	//OutputDebugString(s.c_str());
 }
 
 void LoadLava()
 {
-	XMVECTOR plane_scale = XMVectorSet(100.0f, 1.0f, 100.0f, 0.0f);
-	XMVECTOR rotation = XMQuaternionIdentity();
-	int tiles = 20;
-	Model plane = Model(dx_handle->device, dx_handle->immediateContext,CB_STATE_TIME_SCALED);
-	Geometry::create_indexed_tiled_textured_normal_plane(&plane_vertices, &plane_indices, tiles, 1.0f);
-	plane.LoadGeoModel(plane_vertices, (tiles + 1)*(tiles + 1), sizeof(POS_TEX_NORM_COL_VERTEX), plane_indices, tiles * tiles * 6);
-	char lava_shader[] = "lava_shader.hlsl";
-	plane.set_shader_file(lava_shader);
-	plane.LoadTexture("assets/lava_selfmade_diffuse.png");
-	lava = GameObject("lava", Transform(plane_scale, rotation, XMVectorSet((-tiles * plane_scale.x) / 2, -10.0f, (-tiles * plane_scale.x) / 2, 0.0f)), plane);
+	lavaFloor = LavaFloor("assets/lava_selfmade_diffuse.png", "assets/lava_selfmade_diffuse.png");
 }
 
 
