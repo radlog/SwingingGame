@@ -180,7 +180,7 @@ void DebugUTIL()
 
 void LoadLava()
 {
-	lavaFloor = LavaFloor("assets/lava_selfmade_diffuse.png", "assets/lava_noise.png");
+	lavaFloor = LavaFloor("assets/lava_selfmade_diffuse.png");
 }
 
 
@@ -193,9 +193,9 @@ void LoadContent()
 	timer = new VGTime();
 	skybox = Skybox("assets/purple_nebular.dds");
 
-	char filename[] = "assets/FloatingIsland_002.obj";
+	//char filename[] = "assets/FloatingIsland_001.obj";
 
-	model_test = new Model(dx_handle->device, dx_handle->immediateContext, filename);
+	model_test = new Model(dx_handle->device, dx_handle->immediateContext,(char*) "assets/Sphere.obj");
 	model_test->LoadTexture("assets/FloatingIsland_DIFFUSE.png");
 
 	for (size_t i = 0; i < upperPlatformCount; i++)

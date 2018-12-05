@@ -197,6 +197,9 @@
     <Image Include="assets\Untitled.png">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="assets\lava_selfmade_normal.png">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Object Include="assets\Sphere.obj">

@@ -1,8 +1,6 @@
-Texture2D texture0;
-
-//sampler2D tex0;
-//sampler2D tex1;
-//sampler2D noise_texture;
+Texture2D texture0 : register(t0);
+Texture2D texture1 : register(t1);
+Texture2D texture2 : register(t2);
 
 SamplerState sampler0;
 
@@ -21,7 +19,9 @@ struct VOut
 {
     float4 position : SV_POSITION;
     float4 color : COLOR;
-    float2 texcoord : TEXCOORD;
+    float2 texcoord_diffuse : TEXCOORD0;
+    float2 texcoord_normal : TEXCOORD1;
+    float2 texcoord_noise : TEXCOORD2;
 };
 
 struct VIn
@@ -36,20 +36,24 @@ struct VIn
 VOut VShader(VIn input)
 {
     VOut output;
+    //float aplitude = 1.0f;
+    //float frequency = 12.0f;
+   // float2 noise = sin(TotalTime * frequency) * sin(TotalTime * frequency / 3);
 
-    float aplitude = 1.0f;
-    float frequency = 12.0f;
-    float2 noise = sin(TotalTime * frequency) * sin(TotalTime * frequency / 3);
-
+    float2 tmp = input.texcoord;
 
     output.position = mul(WVPMatrix, input.position);
-    output.texcoord = input.texcoord;
-	//output.texcoord.y += sin(TotalTime/100);
 
-    //output.position.y += abs(noise);
-    //output.position.y += abs(sin((TotalTime / 2)) * sin(TotalTime / 10));
-    
-	//output.position.z += sin(TotalTime  + input.position.y)/100;
+    output.texcoord_diffuse = float2(tmp.x, tmp.y)+TotalTime / 10;
+    output.texcoord_normal = float2(tmp.x, tmp.y) + TotalTime/10;
+    output.texcoord_noise = tmp + TotalTime/2;
+    //float2(sin(tmp.x * TotalTime / 10), sin(tmp.y * TotalTime / 10));
+
+
+    // move the lava vertices themselves
+    output.position.y += (abs(sin((TotalTime / 2 + input.position.z)) * sin(TotalTime / 10 + input.position.x))) / 2;
+    output.position.z += sin(TotalTime + input.position.y) / 100;
+    output.position.x += sin(TotalTime + input.position.y) / 100;
 
 
     float diffuse_amount = dot(directional_light, input.normal);
@@ -61,44 +65,21 @@ VOut VShader(VIn input)
 
 float4 PShader(VOut input) : SV_TARGET
 {
-
-
-    //float4 noise = tex2D(tex0, input.texcoord); // sample color map 
-    //float2 T1 = input.texcoord + float2(1.5, -1.5) * TotalTime * 0.02;
-    //float2 T2 = input.texcoord + float2(-0.5, 2.0) * TotalTime * 0.01;
-    //T1.x += (noise.x) * 2.0;
-    //T1.y += (noise.y) * 2.0;
-    //T2.x += (noise.y) * 0.2;
-    //T2.y += (noise.z) * 0.2;
-
-    //float p = tex2D(tex0, T1 * 2.0).a;
     
-    //float4 col = tex2D(tex1, T2 * 2.0);
-    //float4 temp = col * (float4(p, p, p, p) * 2.0) + (col * col - 0.1);
-    //if (temp.r > 1.0)
-    //{
-    //    temp.bg += clamp(temp.r - 2.0, 0.0, 100.0);
-    //}
-    //if (temp.g > 1.0)
-    //{
-    //    temp.rb += temp.g - 1.0;
-    //}
-    //if (temp.b > 1.0)
-    //{
-    //    temp.rg += temp.b - 1.0;
-    //}
+    input.texcoord_diffuse.x /= 50;
+    input.texcoord_diffuse.y /= 50;
 
-   // return input.color;
+    input.texcoord_normal.x /= 50;
+    input.texcoord_normal.y /= 50;
 
-   // return temp;
+    input.texcoord_noise.x /= 5;
+    input.texcoord_noise.y /= 5;
 
-    //output. = temp;
+    float4 diffuse = texture0.Sample(sampler0, input.texcoord_diffuse);
+    float4 normal = texture1.Sample(sampler0, input.texcoord_normal);
+    float4 noise = texture2.Sample(sampler0, input.texcoord_noise);// * float4(0.1, 0.1, 0.1, 1);
 
-
-
-    input.texcoord.x /= 50; // input.texcoord.x*20.0f + sin(TotalTime * 3 + 10) / 2560;
-    input.texcoord.y /= 50;
-	//input.texcoord.y = input.texcoord.y*20.0f;
-	//input.texcoord.y += sin(TotalTime * 300) + TotalTime;
-    return input.color * texture0.Sample(sampler0, input.texcoord);
+    //return input.color;
+    return input.color *  normal * diffuse - noise;
+    //return input.color * texture0.Sample(sampler0, input.texcoord_diffuse) * texture1.Sample(sampler0, input.texcoord_noise);
 }
