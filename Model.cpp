@@ -222,10 +222,11 @@ HRESULT Model::LoadTexture(LPCSTR filename)
 	return hr;
 }
 
-void Model::UpdateConstantBuffer_FULL(XMMATRIX world_view_projection, XMVECTOR directional_light_vector,
+void Model::UpdateConstantBuffer_FULL(XMMATRIX world_view_projection, XMMATRIX view_projection, XMVECTOR directional_light_vector,
 	XMVECTOR directional_light_color, XMVECTOR ambient_light_color, XMVECTOR rgb_amount, float gameTime)
 {
 	cb_full.WorldViewProjection = world_view_projection;
+	cb_full.ViewProjection = view_projection;
 	cb_full.directional_light_vector = directional_light_vector;
 	cb_full.directional_light_colour = directional_light_color;
 	cb_full.ambient_light_colour = ambient_light_color;
@@ -274,10 +275,11 @@ void Model::UpdateConstantBuffer_FULL(XMMATRIX world_view_projection, XMVECTOR d
 
 }
 
-void Model::UpdateConstantBuffer_TIME_SCALED(XMMATRIX world_view_projection, XMVECTOR directional_light_vector,
+void Model::UpdateConstantBuffer_TIME_SCALED(XMMATRIX world_view_projection, XMMATRIX view_projection, XMVECTOR directional_light_vector,
 	XMVECTOR directional_light_color, XMVECTOR ambient_light_color, float gameTime)
 {
 	cb_time_scaled_lighted.WorldViewProjection = world_view_projection;
+	cb_time_scaled_lighted.ViewProjection = view_projection;
 	cb_time_scaled_lighted.directional_light_vector = directional_light_vector;
 	cb_time_scaled_lighted.directional_light_colour = directional_light_color;
 	cb_time_scaled_lighted.ambient_light_colour = ambient_light_color;
