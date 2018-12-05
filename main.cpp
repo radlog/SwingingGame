@@ -101,7 +101,7 @@ void RenderFrame(void)
 	// draw here
 	//test.Draw(view_projection);
 	skybox.Draw(XMMatrixTranslationFromVector(camera->transform.local_position) * view_projection);
-	upperPlatforms[10].Draw(view_projection);
+	upperPlatforms[0].Draw(view_projection);
 	UpdateLava(view_projection, timer->totalTime());
 
 	DrawMap();
@@ -167,7 +167,7 @@ void UpdateLava(XMMATRIX view_projection,float time)
 {
 
 	lavaFloor.get_model()->UpdateConstantBuffer_TIME_SCALED(lavaFloor.transform.world * view_projection, directional_light_shines_from, directional_light_colour, ambient_light_colour, time);
-	lavaFloor.Draw(view_projection);
+	lavaFloor.Draw(view_projection);// , false, D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
 }
 
 void DebugUTIL()
@@ -180,21 +180,23 @@ void DebugUTIL()
 
 void LoadLava()
 {
-	lavaFloor = LavaFloor("assets/lava_selfmade_diffuse.png", "assets/lava_selfmade_diffuse.png");
+	lavaFloor = LavaFloor("assets/lava_selfmade_diffuse.png", "assets/lava_noise.png");
 }
 
 
 void LoadContent()
 {
-	XMVECTOR sphere_scale = XMVectorSet(10.0f, 1.0f, 10.0f, 0.0f);
+	XMVECTOR sphere_scale = XMVectorSet(1.0f, 1.0f, 1.0f, 0.0f);
 	XMVECTOR rotation = XMQuaternionIdentity();
 
 	camera = new Camera();
 	timer = new VGTime();
 	skybox = Skybox("assets/purple_nebular.dds");
 
-	char filename[] = "assets/Sphere.obj";
+	char filename[] = "assets/FloatingIsland_002.obj";
+
 	model_test = new Model(dx_handle->device, dx_handle->immediateContext, filename);
+	model_test->LoadTexture("assets/FloatingIsland_DIFFUSE.png");
 
 	for (size_t i = 0; i < upperPlatformCount; i++)
 	{

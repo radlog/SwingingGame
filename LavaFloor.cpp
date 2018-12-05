@@ -23,6 +23,9 @@ LavaFloor::LavaFloor(LPCSTR texture,LPCSTR texture_normal, int tiles, float scal
 	model.LoadGeoModel(plane_vertices, (tiles + 1)*(tiles + 1), sizeof(POS_TEX_NORM_COL_VERTEX), plane_indices, tiles * tiles * 6);
 	char lava_shader[] = "lava_shader.hlsl";
 	model.set_shader_file(lava_shader);
+
+	D3DX11CreateShaderResourceViewFromFile(device, texture_normal, nullptr, nullptr, &noise_texture, nullptr);
+
 	model.LoadTexture("assets/lava_selfmade_diffuse.png");
 	transform = Transform(XMVectorSet(scale, 1.0f, scale, 0.0f), XMQuaternionIdentity(), XMVectorSet((-tiles * scale) / 2, -10.0f, (-tiles * scale) / 2, 0.0f));
 

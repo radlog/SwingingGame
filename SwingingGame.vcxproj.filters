@@ -72,9 +72,6 @@
     <ClCompile Include="d3dfw.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Floor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Skybox.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -147,9 +144,6 @@
     <ClInclude Include="d3dfw.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Floor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -194,12 +188,24 @@
     <Image Include="assets\lava_selfmade_diffuse.png">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="assets\lava_noise.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="assets\FloatingIsland_DIFFUSE.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="assets\Untitled.png">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Object Include="assets\Sphere.obj">
       <Filter>Resource Files</Filter>
     </Object>
     <Object Include="assets\cube.obj">
+      <Filter>Resource Files</Filter>
+    </Object>
+    <Object Include="assets\FloatingIsland_001.obj">
       <Filter>Resource Files</Filter>
     </Object>
   </ItemGroup>
