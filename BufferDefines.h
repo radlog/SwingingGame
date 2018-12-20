@@ -16,6 +16,7 @@ struct CONSTANT_BUFFER_LIGHTED
 struct CONSTANT_BUFFER_TIME_SCALED
 {
 	XMMATRIX WorldViewProjection; // 64 bytes
+	XMMATRIX ViewProjection; // 64 bytes
 	XMVECTOR directional_light_vector; // 16 bytes
 	XMVECTOR directional_light_colour; // 16 bytes
 	XMVECTOR ambient_light_colour; // 16 bytes
@@ -26,7 +27,8 @@ struct CONSTANT_BUFFER_TIME_SCALED
 
 struct CONSTANT_BUFFER_FULL 
 {
-	XMMATRIX WorldViewProjection;
+	XMMATRIX WorldViewProjection;// 64 bytes
+	XMMATRIX ViewProjection; // 64 bytes
 	XMVECTOR directional_light_vector; // 16 bytes
 	XMVECTOR directional_light_colour; // 16 bytes
 	XMVECTOR ambient_light_colour; // 16 bytes

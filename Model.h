@@ -37,8 +37,8 @@ public:
 	HRESULT LoadTexture(LPCSTR filename = "assets/crate.jpg");
 	HRESULT LoadNormal(LPCSTR filename);
 
-	void UpdateConstantBuffer_FULL(XMMATRIX world_view_projection, XMVECTOR directional_light_vector, XMVECTOR directional_light_color, XMVECTOR ambient_light_color, XMVECTOR rgb_amount, float gameTime);
-	void UpdateConstantBuffer_TIME_SCALED(XMMATRIX world_view_projection, XMVECTOR directional_light_vector, XMVECTOR directional_light_color, XMVECTOR ambient_light_color, float gameTime);
+	void UpdateConstantBuffer_FULL(XMMATRIX world_view_projection,XMMATRIX view_projection, XMVECTOR directional_light_vector, XMVECTOR directional_light_color, XMVECTOR ambient_light_color, XMVECTOR rgb_amount, float gameTime);
+	void UpdateConstantBuffer_TIME_SCALED(XMMATRIX world_view_projection, XMMATRIX view_projection, XMVECTOR directional_light_vector, XMVECTOR directional_light_color, XMVECTOR ambient_light_color, float gameTime);
 	void UpdateConstantBuffer_LIGHTED(XMMATRIX world_view_projection, XMVECTOR directional_light_vector, XMVECTOR directional_light_color, XMVECTOR ambient_light_color);
 	
 

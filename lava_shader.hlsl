@@ -6,13 +6,14 @@ SamplerState sampler0;
 
 cbuffer CB0
 {
-    matrix WVPMatrix; // 64 bytes
+    matrix WorldViewProjection; // 64 bytes
+    matrix ViewProjection; // 64 bytes
     float4 directional_light; // 16 bytes
     float4 directional_light_colour; // 16 bytes
     float4 ambient_light_colour; // 16 bytes
     float TotalTime; // 4 bytes
     float3 packing; // 12 bytes
-}; // 128 bytes
+}; // 192 bytes
 
 
 struct VOut
@@ -22,6 +23,7 @@ struct VOut
     float2 texcoord_diffuse : TEXCOORD0;
     float2 texcoord_normal : TEXCOORD1;
     float2 texcoord_noise : TEXCOORD2;
+    float3 worldToEye : TEXCOORD3;
 };
 
 struct VIn
@@ -42,8 +44,10 @@ VOut VShader(VIn input)
 
     float2 tmp = input.texcoord;
 
-    output.position = mul(WVPMatrix, input.position);
+    output.position = mul(WorldViewProjection, input.position);
+    output.worldToEye = (WorldViewProjection, input.position);
 
+    // map texcoords and move them
     output.texcoord_diffuse = float2(tmp.x, tmp.y)+TotalTime / 10;
     output.texcoord_normal = float2(tmp.x, tmp.y) + TotalTime/10;
     output.texcoord_noise = tmp + TotalTime/2;

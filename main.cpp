@@ -168,7 +168,7 @@ void UpdateGraphics()
 void UpdateLava(XMMATRIX view_projection,float time)
 {
 
-	lavaFloor.get_model()->UpdateConstantBuffer_TIME_SCALED(lavaFloor.transform.world * view_projection, directional_light_shines_from, directional_light_colour, ambient_light_colour, time);
+	lavaFloor.get_model()->UpdateConstantBuffer_TIME_SCALED(lavaFloor.transform.world * view_projection,view_projection, directional_light_shines_from, directional_light_colour, ambient_light_colour, time);
 	lavaFloor.Draw(view_projection);// , false, D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
 }
 
