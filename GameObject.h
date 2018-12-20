@@ -7,6 +7,7 @@
 #include "d3dfw.h"
 //#include "Camera.h"
 
+class VGTime;
 class d3dfw;
 
 class GameObject 
@@ -23,14 +24,15 @@ public:
 
 	Transform transform;
 	
+
 	virtual void spawn(XMVECTOR position);
 	virtual void render();
 	virtual void start();
-	virtual void update();
+	virtual void update(VGTime timer);
 	virtual void collided(XMVECTOR target);
 	virtual LPCSTR get_name();
 	Model* get_model();
-
+	
 	void Cleanup();
 protected:
 	LPCSTR name;
@@ -39,6 +41,10 @@ protected:
 	float collision_radius;
 	GameData game_data;
 	d3dfw* dx_handle;
+
+	double air_time = 0;
+	bool is_grounded;
+	bool is_kinetic;
 
 	ID3D11Device* device;
 	ID3D11DeviceContext* immediateContext;

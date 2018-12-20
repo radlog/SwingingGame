@@ -11,7 +11,7 @@ public:
 
 	void update_input();
 
-	void update();
+	void update(VGTime timer);
 
 };
 

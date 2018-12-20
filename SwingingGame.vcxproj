@@ -242,6 +242,7 @@
     <ClInclude Include="objfilemodel.h" />
     <ClInclude Include="Obstacle.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="Physics3D.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Geometry.h" />
     <ClInclude Include="resource.h" />

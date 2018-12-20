@@ -1,4 +1,5 @@
 #include "GameObject.h"
+#include "Physics3D.h"
 
 GameObject::~GameObject()
 {
@@ -27,7 +28,7 @@ GameObject::GameObject(LPCSTR name, Transform transform, Model model) : GameObje
 
 void GameObject::Draw(XMMATRIX view_projection, bool use_default_cb, D3D11_PRIMITIVE_TOPOLOGY mode)
 {
-	model.Draw(transform.world* view_projection,use_default_cb, mode);
+	model.Draw(transform.world* view_projection, use_default_cb, mode);
 }
 
 
@@ -43,8 +44,21 @@ void GameObject::start()
 {
 }
 
-void GameObject::update()
-{
+void GameObject::update(VGTime timer)
+{	
+	if (!is_grounded)
+	{
+		air_time += timer.deltaTime();
+		if (is_kinetic)
+		{
+			const double falling_velocity = Physics3D::gravity * (air_time*air_time);
+			transform.up(falling_velocity * timer.deltaTime());
+		}
+	}else
+	{		
+		air_time = 0.0f;
+	}
+	
 }
 
 void GameObject::collided(XMVECTOR target)

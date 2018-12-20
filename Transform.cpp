@@ -90,7 +90,9 @@ void Transform::right(const float speed)
 
 void Transform::up(const float speed)
 {
-	local_position += local_up * speed;
+	const auto up_new = XMVector3Normalize(XMVECTOR(XMVectorSet(0, local_up.y, 0, 0)));
+	local_position += up_new * speed;
+	calculate_world_transform();
 }
 
 void Transform::look_at(XMVECTOR target)

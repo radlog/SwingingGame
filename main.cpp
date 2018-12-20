@@ -100,8 +100,10 @@ void RenderFrame(void)
 
 	// draw here
 	//test.Draw(view_projection);
-	skybox.Draw(XMMatrixTranslationFromVector(camera->transform.local_position) * view_projection);
+	//skybox.Draw(XMMatrixTranslationFromVector(camera->transform.local_position) * view_projection);
+	upperPlatforms[0].update(*timer);
 	upperPlatforms[0].Draw(view_projection);
+	
 	UpdateLava(view_projection, timer->totalTime());
 
 	DrawMap();

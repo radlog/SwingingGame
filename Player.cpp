@@ -21,7 +21,7 @@ void Player::update_input()
 
 }
 
-void Player::update() {
-	GameObject::update();
+void Player::update(VGTime timer) {
+	GameObject::update(timer);
 	update_input();
 }

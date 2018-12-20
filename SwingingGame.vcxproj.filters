@@ -165,6 +165,9 @@
     <ClInclude Include="LavaFloor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Physics3D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="assets\texture.bmp">
