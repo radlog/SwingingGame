@@ -2,9 +2,15 @@
 #include "main.h"
 #include <sstream>
 #include "LavaFloor.h"
+#include <dwrite.h>
+#include <d2d1.h>
 //using namespace std;
 d3dfw* dx_handle = d3dfw::getInstance();
 
+double time_since_last_frame = 0;
+double second = 1;
+static int fps = 0;
+static int frames = 0;
 // game objects
 GameObject test;
 GameObject lava;
@@ -17,8 +23,12 @@ GameObject upperPlatforms[upperPlatformCount];
 GameObject middlePlatforms[middlePlatformCount];
 GameObject lowerPlatforms[lowerPlatformCount];
 
+// text render factory and format
+IDWriteFactory* dwrite_factory;
+IDWriteTextFormat* text_format;
 
 Model *model_test;
+Model *platform;
 Input input;
 
 bool enable_glowing = false;
@@ -45,7 +55,7 @@ void LoadContent();
 void LoadLava();
 
 void RenderFrame(void);
-void DrawMap();
+void DrawMap(XMMATRIX view_projection);
 void UpdateAI();
 void UpdateSound();
 void UpdateGraphics();
@@ -58,7 +68,7 @@ Skybox skybox;
 POS_TEX_NORM_COL_VERTEX *plane_vertices;
 unsigned int *plane_indices;
 
-void DebugUTIL();
+void DebugUTIL(int str);
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
@@ -100,22 +110,24 @@ void RenderFrame(void)
 
 	// draw here
 	//test.Draw(view_projection);
-	//skybox.Draw(XMMatrixTranslationFromVector(camera->transform.local_position) * view_projection);
-	upperPlatforms[0].update(*timer);
-	upperPlatforms[0].Draw(view_projection);
-	upperPlatforms[1].update(*timer);
-	upperPlatforms[1].Draw(view_projection);
+	skybox.Draw(XMMatrixTranslationFromVector(camera->transform.local_position) * view_projection);
+	//upperPlatforms[0].update(*timer);
+	//upperPlatforms[0].Draw(view_projection);
+	//upperPlatforms[1].update(*timer);
+	//upperPlatforms[1].Draw(view_projection);
 
-
-	if(!upperPlatforms[0].collided(upperPlatforms[1]))
-	{
-		upperPlatforms[0].transform.right(timer->deltaTime() * 10);
-	}
+	
+	DrawMap(view_projection);
+	//if(!upperPlatforms[0].collided(upperPlatforms[1]))
+	//{
+	//	upperPlatforms[0].transform.right(timer->deltaTime() * 10);
+	//}
 	UpdateLava(view_projection, timer->totalTime());
 
-	DrawMap();
 
 
+	//DebugUTIL(timer->deltaTime());
+	DebugUTIL(timer->getFPS());
 	// swap back buffer with front buffer
 	dx_handle->swapChain->Present(0, 0);
 
@@ -142,12 +154,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 }
 
 
-void DrawMap()
+void DrawMap(XMMATRIX view_projection)
 {
-	//for (size_t i = 0; i < upperPlatformCount; i++)
-//{
-//	upperPlatforms[i].Draw(view_projection/*,D3D11_PRIMITIVE_TOPOLOGY_POINTLIST*/);
-//}
+	for (size_t i = 0; i < upperPlatformCount; i++)
+{
+	upperPlatforms[i].Draw(view_projection/*,D3D11_PRIMITIVE_TOPOLOGY_POINTLIST*/);
+	middlePlatforms[i].Draw(view_projection/*,D3D11_PRIMITIVE_TOPOLOGY_POINTLIST*/);
+	lowerPlatforms[i].Draw(view_projection/*,D3D11_PRIMITIVE_TOPOLOGY_POINTLIST*/);
+}
 }
 
 void EndGame()
@@ -178,12 +192,12 @@ void UpdateLava(XMMATRIX view_projection,float time)
 	lavaFloor.Draw(view_projection);// , false, D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
 }
 
-void DebugUTIL()
+void DebugUTIL(int str)
 {
-	//std::ostringstream ss;
-	//ss << time;
-	//string s = ss.str() + "\n";
-	//OutputDebugString(s.c_str());
+	std::ostringstream ss;
+	ss << str;
+	string s = ss.str() + "\n";
+	OutputDebugString(s.c_str());
 }
 
 void LoadLava()
@@ -194,7 +208,10 @@ void LoadLava()
 
 void LoadContent()
 {
-	XMVECTOR sphere_scale = XMVectorSet(1.0f, 1.0f, 1.0f, 0.0f);
+
+	
+
+	XMVECTOR platform_scale = XMVectorSet(1.0f, 1.0f, 1.0f, 0.0f);
 	XMVECTOR rotation = XMQuaternionIdentity();
 
 	camera = new Camera();
@@ -205,20 +222,27 @@ void LoadContent()
 
 	model_test = new Model(dx_handle->device, dx_handle->immediateContext,(char*) "assets/Sphere.obj");
 	model_test->LoadTexture("assets/FloatingIsland_DIFFUSE.png");
+	POS_TEX_NORM_COL_VERTEX* platform_placeholder =  Geometry::pos_tex_norm_col_cube(1.0f);
+	platform = new Model(dx_handle->device, dx_handle->immediateContext);
+	platform->LoadGeoModel(platform_placeholder, 36, sizeof(POS_TEX_NORM_COL_VERTEX));
+	platform->LoadTexture("assets/FloatingIsland_DIFFUSE.png");
+
+	float plat_collision_radius = platform->getCollisionSphere().collisionRadius;
+	plat_collision_radius = 2.0f;
 
 	for (size_t i = 0; i < upperPlatformCount; i++)
 	{
-		upperPlatforms[i] = GameObject("upperPlatform" + i, Transform(sphere_scale, rotation, XMVectorSet(i * model_test->getCollisionSphere().collisionRadius * 3,0, 1.0f, 0.0f)), *model_test);
+		upperPlatforms[i] = GameObject("upperPlatform" + i, Transform(platform_scale, rotation, XMVectorSet(i * plat_collision_radius * 3,0, 1.0f, 0.0f)), *platform);
 	}
 
 	for (size_t i = 0; i < middlePlatformCount; i++)
 	{
-
+		middlePlatforms[i] = GameObject("upperPlatform" + i, Transform(platform_scale, rotation, XMVectorSet(i * plat_collision_radius * 3, 0, 1.0f, 0.0f)), *platform);
 	}
 
 	for (size_t i = 0; i < lowerPlatformCount; i++)
 	{
-
+		lowerPlatforms[i] = GameObject("upperPlatform" + i, Transform(platform_scale, rotation, XMVectorSet(i * plat_collision_radius * 3, 0, 1.0f, 0.0f)), *platform);
 	}
 
 	LoadLava();

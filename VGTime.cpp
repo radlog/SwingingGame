@@ -129,3 +129,19 @@ void VGTime::reset()
 
 
 }
+
+int VGTime::getFPS()
+{
+	static double time_since_last_frame;
+	static int frames;
+	frames++;
+	
+	if (totalTime() - time_since_last_frame >= 1.0f)
+	{
+		fps = frames;
+		frames = 0;
+		time_since_last_frame += 1.0;
+	}
+	return ((int)(1.0 / deltaTime()) + fps) / 2;
+	//return fps;
+}

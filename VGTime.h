@@ -16,6 +16,8 @@ public:
 	void stop();
 	void reset();
 
+	int getFPS();
+
 private:
 	//Storage of time
 	long long int _start; //startTime
@@ -29,5 +31,8 @@ private:
 	double _seconds_per_tick;
 
 	bool _is_paused;
+
+	int fps = 0;
+
 };
 

@@ -50,8 +50,8 @@ HRESULT Model::LoadObjModel(char * filename)
 
 	UpdateDefaultVertexBuffer(vertices, vertSize  * numverts);
 	CreateIndexBuffer();
-	CalculateOrigin();
-	InitializeCollider();
+	//CalculateOrigin();
+	//InitializeCollider();
 #ifdef RELEASE
 	//OutputDebugString("Calc origin");
 	CalculateOrigin();

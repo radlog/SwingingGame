@@ -158,10 +158,10 @@ HRESULT Input::UpdateInput(GameObject* actor, VGTime* gameTime)
 	if (IsKeyPressed(DIK_S)) actor->transform.horizontal_forward(static_cast<float>(-gameTime->deltaTime()*move_speed));
 
 
-	if (IsKeyPressed(DIK_LEFT)) actor->transform.rotate_fixed(0, static_cast<float>(-gameTime->deltaTime() * rot_speed), 0);
-	if (IsKeyPressed(DIK_RIGHT)) actor->transform.rotate_fixed(0, static_cast<float>(gameTime->deltaTime() * rot_speed), 0);
-	if (IsKeyPressed(DIK_UP)) actor->transform.rotate_fixed(static_cast<float>(-gameTime->deltaTime() * rot_speed), 0, 0);
-	if (IsKeyPressed(DIK_DOWN)) actor->transform.rotate_fixed(static_cast<float>(gameTime->deltaTime() * rot_speed), 0, 0);
+	if (IsKeyPressed(DIK_LEFT)) actor->transform.rotate_fixed(0, static_cast<float>(-gameTime->deltaTime() * rot_speed /10), 0);
+	if (IsKeyPressed(DIK_RIGHT)) actor->transform.rotate_fixed(0, static_cast<float>(gameTime->deltaTime() * rot_speed/10), 0);
+	if (IsKeyPressed(DIK_UP)) actor->transform.rotate_fixed(static_cast<float>(-gameTime->deltaTime() * rot_speed/10), 0, 0);
+	if (IsKeyPressed(DIK_DOWN)) actor->transform.rotate_fixed(static_cast<float>(gameTime->deltaTime() * rot_speed/10), 0, 0);
 
 	return S_OK;
 }
@@ -190,7 +190,7 @@ bool Input::IsKeyReleased(unsigned char DI_keycode)
 #ifdef DEBUG
 		OutputDebugString("released");
 #endif
-		return !(pressed[DI_keycode] = !pressed[DI_keycode]);
+		return !((pressed[DI_keycode] = !pressed[DI_keycode]));
 	}
 	if (IsKeyPressed(DI_keycode)) pressed[DI_keycode] = true;
 
