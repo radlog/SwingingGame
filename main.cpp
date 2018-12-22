@@ -103,7 +103,14 @@ void RenderFrame(void)
 	//skybox.Draw(XMMatrixTranslationFromVector(camera->transform.local_position) * view_projection);
 	upperPlatforms[0].update(*timer);
 	upperPlatforms[0].Draw(view_projection);
-	
+	upperPlatforms[1].update(*timer);
+	upperPlatforms[1].Draw(view_projection);
+
+
+	if(!upperPlatforms[0].collided(upperPlatforms[1]))
+	{
+		upperPlatforms[0].transform.right(timer->deltaTime() * 10);
+	}
 	UpdateLava(view_projection, timer->totalTime());
 
 	DrawMap();
@@ -167,7 +174,6 @@ void UpdateGraphics()
 
 void UpdateLava(XMMATRIX view_projection,float time)
 {
-
 	lavaFloor.get_model()->UpdateConstantBuffer_TIME_SCALED(lavaFloor.transform.world * view_projection,view_projection, directional_light_shines_from, directional_light_colour, ambient_light_colour, time);
 	lavaFloor.Draw(view_projection);// , false, D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
 }
@@ -202,7 +208,7 @@ void LoadContent()
 
 	for (size_t i = 0; i < upperPlatformCount; i++)
 	{
-		upperPlatforms[i] = GameObject("upperPlatform" + i, Transform(sphere_scale, rotation, XMVectorSet(i, i, 1.0f, 0.0f)), *model_test);
+		upperPlatforms[i] = GameObject("upperPlatform" + i, Transform(sphere_scale, rotation, XMVectorSet(i * model_test->getCollisionSphere().collisionRadius * 3,0, 1.0f, 0.0f)), *model_test);
 	}
 
 	for (size_t i = 0; i < middlePlatformCount; i++)

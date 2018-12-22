@@ -24,7 +24,7 @@ Model::Model(ID3D11Device * device, ID3D11DeviceContext * context, CB_STATE stat
 	case CB_STATE_TIME_SCALED: CreateConstantBuffer_TIME_SCALED(); break;
 	default: CreateConstantBuffer_SIMPLE(); break;
 	}
-	
+
 	CompileShaders();
 	SetDefaultInputLayout();
 	CreateDefaultSamplerForTexture();
@@ -50,7 +50,8 @@ HRESULT Model::LoadObjModel(char * filename)
 
 	UpdateDefaultVertexBuffer(vertices, vertSize  * numverts);
 	CreateIndexBuffer();
-
+	CalculateOrigin();
+	InitializeCollider();
 #ifdef RELEASE
 	//OutputDebugString("Calc origin");
 	CalculateOrigin();
@@ -106,7 +107,8 @@ void Model::Draw(XMMATRIX view_projection, bool use_simple_cb, D3D11_PRIMITIVE_T
 	if (use_simple_cb) {
 		cb_simple.WorldViewProjection = view_projection;
 		immediateContext->UpdateSubresource(constantBuffer, 0, nullptr, &cb_simple, 0, 0);
-	}else
+	}
+	else
 	{
 		//cb_time_scaled_lighted.WorldViewProjection = view_projection;
 		immediateContext->UpdateSubresource(constantBuffer, 0, nullptr, get_constant_buffer_state(), 0, 0);
@@ -196,7 +198,6 @@ void Model::set_shader_file(char * shader_file)
 	this->shader_file = shader_file;
 	CompileShaders();
 	SetDefaultInputLayout();
-	//UpdateModel();
 }
 
 HRESULT Model::CreateDefaultSamplerForTexture()
@@ -297,10 +298,20 @@ void Model::UpdateConstantBuffer_LIGHTED(XMMATRIX world_view_projection, XMVECTO
 	cb_lighted.ambient_light_colour = ambient_light_color;
 }
 
+SphereCollider Model::getCollisionSphere() const
+{
+	return sphereCollider;
+}
+
+void Model::Update()
+{
+	
+}
+
 void Model::CalculateOrigin()
 {
-	vector<XMVECTOR> positions(objFileModel->numverts);
-	objFileModel->getVertexPositions(positions);
+
+	vector<XMVECTOR> positions = objFileModel->getVertexPositions();
 	minOuterVector = positions[0];
 	maxOuterVector = positions[1];
 
@@ -416,12 +427,12 @@ HRESULT Model::CreateIndexBuffer()
 
 void* Model::get_constant_buffer_state()
 {
-	switch(state)
-	{		
-		case CB_STATE_FULL: return &cb_full; break;
-		case CB_STATE_LIGHTED: return &cb_lighted;; break;
-		case CB_STATE_TIME_SCALED:return &cb_time_scaled_lighted;; break;
-		default: return &cb_simple;; break;
+	switch (state)
+	{
+	case CB_STATE_FULL: return &cb_full; break;
+	case CB_STATE_LIGHTED: return &cb_lighted;; break;
+	case CB_STATE_TIME_SCALED:return &cb_time_scaled_lighted;; break;
+	default: return &cb_simple;; break;
 	}
 }
 

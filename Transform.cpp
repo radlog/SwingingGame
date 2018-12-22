@@ -86,6 +86,7 @@ void Transform::horizontal_forward(const float speed)
 void Transform::right(const float speed)
 {
 	local_position += local_right * speed;
+	calculate_world_transform();
 }
 
 void Transform::up(const float speed)

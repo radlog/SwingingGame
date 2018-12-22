@@ -65,7 +65,7 @@ public:
 	unsigned int *indices;
 	unsigned int numverts;
 
-	void getVertexPositions(vector<XMVECTOR> positions);
+	vector<XMVECTOR>  getVertexPositions();
 };
 
 

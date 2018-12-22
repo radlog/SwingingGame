@@ -238,6 +238,7 @@
     <ClInclude Include="InputHandler.h" />
     <ClInclude Include="LavaFloor.h" />
     <ClInclude Include="main.h" />
+    <ClInclude Include="MathHelper.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="objfilemodel.h" />
     <ClInclude Include="Obstacle.h" />

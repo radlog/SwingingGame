@@ -29,7 +29,7 @@ public:
 	virtual void render();
 	virtual void start();
 	virtual void update(VGTime timer);
-	virtual void collided(XMVECTOR target);
+	virtual bool collided(GameObject target);
 	virtual LPCSTR get_name();
 	Model* get_model();
 	

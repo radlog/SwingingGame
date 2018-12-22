@@ -5,7 +5,7 @@
 Camera::Camera()
 {
 	transform = Transform();
-	transform.local_position = XMVectorSet(0.0, 0.0, -5.0, 0.0);
+	transform.local_position = XMVectorSet(0.0, 0.0, -20.0, 0.0);
 	//XMStoreFloat4x4(&world, transform.calculate_world_transform());
 	view_ = XMMatrixIdentity();
 	projection_ = XMMatrixPerspectiveFovLH(XMConvertToRadians(default_fov_), default_aspect_ratio_, default_near_plane_, default_far_plane_);

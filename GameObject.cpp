@@ -1,5 +1,6 @@
 #include "GameObject.h"
 #include "Physics3D.h"
+#include "MathHelper.h"
 
 GameObject::~GameObject()
 {
@@ -46,24 +47,30 @@ void GameObject::start()
 
 void GameObject::update(VGTime timer)
 {	
-	if (!is_grounded)
+	
+	if (is_kinetic)
 	{
-		air_time += timer.deltaTime();
-		if (is_kinetic)
+		if (!is_grounded)
 		{
+			air_time += timer.deltaTime();
 			const double falling_velocity = Physics3D::gravity * (air_time*air_time);
 			transform.up(falling_velocity * timer.deltaTime());
 		}
-	}else
-	{		
-		air_time = 0.0f;
+		else
+		{
+			air_time = 0.0f;
+		}
 	}
 	
 }
 
-void GameObject::collided(XMVECTOR target)
+bool GameObject::collided(GameObject target)
 {
-
+	
+	SphereCollider tar_collider = target.get_model()->getCollisionSphere();
+	SphereCollider orig_collider = model.getCollisionSphere();
+	
+	return dist(tar_collider.localPosition * target.transform.local_position, orig_collider.localPosition * transform.local_position) < tar_collider.collisionRadius + orig_collider.collisionRadius;
 }
 
 LPCSTR GameObject::get_name()
