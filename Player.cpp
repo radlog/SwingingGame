@@ -11,10 +11,12 @@ Player::~Player()
 {
 }
 
-Player::Player(LPCSTR name): Character(name)
+Player::Player(LPCSTR name, bool fps) : Character(name)
 {
-	
+	//if (fps)
 }
+
+
 
 void Player::update_input()
 {

@@ -82,6 +82,7 @@ float Camera::get_far_plane() const
 	return this->far_plane_;
 }
 
+
 XMMATRIX Camera::calculate_view_projection()
 {
 	XMVECTOR determinant;

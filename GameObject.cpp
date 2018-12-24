@@ -1,6 +1,6 @@
 #include "GameObject.h"
 #include "Physics3D.h"
-#include "MathHelper.h"
+
 
 GameObject::~GameObject()
 {

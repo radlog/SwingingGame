@@ -4,6 +4,7 @@
 #include "Model.h"
 #include "SoundEngine.h"
 #include "GameData.h"
+#include "MathHelper.h"
 #include "d3dfw.h"
 //#include "Camera.h"
 

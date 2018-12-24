@@ -30,7 +30,7 @@ inline XMVECTOR normal(const XMVECTOR v1, const XMVECTOR v2, const XMVECTOR v3)
 inline Plane get_plane(const XMVECTOR v1, const XMVECTOR v2, const XMVECTOR v3)
 {
 	const XMVECTOR norm =  normal(v1, v2, v3);
-	const float d_offset =  dot(v1, norm);
+	const float d_offset =  -dot(v1, norm);
 
 	return Plane{ norm, d_offset };
 }

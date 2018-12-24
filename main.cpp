@@ -4,6 +4,7 @@
 #include "LavaFloor.h"
 #include <dwrite.h>
 #include <d2d1.h>
+#include "Floor.h"
 //using namespace std;
 d3dfw* dx_handle = d3dfw::getInstance();
 
@@ -15,6 +16,7 @@ static int frames = 0;
 GameObject test;
 GameObject lava;
 LavaFloor lavaFloor;
+Floor test_floor;
 Camera* camera;
 const int upperPlatformCount = 100; // 3000 * 3312 vertices seems to slow down the process when rotating -> consider optimizations for rotations
 const int middlePlatformCount = 100;
@@ -122,10 +124,10 @@ void RenderFrame(void)
 	//{
 	//	upperPlatforms[0].transform.right(timer->deltaTime() * 10);
 	//}
-	UpdateLava(view_projection, timer->totalTime());
+	//UpdateLava(view_projection, timer->totalTime());
 
 
-
+	test_floor.Draw(view_projection);
 	//DebugUTIL(timer->deltaTime());
 	DebugUTIL(timer->getFPS());
 	// swap back buffer with front buffer
@@ -217,6 +219,7 @@ void LoadContent()
 	camera = new Camera();
 	timer = new VGTime();
 	skybox = Skybox("assets/purple_nebular.dds");
+	test_floor = Floor("assets/crate.jpg");
 
 	//char filename[] = "assets/FloatingIsland_001.obj";
 
@@ -245,7 +248,7 @@ void LoadContent()
 		lowerPlatforms[i] = GameObject("upperPlatform" + i, Transform(platform_scale, rotation, XMVectorSet(i * plat_collision_radius * 3, 0, 1.0f, 0.0f)), *platform);
 	}
 
-	LoadLava();
+	//LoadLava();
 
 	timer->start();
 }

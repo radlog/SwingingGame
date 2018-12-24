@@ -164,6 +164,7 @@
     <ClCompile Include="Command.cpp" />
     <ClCompile Include="d3dfw.cpp" />
     <ClCompile Include="Enemy.cpp" />
+    <ClCompile Include="Floor.cpp" />
     <ClCompile Include="GameData.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="Input.cpp" />
@@ -232,6 +233,7 @@
     <ClInclude Include="d3dfw.h" />
     <ClInclude Include="d3dInputLayouts.h" />
     <ClInclude Include="Enemy.h" />
+    <ClInclude Include="Floor.h" />
     <ClInclude Include="GameData.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="Input.h" />
