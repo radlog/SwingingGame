@@ -36,7 +36,12 @@ struct MODEL_POS_TEX_NORM_VERTEX
 	XMFLOAT3 Normal;
 };
 
-
+// structure representing a plane used for collision detection
+struct Plane
+{
+	XMVECTOR normal; // normal of a plane
+	float d_offset; // offset of the normal
+};
 
 class Geometry
 {

@@ -19,7 +19,7 @@ GameObject::GameObject(LPCSTR name)
 	this->name = name;
 }
 
-GameObject::GameObject(LPCSTR name, Transform transform, Model model) : GameObject(name)
+GameObject::GameObject(LPCSTR name, const Transform transform, const Model model) : GameObject(name)
 {
 	this->name = name;
 	this->transform = transform;
@@ -66,9 +66,8 @@ void GameObject::update(VGTime timer)
 
 bool GameObject::collided(GameObject target)
 {
-	
-	SphereCollider tar_collider = target.get_model()->getCollisionSphere();
-	SphereCollider orig_collider = model.getCollisionSphere();
+	const SphereCollider tar_collider = target.get_model()->getCollisionSphere();
+	const SphereCollider orig_collider = model.getCollisionSphere();
 	
 	return dist(tar_collider.localPosition * target.transform.local_position, orig_collider.localPosition * transform.local_position) < tar_collider.collisionRadius + orig_collider.collisionRadius;
 }
