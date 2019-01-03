@@ -70,14 +70,14 @@ VOut VShader(VIn input)
 float4 PShader(VOut input) : SV_TARGET
 {
     
-    input.texcoord_diffuse.x /= 50;
-    input.texcoord_diffuse.y /= 50;
+	input.texcoord_diffuse.x /= 50 + sin(TotalTime);
+	input.texcoord_diffuse.y /= 50 + sin(TotalTime);
 
-    input.texcoord_normal.x /= 50;
-    input.texcoord_normal.y /= 50;
+	input.texcoord_normal.x /= 50 + sin(TotalTime);
+	input.texcoord_normal.y /= 50 + sin(TotalTime);
 
-    input.texcoord_noise.x /= 5;
-    input.texcoord_noise.y /= 5;
+	input.texcoord_noise.x /= 5 + sin(TotalTime);
+	input.texcoord_noise.y /= 5 + sin(TotalTime);
 
     float4 diffuse = texture0.Sample(sampler0, input.texcoord_diffuse);
     float4 normal = texture1.Sample(sampler0, input.texcoord_normal);
