@@ -43,17 +43,17 @@ private:
 	const float min_fov_ = 45.0;
 	const float max_fov_ = 114.0;
 	//ASPECT_RATIO
-	const float default_aspect_ratio_ = 640.0/480.0;
-	const float min_aspect_ratio_ = 0.1;
-	const float max_aspect_ratio_ = 1.0;
+	const float default_aspect_ratio_ = 640.0f/480.0f;
+	const float min_aspect_ratio_ = 0.1f;
+	const float max_aspect_ratio_ = 1.0f;
 	//NEAR_PLANE
-	const float default_near_plane_ = 0.1;
-	const float min_near_plane_ = 1.0;
-	const float max_near_plane_ = 15.0;
+	const float default_near_plane_ = 0.1f;
+	const float min_near_plane_ = 1.0f;
+	const float max_near_plane_ = 15.0f;
 	//FAR_PLANE
-	const float default_far_plane_ = 300.0;
-	const float min_far_plane_ = 16.0;
-	const float max_far_plane_ = 100.0;
+	const float default_far_plane_ = 300.0f;
+	const float min_far_plane_ = 16.0f;
+	const float max_far_plane_ = 100.0f;
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 };

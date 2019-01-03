@@ -7,11 +7,13 @@ Model::Model()
 {
 }
 
+// loads the main constructor of the Model class in addition with an .obj file with the path defined by char * filename
 Model::Model(ID3D11Device * device, ID3D11DeviceContext * context, char * filename, CB_STATE state) : Model(device, context, state)
 {
 	LoadObjModel(filename);
 }
 
+// main constructor of the Model class to initialize a state and pass the device and context instances
 Model::Model(ID3D11Device * device, ID3D11DeviceContext * context, CB_STATE state)
 {
 	this->device = device;
@@ -32,10 +34,12 @@ Model::Model(ID3D11Device * device, ID3D11DeviceContext * context, CB_STATE stat
 
 }
 
+// default desctructor
 Model::~Model()
 {
 }
 
+// load an .obj file with char * filename defining the path of it
 HRESULT Model::LoadObjModel(char * filename)
 {
 	objFileModel = new ObjFileModel(filename, device, immediateContext);
@@ -73,7 +77,7 @@ HRESULT Model::LoadGeoModel(void* vertices, UINT numverts, UINT single_vertex_by
 	return hr;
 }
 
-// loads primitive topology shapes using only vertices
+// loads primitive topology shapes using only vertices, the number of them and their single bytesize
 HRESULT Model::LoadGeoModel(void* vertices, UINT numverts, UINT single_vertex_bytesize)
 {
 	HRESULT hr = S_OK;
@@ -104,6 +108,7 @@ HRESULT Model::LoadGeoModel(void* vertices, UINT numverts, UINT single_vertex_by
 
 void Model::Draw(XMMATRIX view_projection, bool use_simple_cb, D3D11_PRIMITIVE_TOPOLOGY mode)
 {
+	// use the simple constant buffer, if no other was specifically defined. same counts for the topology mode
 	if (use_simple_cb) {
 		cb_simple.WorldViewProjection = view_projection;
 		immediateContext->UpdateSubresource(constantBuffer, 0, nullptr, &cb_simple, 0, 0);
@@ -114,21 +119,26 @@ void Model::Draw(XMMATRIX view_projection, bool use_simple_cb, D3D11_PRIMITIVE_T
 		immediateContext->UpdateSubresource(constantBuffer, 0, nullptr, get_constant_buffer_state(), 0, 0);
 	}
 
+	// set the constant buffer(s)
 	immediateContext->VSSetConstantBuffers(0, 1, &constantBuffer);
 
-	// set the shader objects as active
+	// set the shader objects for the pixel and vertex shader as actives
 	immediateContext->VSSetShader(vShader, 0, 0);
 	immediateContext->PSSetShader(pShader, 0, 0);
 
+	// set a sampler and a texture as the standard way to draw
 	immediateContext->PSSetSamplers(0, 1, &sampler0);
 	immediateContext->PSSetShaderResources(0, 1, &texture);
 
+	// set topology mode defined in the parameter of the method
 	immediateContext->IASetPrimitiveTopology(mode);
 
 	UINT stride = vertSize;
 	UINT offset = 0;
+	// set the vertex buffer to draw all the vertices with no offset
 	immediateContext->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
 
+	// draw either with or without indices depending on whether an objfilemodel or a primitive topology was used
 	if (numIndices)
 	{
 		immediateContext->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);
@@ -152,7 +162,7 @@ void Model::Draw(XMMATRIX view_projection, bool use_simple_cb, D3D11_PRIMITIVE_T
 
 // INITIALIZATION methods
 
-
+// compile shaders from file -> TODO:: change the way this works, because it may be not a good one for every situation
 HRESULT Model::CompileShaders()
 {
 	HRESULT hr;
