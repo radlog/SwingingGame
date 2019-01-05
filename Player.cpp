@@ -41,12 +41,6 @@ void Player::start()
 }
 
 
-
-LPCSTR Player::get_name()
-{
-	return name_;
-}
-
 void Player::cleanup()
 {
 }

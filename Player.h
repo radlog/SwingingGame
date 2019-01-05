@@ -18,7 +18,6 @@ public:
 	void spawn(XMVECTOR position) override;
 	void render() override;
 	void start() override;	
-	LPCSTR get_name() override;
 	void cleanup() override;
 private:
 	Camera camera_;
