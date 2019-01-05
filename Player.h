@@ -9,13 +9,18 @@ public:
 	Player();
 	~Player();
 
-	Player(LPCSTR name, bool fps = false);
+	explicit Player(LPCSTR name, LPCSTR tag = "player", bool fps = false);
 
-	void update_input();
+	void update_input() const;
 
-	void update(VGTime timer);
+	void update(VGTime timer) override;
 
+	void spawn(XMVECTOR position) override;
+	void render() override;
+	void start() override;	
+	LPCSTR get_name() override;
+	void cleanup() override;
 private:
-	Camera camera;
+	Camera camera_;
 };
 

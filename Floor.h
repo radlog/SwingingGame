@@ -5,14 +5,15 @@ public:
 	Floor();
 	~Floor();
 
-	Floor(LPCSTR texture, int tiles = 200, float scale = 1.0f);
+	explicit Floor(LPCSTR texture, int tiles = 200, float scale = 1.0f);
 	Plane get_collider();
 
+	void cleanup() override;
 private:
-	Plane plane_collider;
-	POS_TEX_NORM_COL_VERTEX *plane_vertices;
-	unsigned int *plane_indices;
-	int tiles;
-	float scale;
+	Plane plane_collider_;
+	POS_TEX_NORM_COL_VERTEX *plane_vertices_;
+	unsigned int *plane_indices_;
+	int tiles_;
+	float scale_;
 };
 

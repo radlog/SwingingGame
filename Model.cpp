@@ -110,7 +110,7 @@ void Model::Draw(XMMATRIX view_projection, bool use_simple_cb, D3D11_PRIMITIVE_T
 {
 	// use the simple constant buffer, if no other was specifically defined. same counts for the topology mode
 	if (use_simple_cb) {
-		cb_simple.WorldViewProjection = view_projection;
+		cb_simple.world_view_projection = view_projection;
 		immediateContext->UpdateSubresource(constantBuffer, 0, nullptr, &cb_simple, 0, 0);
 	}
 	else
@@ -236,13 +236,13 @@ HRESULT Model::LoadTexture(LPCSTR filename)
 void Model::UpdateConstantBuffer_FULL(XMMATRIX world_view_projection, XMMATRIX view_projection, XMVECTOR directional_light_vector,
 	XMVECTOR directional_light_color, XMVECTOR ambient_light_color, XMVECTOR rgb_amount, float gameTime)
 {
-	cb_full.WorldViewProjection = world_view_projection;
-	cb_full.ViewProjection = view_projection;
+	cb_full.world_view_projection = world_view_projection;
+	cb_full.view_projection = view_projection;
 	cb_full.directional_light_vector = directional_light_vector;
 	cb_full.directional_light_colour = directional_light_color;
 	cb_full.ambient_light_colour = ambient_light_color;
 	cb_full.rgb_amount = rgb_amount;
-	cb_full.gameTime = gameTime;
+	cb_full.game_time = gameTime;
 
 	cb = &cb_full;
 	//enable_glowing = true;
@@ -289,12 +289,12 @@ void Model::UpdateConstantBuffer_FULL(XMMATRIX world_view_projection, XMMATRIX v
 void Model::UpdateConstantBuffer_TIME_SCALED(XMMATRIX world_view_projection, XMMATRIX view_projection, XMVECTOR directional_light_vector,
 	XMVECTOR directional_light_color, XMVECTOR ambient_light_color, float gameTime)
 {
-	cb_time_scaled_lighted.WorldViewProjection = world_view_projection;
-	cb_time_scaled_lighted.ViewProjection = view_projection;
+	cb_time_scaled_lighted.world_view_projection = world_view_projection;
+	cb_time_scaled_lighted.view_projection = view_projection;
 	cb_time_scaled_lighted.directional_light_vector = directional_light_vector;
 	cb_time_scaled_lighted.directional_light_colour = directional_light_color;
 	cb_time_scaled_lighted.ambient_light_colour = ambient_light_color;
-	cb_time_scaled_lighted.gameTime = gameTime;
+	cb_time_scaled_lighted.game_time = gameTime;
 
 	cb = &cb_time_scaled_lighted;
 }
@@ -302,7 +302,7 @@ void Model::UpdateConstantBuffer_TIME_SCALED(XMMATRIX world_view_projection, XMM
 void Model::UpdateConstantBuffer_LIGHTED(XMMATRIX world_view_projection, XMVECTOR directional_light_vector,
 	XMVECTOR directional_light_color, XMVECTOR ambient_light_color)
 {
-	cb_lighted.WorldViewProjection = world_view_projection;
+	cb_lighted.world_view_projection = world_view_projection;
 	cb_lighted.directional_light_vector = directional_light_vector;
 	cb_lighted.directional_light_colour = directional_light_color;
 	cb_lighted.ambient_light_colour = ambient_light_color;

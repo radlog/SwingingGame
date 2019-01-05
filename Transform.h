@@ -5,7 +5,7 @@ class Transform
 {
 public:
 	Transform();
-	Transform(XMVECTOR world_scale, XMVECTOR world_rotation, XMVECTOR world_position);
+	Transform(XMVECTOR scale, XMVECTOR rotation, XMVECTOR position);
 	~Transform();
 
 	XMMATRIX calculate_world_transform();
@@ -47,7 +47,7 @@ protected:
 
 
 private:
-	float y_rotation_sum = 0.0f;
-	float y_rotation_max = 89.0f;
+	float y_rotation_sum_ = 0.0f;
+	float y_rotation_max_ = 89.0f;
 };
 

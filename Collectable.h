@@ -1,19 +1,22 @@
 #pragma once
+class Character;
+
 class Collectable
 {
 
-	enum Item_Type {
-		Speedbuff,
-		Accumulator,
-		Coin
+	enum ITEM_TYPE {
+		SPEEDBUFF,
+		COIN
 	};
 public:
 	Collectable();
 	~Collectable();
 
-	Collectable(Item_Type item_type);
+	Collectable(ITEM_TYPE item_type);
 
-	void collected();
+	void collected(Character actor) const;
 
+private:
+	ITEM_TYPE item_type_;
 };
 

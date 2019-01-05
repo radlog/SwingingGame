@@ -13,31 +13,51 @@ LavaFloor::~LavaFloor()
 
 }
 
-LavaFloor::LavaFloor(LPCSTR texture,LPCSTR texture_normal, LPCSTR texture_noise, int tiles, float scale) : GameObject(texture)
+LavaFloor::LavaFloor(const LPCSTR texture, const LPCSTR texture_normal, const LPCSTR texture_noise, const int tiles, const float scale) : GameObject(texture)
 {
 	POS_TEX_NORM_COL_VERTEX *plane_vertices;
 	unsigned int *plane_indices;
 
-	model = Model(dx_handle->device, dx_handle->immediateContext, CB_STATE_TIME_SCALED);
+	model_ = Model(dx_handle_->device, dx_handle_->immediate_context, CB_STATE_TIME_SCALED);
 	Geometry::create_indexed_tiled_textured_normal_plane(&plane_vertices, &plane_indices, tiles, scale);
-	model.LoadGeoModel(plane_vertices, (tiles + 1)*(tiles + 1), sizeof(POS_TEX_NORM_COL_VERTEX), plane_indices, tiles * tiles * 6);
+	model_.LoadGeoModel(plane_vertices, (tiles + 1)*(tiles + 1), sizeof(POS_TEX_NORM_COL_VERTEX), plane_indices, tiles * tiles * 6);
 	char lava_shader[] = "lava_shader.hlsl";
-	model.set_shader_file(lava_shader);
+	model_.set_shader_file(lava_shader);
 
-	D3DX11CreateShaderResourceViewFromFile(device, texture_normal, nullptr, nullptr, &normal_texture, nullptr);
-	D3DX11CreateShaderResourceViewFromFile(device, texture_noise, nullptr, nullptr, &noise_texture, nullptr);
+	D3DX11CreateShaderResourceViewFromFile(device_, texture_normal, nullptr, nullptr, &normal_texture_, nullptr);
+	D3DX11CreateShaderResourceViewFromFile(device_, texture_noise, nullptr, nullptr, &noise_texture_, nullptr);
 
 
-	model.LoadTexture("assets/lava_selfmade_diffuse.png");
+	model_.LoadTexture("assets/lava_selfmade_diffuse.png");
 	transform = Transform(XMVectorSet(scale, 1.0f, scale, 0.0f), XMQuaternionIdentity(), XMVectorSet((-tiles * scale) / 2, -10.0f, (-tiles * scale) / 2, 0.0f));
 
 }
 
 
 
-void LavaFloor::Draw(XMMATRIX view_projection, bool use_default_cb, D3D11_PRIMITIVE_TOPOLOGY mode) 
+void LavaFloor::draw(const XMMATRIX view_projection, const bool use_default_cb, const D3D11_PRIMITIVE_TOPOLOGY mode) 
 {
-	immediateContext->PSSetShaderResources(1, 1, &normal_texture);
-	immediateContext->PSSetShaderResources(2, 1, &noise_texture);
-	GameObject::Draw(view_projection, use_default_cb, mode);
+	immediate_context_->PSSetShaderResources(1, 1, &normal_texture_);
+	immediate_context_->PSSetShaderResources(2, 1, &noise_texture_);
+	GameObject::draw(view_projection, use_default_cb, mode);
+}
+
+void LavaFloor::spawn(XMVECTOR position)
+{
+}
+
+void LavaFloor::render()
+{
+}
+
+void LavaFloor::start()
+{
+}
+
+void LavaFloor::update(VGTime timer)
+{
+}
+
+void LavaFloor::cleanup()
+{
 }

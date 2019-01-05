@@ -5,8 +5,9 @@
 #include <dwrite.h>
 #include <d2d1.h>
 #include "Floor.h"
+#include "Player.h"
 //using namespace std;
-d3dfw* dx_handle = d3dfw::getInstance();
+D3Dfw *dx_handle = D3Dfw::get_instance();
 
 double time_since_last_frame = 0;
 double second = 1;
@@ -15,19 +16,20 @@ static int frames = 0;
 // game objects
 GameObject test;
 GameObject lava;
-LavaFloor lavaFloor;
+LavaFloor lava_floor;
 Floor test_floor;
-Camera* camera;
-const int upperPlatformCount = 100; // 3000 * 3312 vertices seems to slow down the process when rotating -> consider optimizations for rotations
-const int middlePlatformCount = 100;
-const int lowerPlatformCount = 100;
-GameObject upperPlatforms[upperPlatformCount];
-GameObject middlePlatforms[middlePlatformCount];
-GameObject lowerPlatforms[lowerPlatformCount];
+Character player;
+Camera *camera;
+const int upper_platform_count = 100; // 3000 * 3312 vertices seems to slow down the process when rotating -> consider optimizations for rotations
+const int middle_platform_count = 100;
+const int lower_platform_count = 100;
+GameObject upper_platforms[upper_platform_count];
+GameObject middle_platforms[middle_platform_count];
+GameObject lower_platforms[lower_platform_count];
 
 // text render factory and format
-IDWriteFactory* dwrite_factory;
-IDWriteTextFormat* text_format;
+IDWriteFactory *dwrite_factory;
+IDWriteTextFormat *text_format;
 
 Model *model_test;
 Model *platform;
@@ -44,39 +46,39 @@ XMVECTOR ambient_light_colour = XMVectorSet(0.1f, 0.1f, 0.1f, 1.0f); // dark gre
 
 VGTime* timer;
 
-//g_Title is a replace for g_TutorialName
-char g_Title[100] = "Swing to Win(g)";
+// the window title
+char g_title[100] = "Swing to Win(g)";
 
 
 // methods
-HRESULT InitD3D(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow);
-HRESULT InitialiseWindow(HINSTANCE hInstance, int nCmdShow);
-LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
+HRESULT init_dx(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_cmd_show);
+HRESULT initialise_window(HINSTANCE hInstance, int nCmdShow);
+LRESULT CALLBACK wnd_proc(HWND, UINT, WPARAM, LPARAM);
 
-void LoadContent();
-void LoadLava();
+void load_content();
+void load_lava();
 
-void RenderFrame(void);
-void DrawMap(XMMATRIX view_projection);
-void UpdateAI();
-void UpdateSound();
-void UpdateGraphics();
-void EndGame();
+void render_frame(void);
+void draw_map(XMMATRIX view_projection);
+void update_ai();
+void update_sound();
+void update_graphics();
+void end_game();
 
-void UpdateLava(XMMATRIX view_projection, float time);
+void update_lava(XMMATRIX view_projection, float time);
 
 Skybox skybox;
 
 POS_TEX_NORM_COL_VERTEX *plane_vertices;
 unsigned int *plane_indices;
 
-void DebugUTIL(int str);
+void debug_util(int str);
 
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
+int WINAPI WinMain(const HINSTANCE instance, const HINSTANCE prev_instance, const LPSTR lp_cmd_line, const int n_cmd_show)
 {
 
-	InitD3D(hInstance, hPrevInstance, lpCmdLine, nCmdShow);
-	LoadContent();
+	init_dx(instance, prev_instance, lp_cmd_line, n_cmd_show);
+	load_content();
 
 	MSG msg = { 0 };
 
@@ -90,36 +92,36 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		}
 		else {
 			//UpdateAI();
-			dx_handle->input->UpdateInput(camera, timer);
+			dx_handle->input->update_input(camera, timer);
 			//UpdateSound();
 			//UpdateGraphics();
-			RenderFrame();
+			render_frame();
 		}
 	}
 
-	EndGame();
-	return (int)msg.wParam;
+	end_game();
+	return static_cast<int>(msg.wParam);
 }
 
 
 
-void RenderFrame(void)
+void render_frame(void)
 {
 	const XMMATRIX view_projection = camera->calculate_view_projection();
 
 	// clear the render target view
-	dx_handle->ClearRTV();
+	dx_handle->clear_rtv();
 
 	// draw here
 	//test.Draw(view_projection);
-	skybox.Draw(XMMatrixTranslationFromVector(camera->transform.local_position) * view_projection);
+	skybox.draw(XMMatrixTranslationFromVector(camera->transform.local_position) * view_projection);
 	//upperPlatforms[0].update(*timer);
 	//upperPlatforms[0].Draw(view_projection);
 	//upperPlatforms[1].update(*timer);
 	//upperPlatforms[1].Draw(view_projection);
 
 	
-	DrawMap(view_projection);
+	draw_map(view_projection);
 	//if(!upperPlatforms[0].collided(upperPlatforms[1]))
 	//{
 	//	upperPlatforms[0].transform.right(timer->deltaTime() * 10);
@@ -127,16 +129,16 @@ void RenderFrame(void)
 	//UpdateLava(view_projection, timer->totalTime());
 
 
-	test_floor.Draw(view_projection);
+	test_floor.draw(view_projection);
 	//DebugUTIL(timer->deltaTime());
-	DebugUTIL(timer->getFPS());
+	debug_util(timer->getFPS());
 	// swap back buffer with front buffer
-	dx_handle->swapChain->Present(0, 0);
+	dx_handle->swap_chain->Present(0, 0);
 
 }
 
 
-LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK wnd_proc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	PAINTSTRUCT ps;
 	HDC hdc;
@@ -153,48 +155,49 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	default:
 		return DefWindowProc(hWnd, message, wParam, lParam);
 	}
+	return 0;
 }
 
 
-void DrawMap(XMMATRIX view_projection)
+void draw_map(const XMMATRIX view_projection)
 {
-	for (size_t i = 0; i < upperPlatformCount; i++)
+	for (size_t i = 0; i < upper_platform_count; i++)
 {
-	upperPlatforms[i].Draw(view_projection/*,D3D11_PRIMITIVE_TOPOLOGY_POINTLIST*/);
-	middlePlatforms[i].Draw(view_projection/*,D3D11_PRIMITIVE_TOPOLOGY_POINTLIST*/);
-	lowerPlatforms[i].Draw(view_projection/*,D3D11_PRIMITIVE_TOPOLOGY_POINTLIST*/);
+	upper_platforms[i].draw(view_projection/*,D3D11_PRIMITIVE_TOPOLOGY_POINTLIST*/);
+	middle_platforms[i].draw(view_projection/*,D3D11_PRIMITIVE_TOPOLOGY_POINTLIST*/);
+	lower_platforms[i].draw(view_projection/*,D3D11_PRIMITIVE_TOPOLOGY_POINTLIST*/);
 }
 }
 
-void EndGame()
+void end_game()
 {
 	timer->stop();
 }
 
-void UpdateAI()
+void update_ai()
 {
 
 }
 
 
 
-void UpdateSound()
+void update_sound()
 {
 
 }
 
-void UpdateGraphics()
+void update_graphics()
 {
 
 }
 
-void UpdateLava(XMMATRIX view_projection,float time)
+void update_lava(const XMMATRIX view_projection, const float time)
 {
-	lavaFloor.get_model()->UpdateConstantBuffer_TIME_SCALED(lavaFloor.transform.world * view_projection,view_projection, directional_light_shines_from, directional_light_colour, ambient_light_colour, time);
-	lavaFloor.Draw(view_projection);// , false, D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
+	lava_floor.get_model()->UpdateConstantBuffer_TIME_SCALED(lava_floor.transform.world * view_projection,view_projection, directional_light_shines_from, directional_light_colour, ambient_light_colour, time);
+	lava_floor.draw(view_projection);// , false, D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
 }
 
-void DebugUTIL(int str)
+void debug_util(const int str)
 {
 	std::ostringstream ss;
 	ss << str;
@@ -202,19 +205,19 @@ void DebugUTIL(int str)
 	OutputDebugString(s.c_str());
 }
 
-void LoadLava()
+void load_lava()
 {
-	lavaFloor = LavaFloor("assets/lava_selfmade_diffuse.png");
+	lava_floor = LavaFloor("assets/lava_selfmade_diffuse.png");
 }
 
 
-void LoadContent()
+void load_content()
 {
 
-	
+	player = Player("player1");
 
-	XMVECTOR platform_scale = XMVectorSet(1.0f, 1.0f, 1.0f, 0.0f);
-	XMVECTOR rotation = XMQuaternionIdentity();
+	const XMVECTOR platform_scale = XMVectorSet(1.0f, 1.0f, 1.0f, 0.0f);
+	const XMVECTOR rotation = XMQuaternionIdentity();
 
 	camera = new Camera();
 	timer = new VGTime();
@@ -223,29 +226,29 @@ void LoadContent()
 
 	//char filename[] = "assets/FloatingIsland_001.obj";
 
-	model_test = new Model(dx_handle->device, dx_handle->immediateContext,(char*) "assets/Sphere.obj");
+	model_test = new Model(dx_handle->device, dx_handle->immediate_context,(char*) "assets/Sphere.obj");
 	model_test->LoadTexture("assets/FloatingIsland_DIFFUSE.png");
 	POS_TEX_NORM_COL_VERTEX* platform_placeholder =  Geometry::pos_tex_norm_col_cube(1.0f);
-	platform = new Model(dx_handle->device, dx_handle->immediateContext);
+	platform = new Model(dx_handle->device, dx_handle->immediate_context);
 	platform->LoadGeoModel(platform_placeholder, 36, sizeof(POS_TEX_NORM_COL_VERTEX));
 	platform->LoadTexture("assets/FloatingIsland_DIFFUSE.png");
 
 	float plat_collision_radius = platform->getCollisionSphere().collisionRadius;
 	plat_collision_radius = 2.0f;
 
-	for (size_t i = 0; i < upperPlatformCount; i++)
+	for (size_t i = 0; i < upper_platform_count; i++)
 	{
-		upperPlatforms[i] = GameObject("upperPlatform" + i, Transform(platform_scale, rotation, XMVectorSet(i * plat_collision_radius * 3,0, 1.0f, 0.0f)), *platform);
+		upper_platforms[i] = GameObject(&"upperPlatform"[i], Transform(platform_scale, rotation, XMVectorSet(i * plat_collision_radius * 3,0, 1.0f, 0.0f)), *platform);
 	}
 
-	for (size_t i = 0; i < middlePlatformCount; i++)
+	for (size_t i = 0; i < middle_platform_count; i++)
 	{
-		middlePlatforms[i] = GameObject("upperPlatform" + i, Transform(platform_scale, rotation, XMVectorSet(i * plat_collision_radius * 3, 0, 1.0f, 0.0f)), *platform);
+		middle_platforms[i] = GameObject(&"upperPlatform"[i], Transform(platform_scale, rotation, XMVectorSet(i * plat_collision_radius * 3, 0, 1.0f, 0.0f)), *platform);
 	}
 
-	for (size_t i = 0; i < lowerPlatformCount; i++)
+	for (size_t i = 0; i < lower_platform_count; i++)
 	{
-		lowerPlatforms[i] = GameObject("upperPlatform" + i, Transform(platform_scale, rotation, XMVectorSet(i * plat_collision_radius * 3, 0, 1.0f, 0.0f)), *platform);
+		lower_platforms[i] = GameObject(&"upperPlatform"[i], Transform(platform_scale, rotation, XMVectorSet(i * plat_collision_radius * 3, 0, 1.0f, 0.0f)), *platform);
 	}
 
 	//LoadLava();
@@ -253,31 +256,36 @@ void LoadContent()
 	timer->start();
 }
 
-HRESULT InitD3D(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
+HRESULT init_dx(const HINSTANCE instance, HINSTANCE prev_instance, const LPSTR lp_cmd_line, const int n_cmd_show)
 {
-	HRESULT hr = S_OK;
-	UNREFERENCED_PARAMETER(hPrevInstance);
-	UNREFERENCED_PARAMETER(lpCmdLine);
+	auto hr = S_OK;
+	UNREFERENCED_PARAMETER(prev_instance);
+	UNREFERENCED_PARAMETER(lp_cmd_line);
 
-	if (FAILED(dx_handle->InitialiseWindow(hInstance, nCmdShow, WndProc)))
+	if (FAILED(hr = dx_handle->initialise_window(instance, n_cmd_show, wnd_proc)))
 	{
 		DXTRACE_MSG("Failed to create Window");
-		return 0;
+		return hr;
 	}
 
-	if (FAILED(dx_handle->InitialiseD3D()))
+	if (FAILED(hr = dx_handle->initialise_dx()))
 	{
 		DXTRACE_MSG("Failed to initialise DirectX");
-		return 0;
+		return hr;
 	}
 
-	if (FAILED(dx_handle->InitialiseInput()))
+	if (FAILED(hr = dx_handle->initialise_input()))
 	{
 		DXTRACE_MSG("Failed to initialise Input");
-		return 0;
+		return hr;
 	}
 
 	ShowCursor(false);
 
 	return hr;
+}
+
+HRESULT initialise_window(HINSTANCE hInstance, int nCmdShow)
+{
+	return 0;
 }

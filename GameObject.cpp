@@ -11,25 +11,25 @@ GameObject::GameObject()
 }
 
 
-GameObject::GameObject(LPCSTR name)
+GameObject::GameObject(LPCSTR name, LPCSTR tag)
 {
-	dx_handle = d3dfw::getInstance();
-	device = dx_handle->device;
-	immediateContext = dx_handle->immediateContext;
-	this->name = name;
+	dx_handle_ = D3Dfw::get_instance();
+	device_ = dx_handle_->device;
+	immediate_context_ = dx_handle_->immediate_context;
+	this->name_ = name;
+	this->tag_ = tag;
 }
 
-GameObject::GameObject(LPCSTR name, const Transform transform, const Model model) : GameObject(name)
+GameObject::GameObject(LPCSTR name, const Transform transform, const Model model, LPCSTR tag) : GameObject(name, tag)
 {
-	this->name = name;
 	this->transform = transform;
-	this->model = model;
+	this->model_ = model;
 }
 
 
-void GameObject::Draw(XMMATRIX view_projection, bool use_default_cb, D3D11_PRIMITIVE_TOPOLOGY mode)
+void GameObject::draw(XMMATRIX view_projection, bool use_default_cb, D3D11_PRIMITIVE_TOPOLOGY mode)
 {
-	model.Draw(transform.world* view_projection, use_default_cb, mode);
+	model_.Draw(transform.world* view_projection, use_default_cb, mode);
 }
 
 
@@ -46,42 +46,57 @@ void GameObject::start()
 }
 
 void GameObject::update(VGTime timer)
-{	
-	
-	if (is_kinetic)
+{
+
+	if (is_kinetic_)
 	{
-		if (!is_grounded)
+		if (!is_grounded_)
 		{
-			air_time += timer.deltaTime();
-			const double falling_velocity = Physics3D::gravity * (air_time*air_time);
+			air_time_ += timer.deltaTime();
+			const double falling_velocity = Physics3D::gravity * (air_time_*air_time_);
 			transform.up(falling_velocity * timer.deltaTime());
 		}
 		else
 		{
-			air_time = 0.0f;
+			air_time_ = 0.0f;
 		}
 	}
-	
+
 }
 
-bool GameObject::collided(GameObject target)
+
+bool GameObject::collided(GameObject target) const
 {
 	const SphereCollider tar_collider = target.get_model()->getCollisionSphere();
-	const SphereCollider orig_collider = model.getCollisionSphere();
-	
+	const SphereCollider orig_collider = model_.getCollisionSphere();
+
 	return dist(tar_collider.localPosition * target.transform.local_position, orig_collider.localPosition * transform.local_position) < tar_collider.collisionRadius + orig_collider.collisionRadius;
 }
 
-LPCSTR GameObject::get_name()
+LPCSTR GameObject::get_name() const
 {
-	return name;
+	return name_;
 }
 
 Model* GameObject::get_model()
 {
-	return &model;
+	return &model_;
 }
 
-void GameObject::Cleanup()
+void GameObject::cleanup()
 {
+	model_.Cleanup();
+}
+
+
+LPCSTR GameObject::get_collision_type(COLLISION_TYPE collision_type)
+{
+	switch (collision_type)
+	{
+	case 0: return "default";
+	case 1: return "ground";
+	case 2: return "model";
+	case 3: return "poly";
+	default: return "default";
+	}
 }

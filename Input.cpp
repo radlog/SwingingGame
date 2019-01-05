@@ -14,7 +14,7 @@ Input::~Input()
 
 Input::Input(Character * actor)
 {
-	this->actor = actor;
+	this->actor_ = actor;
 }
 
 void Input::handle_input(WPARAM key)
@@ -63,32 +63,32 @@ void Input::handle_input(WPARAM key)
 	}
 }
 
-HRESULT Input::InitialiseInput(HINSTANCE hInstance, HWND hWnd)
+HRESULT Input::initialise_input(const HINSTANCE instance, const HWND hwnd)
 {
-	this->hWnd = hWnd;
+	this->hwnd_ = hwnd;
 	HRESULT hr;
-	ZeroMemory(keyboardKeysState, sizeof(keyboardKeysState));
+	ZeroMemory(keyboard_keys_state_, sizeof(keyboard_keys_state_));
 
 	// initialise input factory
-	hr = DirectInput8Create(hInstance, DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&directInput, NULL);
+	hr = DirectInput8Create(instance, DIRECTINPUT_VERSION, IID_IDirectInput8, reinterpret_cast<void**>(&direct_input_), NULL);
 	if (FAILED(hr)) return hr;
 
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////keyboard init////////////////////////////////////////////////////////////////
 	// create keyboard
-	hr = directInput->CreateDevice(GUID_SysKeyboard, &keyboard, NULL);
+	hr = direct_input_->CreateDevice(GUID_SysKeyboard, &keyboard_, NULL);
 	if (FAILED(hr)) return hr;
 
 	// set keyboard format
-	hr = keyboard->SetDataFormat(&c_dfDIKeyboard);
+	hr = keyboard_->SetDataFormat(&c_dfDIKeyboard);
 	if (FAILED(hr)) return hr;
 
 	// set keyboards behaviour of interaction between other instances of the same device on different processes and the system
-	hr = keyboard->SetCooperativeLevel(hWnd, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE);
+	hr = keyboard_->SetCooperativeLevel(hwnd, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE);
 	if (FAILED(hr)) return hr;
 
 	// acquire the setup device
-	hr = keyboard->Acquire();
+	hr = keyboard_->Acquire();
 	if (FAILED(hr)) return hr;
 
 	////////////////////////////////////////////////////////keyboard init////////////////////////////////////////////////////////////////
@@ -97,19 +97,19 @@ HRESULT Input::InitialiseInput(HINSTANCE hInstance, HWND hWnd)
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////mouse init///////////////////////////////////////////////////////////////////
 	// create mouse
-	hr = directInput->CreateDevice(GUID_SysMouse, &mouseInput, NULL);
+	hr = direct_input_->CreateDevice(GUID_SysMouse, &mouse_input_, NULL);
 	if (FAILED(hr)) return hr;
 
 	// set data format for the mouse
-	hr = mouseInput->SetDataFormat(&c_dfDIMouse);
+	hr = mouse_input_->SetDataFormat(&c_dfDIMouse);
 	if (FAILED(hr)) return hr;
 
 	// set interaction of mouse between processes and other instances of the same device
-	hr = mouseInput->SetCooperativeLevel(hWnd, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE);
+	hr = mouse_input_->SetCooperativeLevel(hwnd, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE);
 	if (FAILED(hr)) return hr;
 
 	// acquire setup mouse
-	hr = mouseInput->Acquire();
+	hr = mouse_input_->Acquire();
 	if (FAILED(hr)) return hr;
 
 	////////////////////////////////////////////////////////mouse init///////////////////////////////////////////////////////////////////
@@ -118,94 +118,101 @@ HRESULT Input::InitialiseInput(HINSTANCE hInstance, HWND hWnd)
 	return S_OK;
 }
 
-HRESULT Input::UpdateInput(GameObject* actor, VGTime* gameTime)
+HRESULT Input::update_input(GameObject* actor, VGTime* game_time)
 {
 	
 	HRESULT hr = NULL;
-	hr = keyboard->GetDeviceState(sizeof(keyboardKeysState), (LPVOID)&keyboardKeysState);
+	hr = keyboard_->GetDeviceState(sizeof(keyboard_keys_state_), (LPVOID)&keyboard_keys_state_);
 
 	if (FAILED(hr)) {
 		if ((hr == DIERR_INPUTLOST) || (hr == DIERR_NOTACQUIRED))
 		{
-			keyboard->Acquire();
+			keyboard_->Acquire();
 		}
 	}
 
-	hr = mouseInput->GetDeviceState(sizeof(mouseState), (LPVOID)&mouseState);
+	hr = mouse_input_->GetDeviceState(sizeof(mouse_state_), (LPVOID)&mouse_state_);
 
 	if (FAILED(hr)) {
 		if ((hr == DIERR_INPUTLOST) || (hr == DIERR_NOTACQUIRED))
 		{
-			mouseInput->Acquire();
+			mouse_input_->Acquire();
 		}
 	}
 
-	if (IsKeyReleased(DIK_L)) 
-		paused = !paused;
+	if (is_key_released(DIK_L)) 
+		paused_ = !paused_;
 
-	if (paused) return S_OK;
+	if (paused_) return S_OK;
 
-	if(fps)	MouseMoved(actor, gameTime);
+	if(fps_)	mouse_moved(actor, game_time);
 
-	if (IsKeyPressed(DIK_ESCAPE)) DestroyWindow(hWnd);
+	if (is_key_pressed(DIK_ESCAPE)) DestroyWindow(hwnd_);
 
-	// TODO:spawn gameobject
+	// TODO: spawn gameobject
 	//if (IsKeyPressed(DIK_P)) GameObject();
 
-	if (IsKeyPressed(DIK_A)) actor->transform.right(static_cast<float> (-gameTime->deltaTime() * move_speed));
-	if (IsKeyPressed(DIK_D)) actor->transform.right(static_cast<float>(gameTime->deltaTime() * move_speed));
-	if (IsKeyPressed(DIK_W)) actor->transform.horizontal_forward(static_cast<float>(gameTime->deltaTime()*move_speed));
-	if (IsKeyPressed(DIK_S)) actor->transform.horizontal_forward(static_cast<float>(-gameTime->deltaTime()*move_speed));
+	
+	if (is_key_pressed(DIK_SPACE))
+		if (is_key_pressed(DIK_LSHIFT))
+			actor->transform.up(static_cast<float> (-game_time->deltaTime() * move_speed_));
+		else
+			actor->transform.up(static_cast<float> (game_time->deltaTime() * move_speed_));
+
+	if (is_key_pressed(DIK_A)) actor->transform.right(static_cast<float> (-game_time->deltaTime() * move_speed_));
+	if (is_key_pressed(DIK_D)) actor->transform.right(static_cast<float>(game_time->deltaTime() * move_speed_));
+	if (is_key_pressed(DIK_W)) actor->transform.horizontal_forward(static_cast<float>(game_time->deltaTime()*move_speed_));
+	if (is_key_pressed(DIK_S)) actor->transform.horizontal_forward(static_cast<float>(-game_time->deltaTime()*move_speed_));
 
 
-	if (IsKeyPressed(DIK_LEFT)) actor->transform.rotate_fixed(0, static_cast<float>(-gameTime->deltaTime() * rot_speed /10), 0);
-	if (IsKeyPressed(DIK_RIGHT)) actor->transform.rotate_fixed(0, static_cast<float>(gameTime->deltaTime() * rot_speed/10), 0);
-	if (IsKeyPressed(DIK_UP)) actor->transform.rotate_fixed(static_cast<float>(-gameTime->deltaTime() * rot_speed/10), 0, 0);
-	if (IsKeyPressed(DIK_DOWN)) actor->transform.rotate_fixed(static_cast<float>(gameTime->deltaTime() * rot_speed/10), 0, 0);
+	if (is_key_pressed(DIK_LEFT)) actor->transform.rotate_fixed(0, static_cast<float>(-game_time->deltaTime() * rot_speed_ /10), 0);
+	if (is_key_pressed(DIK_RIGHT)) actor->transform.rotate_fixed(0, static_cast<float>(game_time->deltaTime() * rot_speed_/10), 0);
+	if (is_key_pressed(DIK_UP)) actor->transform.rotate_fixed(static_cast<float>(-game_time->deltaTime() * rot_speed_/10), 0, 0);
+	if (is_key_pressed(DIK_DOWN)) actor->transform.rotate_fixed(static_cast<float>(game_time->deltaTime() * rot_speed_/10), 0, 0);
 
 	return S_OK;
 }
 
-void Input::MouseMoved(GameObject* actor, VGTime* gameTime)
+void Input::mouse_moved(GameObject* actor, VGTime* game_time)
 {
-	mouse_x += mouseState.lX;
-	mouse_y += mouseState.lY;
+	mouse_x_ += mouse_state_.lX;
+	mouse_y_ += mouse_state_.lY;
 
-	actor->transform.rotate_fixed(static_cast<float> (mouseState.lY * gameTime->deltaTime() * rot_speed), static_cast<float> (mouseState.lX * gameTime->deltaTime() * rot_speed), 0);
+	actor->transform.rotate_fixed(static_cast<float> (mouse_state_.lY * game_time->deltaTime() * rot_speed_), static_cast<float> (mouse_state_.lX * game_time->deltaTime() * rot_speed_), 0);
 
-	mouse_x = mouse_x_center;
-	mouse_y = mouse_y_center;
-	SetCursorPos(mouse_x, mouse_x);
+	mouse_x_ = mouse_x_center_;
+	mouse_y_ = mouse_y_center_;
+	SetCursorPos(mouse_x_, mouse_x_);
 }
 
-bool Input::IsKeyPressed(unsigned char DI_keycode)
+bool Input::is_key_pressed(const unsigned char di_keycode)
 {
-	return keyboardKeysState[DI_keycode] & 0x80;
+	return keyboard_keys_state_[di_keycode] & 0x80;
 }
 
-bool Input::IsKeyReleased(unsigned char DI_keycode)
+bool Input::is_key_released(const unsigned char di_keycode)
 {
-	if (!IsKeyPressed(DI_keycode) && pressed[DI_keycode])
+	if (!is_key_pressed(di_keycode) && pressed_[di_keycode])
 	{
 #ifdef DEBUG
 		OutputDebugString("released");
 #endif
-		return !((pressed[DI_keycode] = !pressed[DI_keycode]));
+		return !((pressed_[di_keycode] = !pressed_[di_keycode]));
 	}
-	if (IsKeyPressed(DI_keycode)) pressed[DI_keycode] = true;
+	if (is_key_pressed(di_keycode)) pressed_[di_keycode] = true;
 
 	return false;
 }
 
-void Input::Cleanup()
+void Input::cleanup() const
 {
-	if (keyboard) {
-		keyboard->Unacquire();
-		keyboard->Release();
+	if (keyboard_) {
+		keyboard_->Unacquire();
+		keyboard_->Release();
 	}
-	if (mouseInput)
+	if (mouse_input_)
 	{
-		mouseInput->Unacquire();
-		mouseInput->Release();
+		mouse_input_->Unacquire();
+		mouse_input_->Release();
 	}
 }
