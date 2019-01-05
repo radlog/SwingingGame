@@ -43,6 +43,8 @@ public:
 	static const XMVECTOR world_forward;
 	static const XMVECTOR world_backward;
 
+	void apply_force(XMVECTOR force);
+
 protected:
 
 

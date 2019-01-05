@@ -7,9 +7,9 @@ public:
 	Command();
 	~Command();
 
-	void execute(Character actor);
+	void execute(Character actor) const;
 
 private:
-	GameData game_data;
+	GameData game_data_;
 };
 

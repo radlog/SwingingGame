@@ -2,15 +2,20 @@
 class Enemy : public Character
 {
 
-	enum Enemy_Type {
-		Grounder,
-		Swinger
+	enum ENEMY_TYPE {
+		GROUNDER,
+		SWINGER
 	};
 
 public:
 	Enemy();
 	~Enemy();
 
-	void attack(Character target);
+	void attack(Character target) const;
+	void cleanup() override;
+	void spawn(XMVECTOR position) override;
+	void render() override;
+	void start() override;
+	void update(VGTime timer) override;
 };
 

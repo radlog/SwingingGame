@@ -33,7 +33,6 @@ public:
 
 	state get_state() const;
 
-
 	void spawn(XMVECTOR position) override;
 	void render() override;
 	void start() override;
@@ -43,6 +42,8 @@ public:
 	void set_stat_deaths(int deaths);
 	void set_stat_score(int score);
 	Stats get_stats();
+	void die();
+	bool inflict(float dmg);
 protected:
 	Stats stats_;
 	int life_;

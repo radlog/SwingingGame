@@ -85,7 +85,7 @@ int WINAPI WinMain(const HINSTANCE instance, const HINSTANCE prev_instance, cons
 	while (msg.message != WM_QUIT)
 	{
 		timer->tick();
-		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+		if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
 		{
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
@@ -193,7 +193,7 @@ void update_graphics()
 
 void update_lava(const XMMATRIX view_projection, const float time)
 {
-	lava_floor.get_model()->UpdateConstantBuffer_TIME_SCALED(lava_floor.transform.world * view_projection,view_projection, directional_light_shines_from, directional_light_colour, ambient_light_colour, time);
+	lava_floor.get_model()->update_constant_buffer_time_scaled(lava_floor.transform.world * view_projection,view_projection, directional_light_shines_from, directional_light_colour, ambient_light_colour, time);
 	lava_floor.draw(view_projection);// , false, D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
 }
 
@@ -227,13 +227,13 @@ void load_content()
 	//char filename[] = "assets/FloatingIsland_001.obj";
 
 	model_test = new Model(dx_handle->device, dx_handle->immediate_context,(char*) "assets/Sphere.obj");
-	model_test->LoadTexture("assets/FloatingIsland_DIFFUSE.png");
+	model_test->load_texture("assets/FloatingIsland_DIFFUSE.png");
 	POS_TEX_NORM_COL_VERTEX* platform_placeholder =  Geometry::pos_tex_norm_col_cube(1.0f);
 	platform = new Model(dx_handle->device, dx_handle->immediate_context);
-	platform->LoadGeoModel(platform_placeholder, 36, sizeof(POS_TEX_NORM_COL_VERTEX));
-	platform->LoadTexture("assets/FloatingIsland_DIFFUSE.png");
+	platform->load_geo_model(platform_placeholder, 36, sizeof(POS_TEX_NORM_COL_VERTEX));
+	platform->load_texture("assets/FloatingIsland_DIFFUSE.png");
 
-	float plat_collision_radius = platform->getCollisionSphere().collisionRadius;
+	float plat_collision_radius = platform->get_collision_sphere().collision_radius;
 	plat_collision_radius = 2.0f;
 
 	for (size_t i = 0; i < upper_platform_count; i++)

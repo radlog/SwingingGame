@@ -101,4 +101,8 @@ void Transform::look_at(XMVECTOR target)
 
 }
 
+void Transform::apply_force(XMVECTOR force)
+{
+}
+
 

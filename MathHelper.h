@@ -38,5 +38,5 @@ inline Plane get_plane(const XMVECTOR v1, const XMVECTOR v2, const XMVECTOR v3)
 bool is_point_on_plane(const Plane plane, const XMVECTOR point)
 {
 	const XMVECTOR n = plane.normal;
-	return (n.x * point.x) + (n.y * point.y) + (n.z * point.z) + plane.d_offset == 0;
+	return (n.x * point.x) + (n.y * point.y) + (n.z * point.z) + plane.offset == 0;
 }

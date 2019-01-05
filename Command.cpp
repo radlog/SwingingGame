@@ -11,7 +11,7 @@ Command::~Command()
 {
 }
 
-void Command::execute(Character actor)
+void Command::execute(Character actor) const
 {
 	
 }

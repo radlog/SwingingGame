@@ -11,6 +11,7 @@ Collectable::~Collectable()
 {
 }
 
+
 Collectable::Collectable(ITEM_TYPE item_type)
 {
 }
@@ -23,6 +24,26 @@ void Collectable::collected(Character actor) const
 	case COIN: actor.set_stat_score(actor.get_stats().score + 1);
 	default: ;
 	}
+}
+
+void Collectable::spawn(XMVECTOR position)
+{
+}
+
+void Collectable::render()
+{
+}
+
+void Collectable::start()
+{
+}
+
+void Collectable::update(VGTime timer)
+{
+}
+
+void Collectable::cleanup()
+{
 }
 
 

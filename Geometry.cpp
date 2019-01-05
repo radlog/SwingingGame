@@ -223,10 +223,10 @@ void Geometry::create_indexed_tiled_textured_normal_plane(POS_TEX_NORM_COL_VERTE
 	{
 		for (size_t x = 0; x < (tiles + 1); x++)
 		{
-			plane_vertices[z*(tiles + 1) + x].Pos = XMFLOAT3(x * scale, 0.0f, z * scale);
-			plane_vertices[z*(tiles + 1) + x].Texture0 = XMFLOAT2((float)x, (float)z);
-			plane_vertices[z*(tiles + 1) + x].Normal = XMFLOAT3(0.0f, 1.0f, 0.0f);
-			plane_vertices[z*(tiles + 1) + x].Col = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+			plane_vertices[z*(tiles + 1) + x].pos = XMFLOAT3(x * scale, 0.0f, z * scale);
+			plane_vertices[z*(tiles + 1) + x].texture0 = XMFLOAT2((float)x, (float)z);
+			plane_vertices[z*(tiles + 1) + x].normal = XMFLOAT3(0.0f, 1.0f, 0.0f);
+			plane_vertices[z*(tiles + 1) + x].col = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 		}
 	}
 

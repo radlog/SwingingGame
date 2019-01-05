@@ -4,8 +4,8 @@
 
 struct SphereCollider
 {
-	XMVECTOR localPosition;
-	float collisionRadius;
+	XMVECTOR local_position;
+	float collision_radius;
 };
 
 enum CB_STATE
@@ -25,80 +25,83 @@ public:
 	Model(ID3D11Device* device, ID3D11DeviceContext* context, CB_STATE state = CB_STATE_SIMPLE);
 	~Model();
 
-	HRESULT LoadObjModel(char* filename);
-	HRESULT LoadGeoModel(void* vertices, UINT numverts, UINT single_vertex_bytesize, unsigned int *indices, UINT numIndices);
-	HRESULT LoadGeoModel(void* vertices, UINT numverts, UINT single_vertex_bytesize);
+	HRESULT load_obj_model(char* filename);
+	HRESULT load_geo_model(void* vertices, UINT num_verts, UINT single_vertex_bytesize, unsigned int *indices, UINT
+	                       num_indices);
+	HRESULT load_geo_model(void* vertices, UINT numverts, UINT single_vertex_bytesize);
 
 	void set_shader_file(char* shader_file);
 
-	void Draw(XMMATRIX view_projection, bool use_simple_cb, D3D11_PRIMITIVE_TOPOLOGY mode = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	void Cleanup() const;
+	void draw(XMMATRIX view_projection, bool use_simple_cb, D3D11_PRIMITIVE_TOPOLOGY mode = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	void cleanup() const;
 
-	HRESULT LoadTexture(LPCSTR filename = "assets/crate.jpg");
-	HRESULT LoadNormal(LPCSTR filename);
+	HRESULT load_texture(LPCSTR filename = "assets/crate.jpg");
+	HRESULT load_normal(LPCSTR filename);
 
-	void UpdateConstantBuffer_FULL(XMMATRIX world_view_projection,XMMATRIX view_projection, XMVECTOR directional_light_vector, XMVECTOR directional_light_color, XMVECTOR ambient_light_color, XMVECTOR rgb_amount, float gameTime);
-	void UpdateConstantBuffer_TIME_SCALED(XMMATRIX world_view_projection, XMMATRIX view_projection, XMVECTOR directional_light_vector, XMVECTOR directional_light_color, XMVECTOR ambient_light_color, float gameTime);
-	void UpdateConstantBuffer_LIGHTED(XMMATRIX world_view_projection, XMVECTOR directional_light_vector, XMVECTOR directional_light_color, XMVECTOR ambient_light_color);
-	SphereCollider getCollisionSphere() const;
-	void Update();
+	void update_constant_buffer_full(XMMATRIX world_view_projection,XMMATRIX view_projection, XMVECTOR directional_light_vector, XMVECTOR directional_light_color, XMVECTOR ambient_light_color, XMVECTOR rgb_amount, float gameTime);
+	void update_constant_buffer_time_scaled(XMMATRIX world_view_projection, XMMATRIX view_projection, XMVECTOR directional_light_vector, XMVECTOR directional_light_color, XMVECTOR ambient_light_color, float
+	                                        game_time);
+	void update_constant_buffer_lighted(XMMATRIX world_view_projection, XMVECTOR directional_light_vector, XMVECTOR directional_light_color, XMVECTOR ambient_light_color);
+	SphereCollider get_collision_sphere() const;
+	void update() const;
 
 
 protected:
-	ObjFileModel* objFileModel;
+	ObjFileModel *obj_file_model_;
 
-	void *cb;
-	CONSTANT_BUFFER_SIMPLE cb_simple;
-	CONSTANT_BUFFER_LIGHTED cb_lighted;
-	CONSTANT_BUFFER_TIME_SCALED cb_time_scaled_lighted;
-	CONSTANT_BUFFER_FULL cb_full;
-	string shader_file = "default_shader.hlsl";
-	string objfile;
-	ID3D11Device* device;
-	ID3D11DeviceContext* immediateContext;
+	void *cb_;
+	CONSTANT_BUFFER_SIMPLE cb_simple_;
+	CONSTANT_BUFFER_LIGHTED cb_lighted_;
+	CONSTANT_BUFFER_TIME_SCALED cb_time_scaled_lighted_;
+	CONSTANT_BUFFER_FULL cb_full_;
+	string shader_file_ = "default_shader.hlsl";
+	string objfile_;
+	ID3D11Device *device_;
+	ID3D11DeviceContext *immediate_context_;
 
 
-	ID3D11VertexShader* vShader;
-	ID3D11PixelShader* pShader;
-	ID3DBlob *VS, *PS;
-	ID3D11InputLayout* inputLayout;
-	ID3D11Buffer* constantBuffer;
-	ID3D11Buffer* vertexBuffer;
-	ID3D11Buffer* indexBuffer;
+	ID3D11VertexShader *v_shader_;
+	ID3D11PixelShader *p_shader_;
+	ID3DBlob *vs_, *ps_;
+	ID3D11InputLayout *input_layout_;
+	ID3D11Buffer *constant_buffer_;
+	ID3D11Buffer *vertex_buffer_;
+	ID3D11Buffer *index_buffer_;
 
-	ID3D11SamplerState * sampler0;
-	ID3D11ShaderResourceView *texture;
+	ID3D11SamplerState *sampler0_;
+	ID3D11ShaderResourceView *texture_;
+	ID3D11ShaderResourceView *normal_;
 
-	SphereCollider sphereCollider;
-	XMVECTOR minOuterVector;
-	XMVECTOR maxOuterVector;
-	XMVECTOR origin;
+	SphereCollider sphere_collider_;
+	XMVECTOR min_outer_vector_;
+	XMVECTOR max_outer_vector_;
+	XMVECTOR origin_;
 
-	UINT numverts;
-	UINT vertSize;
-	void *vertices;
-	UINT numIndices;
-	unsigned int *indices;
+	UINT numverts_;
+	UINT vert_size_;
+	void *vertices_;
+	UINT num_indices_;
+	unsigned int *indices_;
 
-	void CalculateOrigin();
-	void InitializeCollider();
+	void calculate_origin();
+	void initialize_collider();
 
-	bool recalcOrigin = false;
+	bool recalc_origin_ = false;
 
-	CB_STATE state;
+	CB_STATE state_;
 
-	HRESULT CreateConstantBuffer_FULL();
-	HRESULT CreateConstantBuffer_TIME_SCALED();
-	HRESULT CreateConstantBuffer_LIGHTED();
-	HRESULT CreateConstantBuffer_SIMPLE();
-	HRESULT CreateConstantBuffer(UINT bytewidth);
+	HRESULT create_constant_buffer_full();
+	HRESULT create_constant_buffer_time_scaled();
+	HRESULT create_constant_buffer_lighted();
+	HRESULT create_constant_buffer_simple();
+	HRESULT create_constant_buffer(UINT byte_width);
 
-	HRESULT CompileShaders();
-	HRESULT SetDefaultInputLayout();
-	HRESULT SetInputLayout(D3D11_INPUT_ELEMENT_DESC iedesc[], int size);
-	HRESULT CreateDefaultSamplerForTexture();
-	HRESULT UpdateDefaultVertexBuffer(void* vertices, UINT byteWidth);
-	HRESULT CreateIndexBuffer();
+	HRESULT compile_shaders();
+	HRESULT set_default_input_layout();
+	HRESULT set_input_layout(D3D11_INPUT_ELEMENT_DESC iedesc[], int size);
+	HRESULT create_default_sampler_for_texture();
+	HRESULT update_default_vertex_buffer(void* vertices, UINT byte_width);
+	HRESULT create_index_buffer();
 
 	void* get_constant_buffer_state();
 };

@@ -14,32 +14,32 @@ using namespace std;
 class ObjFileModel
 {
 private:
-	ID3D11Device*           pD3DDevice;
-	ID3D11DeviceContext*    pImmediateContext;
+	ID3D11Device*           device_;
+	ID3D11DeviceContext*    immediate_context_;
 
 
 
 //////////////////////////////////////////////////
 
-	int loadfile(char* fname);
+	int load_file(char* filename);
 
-	char* fbuffer;
-	long fbuffersize; // filesize
-	size_t actualsize; // actual size of loaded data (can be less if loading as text files as ASCII CR (0d) are stripped out)
-
-//////////////////////////////////////////////////
-
-	void parsefile();
-	bool getnextline() ;
-	bool getnexttoken(int& tokenstart, int& tokenlength);
-
-	unsigned int  tokenptr;
+	char* fbuffer_;
+	long fbuffersize_; // filesize
+	size_t actualsize_; // actual size of loaded data (can be less if loading as text files as ASCII CR (0d) are stripped out)
 
 //////////////////////////////////////////////////
 
-	bool createVB();
+	void parse_file();
+	bool get_next_line() ;
+	bool get_next_token(int& tokenstart, int& tokenlength);
 
-	ID3D11Buffer* pVertexBuffer; 
+	unsigned int  tokenptr_;
+
+//////////////////////////////////////////////////
+
+	bool create_vb();
+
+	ID3D11Buffer* vertex_buffer_; 
 
 public:
 
@@ -54,7 +54,7 @@ public:
 	ObjFileModel(char* filename, ID3D11Device* device, ID3D11DeviceContext* context);
 	~ObjFileModel();
 
-	void Draw(void);
+	void draw(void) const;
 
 	vector <xyz> position_list;		// list of parsed positions
 	vector <xyz> normal_list;		// list of parsed normals
@@ -65,7 +65,7 @@ public:
 	unsigned int *indices;
 	unsigned int numverts;
 
-	vector<XMVECTOR>  getVertexPositions();
+	vector<XMVECTOR>  get_vertex_positions() const;
 };
 
 

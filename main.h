@@ -7,5 +7,5 @@
 #include "Camera.h"
 #include "GameObject.h"
 #include "Skybox.h"
-HINSTANCE g_hInst = NULL;
-HWND g_hWnd = NULL;
+HINSTANCE g_hInst = nullptr;
+HWND g_hWnd = nullptr;

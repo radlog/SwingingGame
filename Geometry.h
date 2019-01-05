@@ -3,44 +3,44 @@
 
 struct POS_TEX_VERTEX
 {
-	XMFLOAT3 Pos;	
-	XMFLOAT2 Texture0;
+	XMFLOAT3 pos;	
+	XMFLOAT2 texture0;
 };
 
 struct POS_COL_VERTEX
 {
-	XMFLOAT3 Pos;
-	XMFLOAT4 Col;
+	XMFLOAT3 pos;
+	XMFLOAT4 col;
 };
 
 struct POS_COL_TEX_VERTEX
 {
-	XMFLOAT3 Pos;
-	XMFLOAT4 Col;
-	XMFLOAT2 Texture0;
+	XMFLOAT3 pos;
+	XMFLOAT4 col;
+	XMFLOAT2 texture0;
 };
 
 struct POS_TEX_NORM_COL_VERTEX
 {
-	XMFLOAT3 Pos;	
-	XMFLOAT2 Texture0;
-	XMFLOAT3 Normal;
-	XMFLOAT4 Col;
+	XMFLOAT3 pos;	
+	XMFLOAT2 texture0;
+	XMFLOAT3 normal;
+	XMFLOAT4 col;
 };
 
 // Define model vertex structure
 struct MODEL_POS_TEX_NORM_VERTEX
 {
-	XMFLOAT3 Pos;
-	XMFLOAT2 TexCoord;
-	XMFLOAT3 Normal;
+	XMFLOAT3 pos;
+	XMFLOAT2 texcoord;
+	XMFLOAT3 normal;
 };
 
 // structure representing a plane used for collision detection
 struct Plane
 {
 	XMVECTOR normal; // normal of a plane
-	float d_offset; // offset of the normal
+	float offset; // offset of the normal
 };
 
 class Geometry

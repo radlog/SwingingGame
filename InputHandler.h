@@ -9,15 +9,15 @@ public:
 	~InputHandler();
 
 private:
-	Command* w_button;
-	Command* a_button;
-	Command* s_button;
-	Command* d_button;
-	Command* c_button;
-	Command* jump_button;
-	Command* shoot_button;
-	Command* hook_button;
+	Command* w_button_;
+	Command* a_button_;
+	Command* s_button_;
+	Command* d_button_;
+	Command* c_button_;
+	Command* jump_button_;
+	Command* shoot_button_;
+	Command* hook_button_;
 
-	Input input;
+	Input input_;
 };
 
