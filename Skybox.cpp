@@ -12,7 +12,7 @@ Skybox::Skybox()
 
 Skybox::Skybox(const LPCSTR texture_name) : GameObject(texture_name)
 {
-	POS_TEX_VERTEX* skybox_desc = Geometry::create_textured_skybox(20.0f);
+	POS_TEX_VERTEX* skybox_desc = Geometry::create_skybox(20.0f);
 	model_ = new Model();
 	char filename[] = "skybox_shader.hlsl";
 	model_->set_shader_file(filename);

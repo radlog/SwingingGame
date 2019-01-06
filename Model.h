@@ -41,7 +41,7 @@ public:
 	void update_constant_buffer_full(XMMATRIX world_view_projection,XMMATRIX view_projection, XMVECTOR directional_light_vector, XMVECTOR directional_light_color, XMVECTOR ambient_light_color, XMVECTOR rgb_amount, float gameTime);
 	void update_constant_buffer_time_scaled(XMMATRIX world_view_projection, XMMATRIX view_projection, XMVECTOR directional_light_vector, XMVECTOR directional_light_color, XMVECTOR ambient_light_color, float
 	                                        game_time);
-	void update_constant_buffer_lighted(XMMATRIX world_view_projection, XMVECTOR directional_light_vector, XMVECTOR directional_light_color, XMVECTOR ambient_light_color);
+	void update_constant_buffer_lighted(XMMATRIX world_view_projection, const XMMATRIX view_projection, XMVECTOR directional_light_vector, XMVECTOR directional_light_color, XMVECTOR ambient_light_color);
 	SphereCollider get_collision_sphere() const;
 	void update() const;
 

@@ -4,7 +4,7 @@ TextureCube cube0;
 
 cbuffer CB0
 {
-    matrix WVPMatrix; // 64 bytes
+    matrix WorldViewProjection; // 64 bytes
 }; // total = 64 bytes
 
 
@@ -20,7 +20,7 @@ VOut VShader(float4 position : POSITION, float3 texcoord : TEXCOORD, float3 norm
     VOut output;
 
     output.texcoord = position.xyz;
-    output.position = mul(WVPMatrix, position);
+    output.position = mul(WorldViewProjection, position);
     //normalize(output.position);
     //normalize(output.texcoord);
 

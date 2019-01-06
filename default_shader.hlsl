@@ -4,7 +4,7 @@ TextureCube skybox;
 
 cbuffer CB0
 {
-	matrix WVPMatrix; // 64 bytes
+	matrix WorldViewProjection; // 64 bytes
 
 }; // total = 64 bytes
 
@@ -21,7 +21,7 @@ VOut VShader(float4 position: POSITION, float2 texcoord : TEXCOORD, float3 norma
 	VOut output;
 
 	float4 default_color = { 1.0,1.0,1.0,1.0 };
-	output.position = mul(WVPMatrix, position);
+	output.position = mul(WorldViewProjection, position);
 	output.texcoord = texcoord;
 	output.color = default_color;
 

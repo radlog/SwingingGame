@@ -7,7 +7,7 @@ SamplerState sampler0;
 cbuffer CB0
 {
     matrix WorldViewProjection; // 64 bytes
-    matrix ViewProjection; // 64 bytes
+	matrix ViewProjection; // 64 bytes
     float4 directional_light; // 16 bytes
     float4 directional_light_colour; // 16 bytes
     float4 ambient_light_colour; // 16 bytes

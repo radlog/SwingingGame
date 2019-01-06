@@ -201,14 +201,6 @@ void D3Dfw::cleanup() const
 {
 	if (device_) device_->Release();
 	if (immediate_context_) immediate_context_->Release();
-	if (v_shader_) v_shader_->Release();
-	if (p_shader_) p_shader_->Release();
-	if (vs_) vs_->Release();
-	if (ps_) ps_->Release();
-	if (input_layout_) input_layout_->Release();
-	if (constant_buffer_) constant_buffer_->Release();
-	if (constant_buffer0_) constant_buffer0_->Release();
-	if (vertex_buffer_) vertex_buffer_->Release();
 	if (render_target_view_) render_target_view_->Release();
 	if (z_buffer_) z_buffer_->Release();
 	if (swap_chain_) swap_chain_->Release();

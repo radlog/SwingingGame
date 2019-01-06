@@ -1,4 +1,6 @@
 #pragma once
+
+// input layout with position, texture coord, normal, color of a vertex
 static const D3D11_INPUT_ELEMENT_DESC pos_tex_norm_col[] =
 {
 	{"POSITION", 0,DXGI_FORMAT_R32G32B32_FLOAT,0,0,D3D11_INPUT_PER_VERTEX_DATA,0},
@@ -7,6 +9,7 @@ static const D3D11_INPUT_ELEMENT_DESC pos_tex_norm_col[] =
 	{"COLOR",0,DXGI_FORMAT_R32G32B32_FLOAT,0,D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA,0}
 };
 
+// input layout with position, texture coord, normal of a vertex
 static const D3D11_INPUT_ELEMENT_DESC pos_tex_norm[] =
 {
 	{"POSITION", 0,DXGI_FORMAT_R32G32B32_FLOAT,0,0,D3D11_INPUT_PER_VERTEX_DATA,0},
@@ -14,6 +17,7 @@ static const D3D11_INPUT_ELEMENT_DESC pos_tex_norm[] =
 	{"NORMAL",0,DXGI_FORMAT_R32G32B32_FLOAT,0,D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA,0}
 };
 
+// input layout with position, normal, color of a vertex
 static const D3D11_INPUT_ELEMENT_DESC pos_col_norm[] =
 {
 	{"POSITION", 0,DXGI_FORMAT_R32G32B32_FLOAT,0,0,D3D11_INPUT_PER_VERTEX_DATA,0},
@@ -21,12 +25,14 @@ static const D3D11_INPUT_ELEMENT_DESC pos_col_norm[] =
 	{"NORMAL",0,DXGI_FORMAT_R32G32B32_FLOAT,0,D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA,0}
 };
 
+// input layout with position, texture coord of a vertex
 static const D3D11_INPUT_ELEMENT_DESC pos_tex[] =
 {
 	{"POSITION", 0,DXGI_FORMAT_R32G32B32_FLOAT,0,0,D3D11_INPUT_PER_VERTEX_DATA,0},
 	{"TEXCOORD",0,DXGI_FORMAT_R32G32_FLOAT,0,D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA,0}
 };
 
+// input layout with position, color of a vertex
 static const D3D11_INPUT_ELEMENT_DESC pos_col[] =
 {
 	{"POSITION", 0,DXGI_FORMAT_R32G32B32_FLOAT,0,0,D3D11_INPUT_PER_VERTEX_DATA,0},

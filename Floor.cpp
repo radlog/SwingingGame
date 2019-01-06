@@ -24,7 +24,7 @@ Floor::Floor(LPCSTR texture, int tiles, float scale) : GameObject(texture)
 	this->scale_ = scale;
 
 	model_ = new Model();
-	Geometry::create_indexed_tiled_textured_normal_plane(&plane_vertices_, &plane_indices_, tiles, scale);
+	Geometry::plane_ittn(&plane_vertices_, &plane_indices_, tiles, scale);
 	model_->load_geo_model(plane_vertices_, (tiles + 1)*(tiles + 1), sizeof(POS_TEX_NORM_COL_VERTEX), plane_indices_, tiles * tiles * 6);
 	model_->load_texture();
 
@@ -44,8 +44,5 @@ Plane Floor::get_collider()
 	return plane_collider_ = get_plane(v1, v2, v3);
 }
 
-void Floor::cleanup()
-{
-}
 
 

@@ -24,7 +24,7 @@ Model::Model(const CB_STATE state)
 	this->state_ = state;
 	switch (state)
 	{
-	case CB_STATE_FULL: create_constant_buffer_simple(); break;
+	case CB_STATE_FULL: create_constant_buffer_full(); break;
 	case CB_STATE_LIGHTED: create_constant_buffer_lighted(); break;
 	case CB_STATE_TIME_SCALED: create_constant_buffer_time_scaled(); break;
 	default: create_constant_buffer_simple(); break;
@@ -304,10 +304,11 @@ void Model::update_constant_buffer_time_scaled(const XMMATRIX world_view_project
 	cb_ = &cb_time_scaled_lighted_;
 }
 
-void Model::update_constant_buffer_lighted(const XMMATRIX world_view_projection, const XMVECTOR directional_light_vector,
+void Model::update_constant_buffer_lighted(const XMMATRIX world_view_projection, const XMMATRIX view_projection,  const XMVECTOR directional_light_vector,
                                            const XMVECTOR directional_light_color, const XMVECTOR ambient_light_color)
 {
 	cb_lighted_.world_view_projection = world_view_projection;
+	cb_lighted_.view_projection = view_projection;
 	cb_lighted_.directional_light_vector = directional_light_vector;
 	cb_lighted_.directional_light_colour = directional_light_color;
 	cb_lighted_.ambient_light_colour = ambient_light_color;

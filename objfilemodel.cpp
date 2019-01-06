@@ -8,7 +8,7 @@
 // draw object
 void ObjFileModel::draw() const
 {
-	UINT stride = sizeof(MODEL_POS_TEX_NORM_VERTEX);
+	UINT stride = sizeof(POS_TEX_NORM_VERTEX);
 	UINT offset = 0;
 	immediate_context_->IASetVertexBuffers(0, 1, &vertex_buffer_, &stride, &offset);
 	immediate_context_->Draw(numverts, 0);
@@ -229,7 +229,7 @@ bool ObjFileModel::create_vb()
 	// create vertex array to pass to vertex buffer from parsed data
 	numverts = pindices.size();
 
-	vertices = new MODEL_POS_TEX_NORM_VERTEX[numverts]; // create big enough vertex array
+	vertices = new POS_TEX_NORM_VERTEX[numverts]; // create big enough vertex array
 
 	for(unsigned int i = 0; i< numverts; i++)
 	{

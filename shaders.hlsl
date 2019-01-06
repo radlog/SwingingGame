@@ -4,6 +4,7 @@ SamplerState sampler0;
 cbuffer CBuffer0
 {
 	float4x4 WVPMatrix; // 64 bytes
+	float4x4 ViewProjection; // 64 bytes
 	float4 directional_light_vector;
 	float4 directional_light_colour;
 	float4 ambient_light_colour;

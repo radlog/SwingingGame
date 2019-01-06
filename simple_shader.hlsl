@@ -3,7 +3,7 @@ SamplerState sampler0;
 
 cbuffer CBuffer0
 {
-    float4x4 WVPMatrix; // 64 bytes
+    float4x4 WorldViewProjection; // 64 bytes
 }; // total  64 bytes
 
 
@@ -18,7 +18,7 @@ VOut VShader(float4 position : POSITION, float4 color : COLOR)
     VOut output;
 
 
-    output.position = mul(WVPMatrix, position);
+    output.position = mul(WorldViewProjection, position);
     output.color = color;
 
     return output;

@@ -217,7 +217,7 @@ void load_content()
 
 	model_test = new Model("assets/Sphere.obj");
 	model_test->load_texture("assets/FloatingIsland_DIFFUSE.png");
-	POS_TEX_NORM_COL_VERTEX* platform_placeholder =  Geometry::pos_tex_norm_col_cube(1.0f);
+	POS_TEX_NORM_COL_VERTEX* platform_placeholder =  Geometry::cube_ptnc(1.0f);
 	platform = new Model(CB_STATE_SIMPLE);
 	platform->load_geo_model(platform_placeholder, 36, sizeof(POS_TEX_NORM_COL_VERTEX));
 	platform->load_texture("assets/FloatingIsland_DIFFUSE.png");
@@ -245,7 +245,7 @@ void load_content()
 		lower_platforms[i] = GameObject(&"upperPlatform"[i], platform, Transform(platform_scale, rotation, XMVectorSet((i + 4) * plat_collision_radius * 3, 0, 1.0f, 0.0f)));
 	}
 
-	player.add_child(&upper_platforms[0]);
+	//player.add_child(&upper_platforms[0]);
 	//LoadLava();
 
 	timer->start();

@@ -145,7 +145,7 @@ void GameObject::start()
 
 void GameObject::update(VGTime timer)
 {
-	if (is_kinetic_)
+	if (!is_kinetic_)
 	{
 		if (!is_grounded_)
 		{

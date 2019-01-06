@@ -61,7 +61,7 @@ public:
 	vector <xy> texcoord_list;		// list of parsed texture coordinates
 	vector <int> pindices, tindices, nindices; // lists of indicies into above lists derived from faces
 
-	MODEL_POS_TEX_NORM_VERTEX* vertices;
+	POS_TEX_NORM_VERTEX* vertices;
 	unsigned int *indices;
 	unsigned int numverts;
 
