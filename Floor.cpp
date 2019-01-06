@@ -18,7 +18,7 @@ Floor::~Floor()
  * \param tiles 
  * \param scale 
  */
-Floor::Floor(LPCSTR texture, int tiles, float scale) : GameObject(texture, get_collision_type(GROUND))
+Floor::Floor(LPCSTR texture, int tiles, float scale) : GameObject(texture)
 {
 	this->tiles_ = tiles;
 	this->scale_ = scale;
@@ -26,7 +26,6 @@ Floor::Floor(LPCSTR texture, int tiles, float scale) : GameObject(texture, get_c
 	model_ = new Model();
 	Geometry::create_indexed_tiled_textured_normal_plane(&plane_vertices_, &plane_indices_, tiles, scale);
 	model_->load_geo_model(plane_vertices_, (tiles + 1)*(tiles + 1), sizeof(POS_TEX_NORM_COL_VERTEX), plane_indices_, tiles * tiles * 6);
-
 	model_->load_texture();
 
 	transform = Transform(XMVectorSet(scale, 1.0f, scale, 0.0f), XMQuaternionIdentity(), XMVectorSet((-tiles * scale) / 2, -10.0f, (-tiles * scale) / 2, 0.0f));
@@ -38,9 +37,15 @@ Floor::Floor(LPCSTR texture, int tiles, float scale) : GameObject(texture, get_c
 
 Plane Floor::get_collider()
 {
-	return plane_collider_ = get_plane(XMLoadFloat3(&plane_vertices_[0].pos) + transform.local_position, XMLoadFloat3(&plane_vertices_[tiles_ + 1].pos) + transform.local_position, XMLoadFloat3(&plane_vertices_[(tiles_ + 1) * (tiles_ + 1)].pos) + transform.local_position);
+	XMVECTOR local_position = transform.get_local_position();
+	XMVECTOR v1 = XMLoadFloat3(&plane_vertices_[0].pos) + local_position;
+	XMVECTOR v2 = XMLoadFloat3(&plane_vertices_[tiles_ + 1].pos) + local_position;
+	XMVECTOR v3 = XMLoadFloat3(&plane_vertices_[(tiles_ + 1) * (tiles_ + 1)].pos) + local_position;
+	return plane_collider_ = get_plane(v1, v2, v3);
 }
 
 void Floor::cleanup()
 {
 }
+
+

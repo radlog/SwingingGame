@@ -4,8 +4,7 @@
 
 Camera::Camera()
 {
-	transform = Transform();
-	transform.local_position = XMVectorSet(0.0, 0.0, -20.0, 0.0);
+	transform = Transform(XMVectorSet(1,1,1,0),XMQuaternionIdentity(), XMVectorSet(0.0, 0.0, -20.0, 0.0));	
 	//XMStoreFloat4x4(&world, transform.calculate_world_transform());
 	view_ = XMMatrixIdentity();
 	projection_ = XMMatrixPerspectiveFovLH(XMConvertToRadians(default_fov_), default_aspect_ratio_, default_near_plane_, default_far_plane_);
@@ -16,7 +15,7 @@ Camera::~Camera()
 {
 }
 
-Camera::Camera(float fov, float aspect_ratio, float near_plane, float far_plane)
+Camera::Camera(const LPCSTR name, const float fov, const float aspect_ratio, const float near_plane, const float far_plane) : GameObject(name), look_at_(XMVectorSet(0,0,0,0))
 {
 	transform = Transform();
 	view_ = XMMatrixIdentity();
@@ -91,7 +90,7 @@ XMMATRIX Camera::calculate_view_projection()
 	return view_projection;
 }
 
-void Camera::look_at(XMVECTOR target)
+void Camera::look_at(XMVECTOR target) const
 {
 }
 

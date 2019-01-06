@@ -120,9 +120,7 @@ HRESULT Input::initialise_input(const HINSTANCE instance, const HWND hwnd)
 
 HRESULT Input::update_input(GameObject* actor, VGTime* game_time)
 {
-	
-	HRESULT hr = NULL;
-	hr = keyboard_->GetDeviceState(sizeof(keyboard_keys_state_), (LPVOID)&keyboard_keys_state_);
+	HRESULT hr = keyboard_->GetDeviceState(sizeof(keyboard_keys_state_), (LPVOID)&keyboard_keys_state_);
 
 	if (FAILED(hr)) {
 		if ((hr == DIERR_INPUTLOST) || (hr == DIERR_NOTACQUIRED))
@@ -155,20 +153,20 @@ HRESULT Input::update_input(GameObject* actor, VGTime* game_time)
 	
 	if (is_key_pressed(DIK_SPACE))
 		if (is_key_pressed(DIK_LSHIFT))
-			actor->transform.up(static_cast<float> (-game_time->deltaTime() * move_speed_));
+			actor->transform.up(static_cast<float> (-game_time->delta_time() * move_speed_));
 		else
-			actor->transform.up(static_cast<float> (game_time->deltaTime() * move_speed_));
+			actor->transform.up(static_cast<float> (game_time->delta_time() * move_speed_));
 
-	if (is_key_pressed(DIK_A)) actor->transform.right(static_cast<float> (-game_time->deltaTime() * move_speed_));
-	if (is_key_pressed(DIK_D)) actor->transform.right(static_cast<float>(game_time->deltaTime() * move_speed_));
-	if (is_key_pressed(DIK_W)) actor->transform.horizontal_forward(static_cast<float>(game_time->deltaTime()*move_speed_));
-	if (is_key_pressed(DIK_S)) actor->transform.horizontal_forward(static_cast<float>(-game_time->deltaTime()*move_speed_));
+	if (is_key_pressed(DIK_A)) actor->move_left(game_time->delta_time() * move_speed_);
+	if (is_key_pressed(DIK_D)) actor->move_right(game_time->delta_time() * move_speed_);
+	if (is_key_pressed(DIK_W)) actor->move_horizontal_forward(game_time->delta_time() * move_speed_);
+	if (is_key_pressed(DIK_S)) actor->move_horizontal_backward(game_time->delta_time() * move_speed_);
 
 
-	if (is_key_pressed(DIK_LEFT)) actor->transform.rotate_fixed(0, static_cast<float>(-game_time->deltaTime() * rot_speed_ /10), 0);
-	if (is_key_pressed(DIK_RIGHT)) actor->transform.rotate_fixed(0, static_cast<float>(game_time->deltaTime() * rot_speed_/10), 0);
-	if (is_key_pressed(DIK_UP)) actor->transform.rotate_fixed(static_cast<float>(-game_time->deltaTime() * rot_speed_/10), 0, 0);
-	if (is_key_pressed(DIK_DOWN)) actor->transform.rotate_fixed(static_cast<float>(game_time->deltaTime() * rot_speed_/10), 0, 0);
+	if (is_key_pressed(DIK_LEFT)) actor->transform.rotate_fixed(0, static_cast<float>(-game_time->delta_time() * rot_speed_ /10), 0);
+	if (is_key_pressed(DIK_RIGHT)) actor->transform.rotate_fixed(0, static_cast<float>(game_time->delta_time() * rot_speed_/10), 0);
+	if (is_key_pressed(DIK_UP)) actor->transform.rotate_fixed(static_cast<float>(-game_time->delta_time() * rot_speed_/10), 0, 0);
+	if (is_key_pressed(DIK_DOWN)) actor->transform.rotate_fixed(static_cast<float>(game_time->delta_time() * rot_speed_/10), 0, 0);
 
 	return S_OK;
 }
@@ -178,7 +176,7 @@ void Input::mouse_moved(GameObject* actor, VGTime* game_time)
 	mouse_x_ += mouse_state_.lX;
 	mouse_y_ += mouse_state_.lY;
 
-	actor->transform.rotate_fixed(static_cast<float> (mouse_state_.lY * game_time->deltaTime() * rot_speed_), static_cast<float> (mouse_state_.lX * game_time->deltaTime() * rot_speed_), 0);
+	actor->transform.rotate_fixed(static_cast<float> (mouse_state_.lY * game_time->delta_time() * rot_speed_), static_cast<float> (mouse_state_.lX * game_time->delta_time() * rot_speed_), 0);
 
 	mouse_x_ = mouse_x_center_;
 	mouse_y_ = mouse_y_center_;
@@ -195,7 +193,7 @@ bool Input::is_key_released(const unsigned char di_keycode)
 	if (!is_key_pressed(di_keycode) && pressed_[di_keycode])
 	{
 #ifdef DEBUG
-		OutputDebugString("released");
+		//OutputDebugString("released");
 #endif
 		return !((pressed_[di_keycode] = !pressed_[di_keycode]));
 	}

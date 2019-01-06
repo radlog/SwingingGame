@@ -6,8 +6,8 @@ public:
 	VGTime();
 	~VGTime();
 
-	double deltaTime() const;
-	double totalTime() const;
+	double delta_time() const;
+	double total_time() const;
 
 	void start();
 	void tick();
@@ -16,23 +16,23 @@ public:
 	void stop();
 	void reset();
 
-	int getFPS();
+	int get_fps();
 
 private:
 	//Storage of time
-	long long int _start; //startTime
-	long long int _paused; //Time when the timer was paused
-	long long int _idle; //total time the timer was paused
-	long long int _current; //currentTime
-	long long int _previous; //time of the previous tick
+	long long int start_; //startTime
+	long long int paused_; //Time when the timer was paused
+	long long int idle_; //total time the timer was paused
+	long long int current_; //currentTime
+	long long int previous_; //time of the previous tick
 
-	double _total; //total time the timer ran(total lifetime - idle)
-	double _delta; //time between two frames
-	double _seconds_per_tick;
+	double total_; //total time the timer ran(total lifetime - idle)
+	double delta_; //time between two frames
+	double seconds_per_tick_;
 
-	bool _is_paused;
+	bool is_paused_;
 
-	int fps = 0;
+	int fps_ = 0;
 
 };
 

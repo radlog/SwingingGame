@@ -7,7 +7,7 @@ public:
 	Camera();
 	~Camera();
 
-	Camera(float fov, float aspect_ratio, float near_plane, float far_plane);
+	explicit Camera(LPCSTR name, float fov = 80.0f, float aspect_ratio = 640.0f / 480.0f, float near_plane = 0.1f, float far_plane = 300.0f);
 
 	void set_fov(float fov);
 	void set_aspect_ratio(float aspect_ratio);
@@ -22,11 +22,9 @@ public:
 	XMMATRIX view_projection;
 	XMMATRIX calculate_view_projection();
 
-	void look_at(XMVECTOR target);
+	void look_at(XMVECTOR target) const;
 
 private:
-
-
 
 	float fov_;
 	float aspect_ratio_;
@@ -39,9 +37,9 @@ private:
 
 	//////////////////////////////////////////////////////////////////CONSTANTS///////////////////////////////////////////////////////////////////////////
 	//FOV
-	const float default_fov_ = 80.0;
-	const float min_fov_ = 45.0;
-	const float max_fov_ = 114.0;
+	const float default_fov_ = 80.0f;
+	const float min_fov_ = 45.0f;
+	const float max_fov_ = 114.0f;
 	//ASPECT_RATIO
 	const float default_aspect_ratio_ = 640.0f/480.0f;
 	const float min_aspect_ratio_ = 0.1f;

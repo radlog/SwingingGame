@@ -27,11 +27,11 @@ Skybox::Skybox(const LPCSTR name, Transform transform, Model model): Skybox(name
 {
 }
 
-void Skybox::draw(const XMMATRIX view_projection, const D3D11_PRIMITIVE_TOPOLOGY mode) const
+void Skybox::draw(const XMMATRIX view_projection, const D3D11_PRIMITIVE_TOPOLOGY mode)
 {
 	//immediateContext->RSSetState(rasterizerSky);
 	immediate_context_->OMSetDepthStencilState(depth_write_sky_,0);
-	model_->draw(transform.world* view_projection, mode);
+	model_->draw(transform.get_world()* view_projection, mode);
 	immediate_context_->OMSetDepthStencilState(depth_write_solid_, 0);
 	//immediateContext->RSSetState(rasterizerSolid);
 }

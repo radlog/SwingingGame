@@ -14,11 +14,11 @@ double second = 1;
 static int fps = 0;
 static int frames = 0;
 // game objects
+Player player;
 GameObject test;
 GameObject lava;
 LavaFloor lava_floor;
 Floor test_floor;
-Character player;
 Camera *camera;
 const int upper_platform_count = 100; // 3000 * 3312 vertices seems to slow down the process when rotating -> consider optimizations for rotations
 const int middle_platform_count = 100;
@@ -74,13 +74,18 @@ unsigned int *plane_indices;
 
 void debug_util(int str);
 
+
+
+
+
+
 int WINAPI WinMain(const HINSTANCE instance, const HINSTANCE prev_instance, const LPSTR lp_cmd_line, const int n_cmd_show)
 {
 
 	init_dx(instance, prev_instance, lp_cmd_line, n_cmd_show);
 	load_content();
 
-	MSG msg = { 0 };
+	MSG msg = { nullptr };
 
 	while (msg.message != WM_QUIT)
 	{
@@ -93,6 +98,7 @@ int WINAPI WinMain(const HINSTANCE instance, const HINSTANCE prev_instance, cons
 		else {
 			//UpdateAI();
 			dx_handle->input->update_input(camera, timer);
+			//dx_handle->input->update_input(&player, timer);
 			//UpdateSound();
 			//UpdateGraphics();
 			render_frame();
@@ -114,7 +120,7 @@ void render_frame(void)
 
 	// draw here
 	//test.Draw(view_projection);
-	skybox.draw(XMMatrixTranslationFromVector(camera->transform.local_position) * view_projection);
+	skybox.draw(XMMatrixTranslationFromVector(camera->transform.get_local_position()) * view_projection);
 	//upperPlatforms[0].update(*timer);
 	//upperPlatforms[0].Draw(view_projection);
 	//upperPlatforms[1].update(*timer);
@@ -130,33 +136,16 @@ void render_frame(void)
 
 
 	test_floor.draw(view_projection);
+
+	player.draw(view_projection);
+
 	//DebugUTIL(timer->deltaTime());
-	debug_util(timer->getFPS());
+	debug_util(timer->get_fps());
 	// swap back buffer with front buffer
 	dx_handle->get_swap_chain()->Present(0, 0);
 
 }
 
-
-LRESULT CALLBACK wnd_proc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
-{
-	PAINTSTRUCT ps;
-	HDC hdc;
-
-	switch (message)
-	{
-	case WM_PAINT:
-		hdc = BeginPaint(hWnd, &ps);
-		EndPaint(hWnd, &ps);
-		break;
-	case WM_DESTROY:
-		PostQuitMessage(0);
-		break;
-	default:
-		return DefWindowProc(hWnd, message, wParam, lParam);
-	}
-	return 0;
-}
 
 
 void draw_map(const XMMATRIX view_projection)
@@ -193,7 +182,7 @@ void update_graphics()
 
 void update_lava(const XMMATRIX view_projection, const float time)
 {
-	lava_floor.get_model()->update_constant_buffer_time_scaled(lava_floor.transform.world * view_projection,view_projection, directional_light_shines_from, directional_light_colour, ambient_light_colour, time);
+	lava_floor.get_model()->update_constant_buffer_time_scaled(lava_floor.transform.get_world() * view_projection,view_projection, directional_light_shines_from, directional_light_colour, ambient_light_colour, time);
 	lava_floor.draw(view_projection);// , false, D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
 }
 
@@ -211,13 +200,13 @@ void load_lava()
 }
 
 
+
+
 void load_content()
 {
-
-	player = Player("player1");
-
 	const XMVECTOR platform_scale = XMVectorSet(1.0f, 1.0f, 1.0f, 0.0f);
 	const XMVECTOR rotation = XMQuaternionIdentity();
+
 
 	camera = new Camera();
 	timer = new VGTime();
@@ -233,22 +222,27 @@ void load_content()
 	platform->load_geo_model(platform_placeholder, 36, sizeof(POS_TEX_NORM_COL_VERTEX));
 	platform->load_texture("assets/FloatingIsland_DIFFUSE.png");
 
+	player = Player("player1", platform);
+
 	float plat_collision_radius = platform->get_collision_sphere().collision_radius;
 	plat_collision_radius = 2.0f;
 
+	//player = Player("player1", platform);	
+
+
 	for (size_t i = 0; i < upper_platform_count; i++)
 	{
-		upper_platforms[i] = GameObject(&"upperPlatform"[i], Transform(platform_scale, rotation, XMVectorSet(i * plat_collision_radius * 3,0, 1.0f, 0.0f)), platform);
+		upper_platforms[i] = GameObject(&"upperPlatform"[i], platform, Transform(platform_scale, rotation, XMVectorSet((i+4) * plat_collision_radius * 3, 0, 1.0f, 0.0f)));
 	}
 
 	for (size_t i = 0; i < middle_platform_count; i++)
 	{
-		middle_platforms[i] = GameObject(&"upperPlatform"[i], Transform(platform_scale, rotation, XMVectorSet(i * plat_collision_radius * 3, 0, 1.0f, 0.0f)), platform);
+		middle_platforms[i] = GameObject(&"upperPlatform"[i], platform, Transform(platform_scale, rotation, XMVectorSet((i + 4) * plat_collision_radius * 3, 0, 1.0f, 0.0f)));
 	}
 
 	for (size_t i = 0; i < lower_platform_count; i++)
 	{
-		lower_platforms[i] = GameObject(&"upperPlatform"[i], Transform(platform_scale, rotation, XMVectorSet(i * plat_collision_radius * 3, 0, 1.0f, 0.0f)), platform);
+		lower_platforms[i] = GameObject(&"upperPlatform"[i], platform, Transform(platform_scale, rotation, XMVectorSet((i + 4) * plat_collision_radius * 3, 0, 1.0f, 0.0f)));
 	}
 
 	//LoadLava();
@@ -284,6 +278,28 @@ HRESULT init_dx(const HINSTANCE instance, HINSTANCE prev_instance, const LPSTR l
 
 	return hr;
 }
+
+
+LRESULT CALLBACK wnd_proc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+	PAINTSTRUCT ps;
+	HDC hdc;
+
+	switch (message)
+	{
+	case WM_PAINT:
+		hdc = BeginPaint(hWnd, &ps);
+		EndPaint(hWnd, &ps);
+		break;
+	case WM_DESTROY:
+		PostQuitMessage(0);
+		break;
+	default:
+		return DefWindowProc(hWnd, message, wParam, lParam);
+	}
+	return 0;
+}
+
 
 HRESULT initialise_window(HINSTANCE hInstance, int nCmdShow)
 {

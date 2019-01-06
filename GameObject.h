@@ -5,28 +5,33 @@
 #include "SoundEngine.h"
 #include "GameData.h"
 #include "MathHelper.h"
-#include "d3dfw.h"
 //#include "Camera.h"
 
 class VGTime;
 class D3Dfw;
 
-class GameObject 
+class GameObject
 {
-
-
 
 public:
 	GameObject();
 	virtual ~GameObject();
 
-	explicit GameObject(LPCSTR name, LPCSTR tag = "default");
-	GameObject(LPCSTR name, Transform transform, Model *model, LPCSTR tag = "default");
-	void draw(XMMATRIX view_projection, bool use_default_cb = true, D3D11_PRIMITIVE_TOPOLOGY mode = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	explicit GameObject(LPCSTR name);
+	GameObject(LPCSTR name, Model *model, const Transform transform);
+	virtual void draw(XMMATRIX view_projection, bool use_default_cb = true, D3D11_PRIMITIVE_TOPOLOGY mode = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
+	virtual void move_horizontal_forward(float speed);
+	virtual void move_horizontal_backward(float speed);
+	virtual void move_forward(float speed);
+	virtual void move_backward(float speed);
+	virtual void move_right(float speed);
+	virtual void move_left(float speed);
+	virtual void move_up(float speed);
+	virtual void move_down(float speed);
 
 	Transform transform;
-	
+
 
 	virtual void spawn(XMVECTOR position);
 	virtual void render();
@@ -34,12 +39,14 @@ public:
 	virtual void update(VGTime timer);
 	bool collided(GameObject target) const;
 	LPCSTR get_name() const;
-	Model* get_model();
-	
+	Model* get_model() const;
+
+	void set_model(Model *model);
+
 	virtual void cleanup();
 protected:
 	LPCSTR name_;
-	LPCSTR tag_;
+	LPCSTR tag_ = "default_object";
 	Model *model_;
 	SoundEngine sound_;
 	float collision_radius_;
@@ -62,7 +69,5 @@ protected:
 		CHARACTER = 4,
 		PLAYER = 5
 	};
-
-	static LPCSTR get_collision_type(COLLISION_TYPE collision_type);
 
 };

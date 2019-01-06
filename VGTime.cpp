@@ -1,12 +1,12 @@
 #include "VGTime.h"
 
 
-VGTime::VGTime() : _start(0), _paused(0), _idle(0), _total(0), _current(0), _previous(0)
+VGTime::VGTime() : start_(0), paused_(0), idle_(0), current_(0), previous_(0), total_(0), delta_(0), is_paused_(false)
 {
 	long long int frequency;
-	QueryPerformanceFrequency((LARGE_INTEGER*)&frequency);
+	QueryPerformanceFrequency(reinterpret_cast<LARGE_INTEGER*>(&frequency));
 
-	_seconds_per_tick = 1.0 / (double)frequency;
+	seconds_per_tick_ = 1.0 / double(frequency);
 }
 
 
@@ -14,24 +14,24 @@ VGTime::~VGTime()
 {
 }
 
-double VGTime::deltaTime() const
+double VGTime::delta_time() const
 {
-	return _delta;
+	return delta_;
 }
 
-double VGTime::totalTime() const
+double VGTime::total_time() const
 {
-	return _total;
+	return total_;
 }
 
 void VGTime::start()
 {
-	if (QueryPerformanceCounter((LARGE_INTEGER*)&_start))
+	if (QueryPerformanceCounter(reinterpret_cast<LARGE_INTEGER*>(&start_)))
 	{
-		_current = _start;
-		_previous = _current;
-		_paused = 0;
-		_is_paused = false;
+		current_ = start_;
+		previous_ = current_;
+		paused_ = 0;
+		is_paused_ = false;
 	}
 	else {
 		//return std::runtime_error("Could not get the current time from query performance counter!");
@@ -42,22 +42,22 @@ void VGTime::start()
 
 void VGTime::tick()
 {
-	if (_is_paused)
+	if (is_paused_)
 	{
-		_delta = 0.0;
+		delta_ = 0.0;
 	}
 	else
 	{
-		if (QueryPerformanceCounter((LARGE_INTEGER*)&_current))
+		if (QueryPerformanceCounter(reinterpret_cast<LARGE_INTEGER*>(&current_)))
 		{
 
-			_delta = (_current - _previous) * _seconds_per_tick;
-			_previous = _current;
+			delta_ = (current_ - previous_) * seconds_per_tick_;
+			previous_ = current_;
 
-			if (_delta < 0.0)
-				_delta = 0.0;
+			if (delta_ < 0.0)
+				delta_ = 0.0;
 
-			_total = (_current - _start - _idle)*_seconds_per_tick;
+			total_ = (current_ - start_ - idle_)*seconds_per_tick_;
 		}
 		else {
 			//return std::runtime_error("Could not get the current time from query performance counter!");
@@ -69,10 +69,10 @@ void VGTime::tick()
 
 void VGTime::pause()
 {
-	if (QueryPerformanceCounter((LARGE_INTEGER*)&_paused))
+	if (QueryPerformanceCounter(reinterpret_cast<LARGE_INTEGER*>(&paused_)))
 	{
-		_is_paused = true;
-		_total = (_paused - _start - _idle)*_seconds_per_tick;
+		is_paused_ = true;
+		total_ = (paused_ - start_ - idle_)*seconds_per_tick_;
 	}
 	else
 	{
@@ -84,13 +84,13 @@ void VGTime::pause()
 
 void VGTime::resume()
 {
-	if (QueryPerformanceCounter((LARGE_INTEGER*)&_current))
+	if (QueryPerformanceCounter(reinterpret_cast<LARGE_INTEGER*>(&current_)))
 	{
-		_idle += _current - _paused;
-		_previous = _current;
-		_paused = 0;
+		idle_ += current_ - paused_;
+		previous_ = current_;
+		paused_ = 0;
 
-		_is_paused = false;
+		is_paused_ = false;
 	}
 	else {
 		//return std::runtime_error("Could not get the current time from query performance counter!");
@@ -101,10 +101,10 @@ void VGTime::resume()
 
 void VGTime::stop()
 {
-	if (!_is_paused)
+	if (!is_paused_)
 	{
-		_total = static_cast<double> (_current - _start) - _idle;
-		_is_paused = true;
+		total_ = static_cast<double> (current_ - start_) - idle_;
+		is_paused_ = true;
 	}
 	else {
 		//return std::runtime_error("timer is already stopped!");
@@ -114,14 +114,14 @@ void VGTime::stop()
 
 void VGTime::reset()
 {
-	if (QueryPerformanceCounter((LARGE_INTEGER*)&_current))
+	if (QueryPerformanceCounter(reinterpret_cast<LARGE_INTEGER*>(&current_)))
 	{
-		_start = _current;
-		_previous = _current;
-		_paused = 0;
-		_idle = 0;
-		_total = 0;
-		_is_paused = false;
+		start_ = current_;
+		previous_ = current_;
+		paused_ = 0;
+		idle_ = 0;
+		total_ = 0;
+		is_paused_ = false;
 	}
 	else {
 		//return std::runtime_error("Could not get the current time from query performance counter!");
@@ -130,18 +130,18 @@ void VGTime::reset()
 
 }
 
-int VGTime::getFPS()
+int VGTime::get_fps()
 {
 	static double time_since_last_frame;
 	static int frames;
 	frames++;
 	
-	if (totalTime() - time_since_last_frame >= 1.0f)
+	if (total_time() - time_since_last_frame >= 1.0f)
 	{
-		fps = frames;
+		fps_ = frames;
 		frames = 0;
 		time_since_last_frame += 1.0;
 	}
-	return ((int)(1.0 / deltaTime()) + fps) / 2;
+	return (int(1.0 / delta_time()) + fps_) / 2;
 	//return fps;
 }

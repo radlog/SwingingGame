@@ -11,11 +11,19 @@ Player::~Player()
 {
 }
 
-Player::Player(const LPCSTR name, const LPCSTR tag, const bool fps) : Character(name, tag, fps)
+Player::Player(const LPCSTR name,const bool fps) : Character(name)
 {
-	//if (fps)
+
 }
 
+Player::Player(LPCSTR name, Model* model, Transform transform, bool fps) : Character(name, model, transform)
+{
+	if (model == nullptr) model_ = new Model("assets/crate.jpg");
+	if (fps)
+	{
+		camera_ = new Camera();
+	}
+}
 
 
 void Player::update_input() const
@@ -28,19 +36,4 @@ void Player::update(const VGTime timer) {
 	update_input();
 }
 
-void Player::spawn(XMVECTOR position)
-{
-}
 
-void Player::render()
-{
-}
-
-void Player::start()
-{
-}
-
-
-void Player::cleanup()
-{
-}

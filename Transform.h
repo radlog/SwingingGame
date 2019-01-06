@@ -9,17 +9,6 @@ public:
 	~Transform();
 
 	XMMATRIX calculate_world_transform();
-	XMVECTOR local_up = XMVectorSet(0.0, 1.0, 0.0, 0.0);
-	XMVECTOR local_down = -local_up;
-	XMVECTOR local_right = XMVectorSet(1.0, 0.0, 0.0, 0.0);
-	XMVECTOR local_left = -local_right;
-	XMVECTOR local_forward = XMVectorSet(0.0, 0.0, 1.0, 0.0);
-	XMVECTOR local_backward = -local_forward;
-
-	XMVECTOR local_scale;
-	XMVECTOR local_rotation;
-	XMVECTOR local_position;
-	XMMATRIX world; 
 
 	void translate(XMVECTOR position);
 	void rotate(float pitch, float yaw, float roll);
@@ -34,6 +23,8 @@ public:
 	void up(float speed);
 
 	void look_at(XMVECTOR target);
+	XMMATRIX get_world();
+	XMVECTOR get_local_position() const;
 
 
 	static const XMVECTOR world_up;
@@ -51,5 +42,19 @@ protected:
 private:
 	float y_rotation_sum_ = 0.0f;
 	float y_rotation_max_ = 89.0f;
+
+	XMVECTOR local_up_ = XMVectorSet(0.0, 1.0, 0.0, 0.0);
+	XMVECTOR local_down_ = -local_up_;
+	XMVECTOR local_right_ = XMVectorSet(1.0, 0.0, 0.0, 0.0);
+	XMVECTOR local_left_ = -local_right_;
+	XMVECTOR local_forward_ = XMVectorSet(0.0, 0.0, 1.0, 0.0);
+	XMVECTOR local_backward_ = -local_forward_;
+
+	XMVECTOR local_scale_;
+	XMVECTOR local_rotation_;
+	XMVECTOR local_position_;
+	XMMATRIX world_;
+
+
 };
 
