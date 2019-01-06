@@ -99,7 +99,7 @@ int WINAPI WinMain(const HINSTANCE instance, const HINSTANCE prev_instance, cons
 			//UpdateAI();
 			//dx_handle->input->update_input(camera, timer);
 			player.update(*timer);
-			dx_handle->input->update_input(&upper_platforms[0], timer);
+			//dx_handle->input->update_input(&upper_platforms[0], timer);
 			//UpdateSound();
 			//UpdateGraphics();
 			render_frame();
@@ -245,7 +245,7 @@ void load_content()
 		lower_platforms[i] = GameObject(&"upperPlatform"[i], platform, Transform(platform_scale, rotation, XMVectorSet((i + 4) * plat_collision_radius * 3, 0, 1.0f, 0.0f)));
 	}
 
-	//player.add_child(camera);
+	player.add_child(&upper_platforms[0]);
 	//LoadLava();
 
 	timer->start();

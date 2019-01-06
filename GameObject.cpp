@@ -107,6 +107,29 @@ void GameObject::move_down(float speed)
 	}
 }
 
+void GameObject::rotate_fixed(float pitch, float yaw, float roll)
+{
+	transform.rotate_fixed(pitch, yaw, roll);
+	for (int i = 0; i < children_.size(); i++)
+	{
+		children_[i]->rotate_fixed(pitch, yaw, roll);
+	}
+}
+
+void GameObject::rotate(float pitch, float yaw, float roll)
+{
+	transform.rotate(pitch, yaw, roll);
+	for (int i = 0; i < children_.size(); i++)
+	{
+		children_[i]->rotate(pitch, yaw, roll);
+	}
+}
+
+vector<GameObject*> GameObject::get_children()
+{
+	return children_;
+}
+
 
 void GameObject::spawn(XMVECTOR position)
 {

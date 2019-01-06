@@ -29,6 +29,10 @@ public:
 	virtual void move_left(float speed);
 	virtual void move_up(float speed);
 	virtual void move_down(float speed);
+	virtual void rotate_fixed(float pitch, float yaw, float roll);
+	virtual void rotate(float pitch, float yaw, float roll);
+
+	vector<GameObject*> get_children();
 
 	Transform transform;
 
