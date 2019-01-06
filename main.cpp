@@ -133,7 +133,7 @@ void render_frame(void)
 	//DebugUTIL(timer->deltaTime());
 	debug_util(timer->getFPS());
 	// swap back buffer with front buffer
-	dx_handle->swap_chain->Present(0, 0);
+	dx_handle->get_swap_chain()->Present(0, 0);
 
 }
 
@@ -226,10 +226,10 @@ void load_content()
 
 	//char filename[] = "assets/FloatingIsland_001.obj";
 
-	model_test = new Model(dx_handle->device, dx_handle->immediate_context,(char*) "assets/Sphere.obj");
+	model_test = new Model("assets/Sphere.obj");
 	model_test->load_texture("assets/FloatingIsland_DIFFUSE.png");
 	POS_TEX_NORM_COL_VERTEX* platform_placeholder =  Geometry::pos_tex_norm_col_cube(1.0f);
-	platform = new Model(dx_handle->device, dx_handle->immediate_context);
+	platform = new Model(CB_STATE_SIMPLE);
 	platform->load_geo_model(platform_placeholder, 36, sizeof(POS_TEX_NORM_COL_VERTEX));
 	platform->load_texture("assets/FloatingIsland_DIFFUSE.png");
 
@@ -238,17 +238,17 @@ void load_content()
 
 	for (size_t i = 0; i < upper_platform_count; i++)
 	{
-		upper_platforms[i] = GameObject(&"upperPlatform"[i], Transform(platform_scale, rotation, XMVectorSet(i * plat_collision_radius * 3,0, 1.0f, 0.0f)), *platform);
+		upper_platforms[i] = GameObject(&"upperPlatform"[i], Transform(platform_scale, rotation, XMVectorSet(i * plat_collision_radius * 3,0, 1.0f, 0.0f)), platform);
 	}
 
 	for (size_t i = 0; i < middle_platform_count; i++)
 	{
-		middle_platforms[i] = GameObject(&"upperPlatform"[i], Transform(platform_scale, rotation, XMVectorSet(i * plat_collision_radius * 3, 0, 1.0f, 0.0f)), *platform);
+		middle_platforms[i] = GameObject(&"upperPlatform"[i], Transform(platform_scale, rotation, XMVectorSet(i * plat_collision_radius * 3, 0, 1.0f, 0.0f)), platform);
 	}
 
 	for (size_t i = 0; i < lower_platform_count; i++)
 	{
-		lower_platforms[i] = GameObject(&"upperPlatform"[i], Transform(platform_scale, rotation, XMVectorSet(i * plat_collision_radius * 3, 0, 1.0f, 0.0f)), *platform);
+		lower_platforms[i] = GameObject(&"upperPlatform"[i], Transform(platform_scale, rotation, XMVectorSet(i * plat_collision_radius * 3, 0, 1.0f, 0.0f)), platform);
 	}
 
 	//LoadLava();

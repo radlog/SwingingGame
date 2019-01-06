@@ -2,6 +2,8 @@
 #include "objfilemodel.h"
 #include "BufferDefines.h"
 
+class D3Dfw;
+
 struct SphereCollider
 {
 	XMVECTOR local_position;
@@ -19,13 +21,11 @@ enum CB_STATE
 class Model
 {
 public:
-	Model();
-	Model(ID3D11Device* device, ID3D11DeviceContext* context, char * filename, CB_STATE state = CB_STATE_SIMPLE);
-
-	Model(ID3D11Device* device, ID3D11DeviceContext* context, CB_STATE state = CB_STATE_SIMPLE);
+	explicit Model(LPCSTR filename, CB_STATE state = CB_STATE_SIMPLE);
+	explicit Model(CB_STATE state = CB_STATE_SIMPLE);
 	~Model();
 
-	HRESULT load_obj_model(char* filename);
+	HRESULT load_obj_model(LPCSTR filename);
 	HRESULT load_geo_model(void* vertices, UINT num_verts, UINT single_vertex_bytesize, unsigned int *indices, UINT
 	                       num_indices);
 	HRESULT load_geo_model(void* vertices, UINT numverts, UINT single_vertex_bytesize);
@@ -56,6 +56,8 @@ protected:
 	CONSTANT_BUFFER_FULL cb_full_;
 	string shader_file_ = "default_shader.hlsl";
 	string objfile_;
+
+	D3Dfw* dx_handle_;
 	ID3D11Device *device_;
 	ID3D11DeviceContext *immediate_context_;
 

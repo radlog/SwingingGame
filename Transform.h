@@ -23,7 +23,7 @@ public:
 
 	void translate(XMVECTOR position);
 	void rotate(float pitch, float yaw, float roll);
-	void scale(float x, float y, float z) const;
+	void scale(float x, float y, float z);
 
 	void rotate_fixed(float pitch, float yaw, float roll);
 

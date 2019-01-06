@@ -21,7 +21,7 @@ public:
 	virtual ~GameObject();
 
 	explicit GameObject(LPCSTR name, LPCSTR tag = "default");
-	GameObject(LPCSTR name, Transform transform, Model model, LPCSTR tag = "default");
+	GameObject(LPCSTR name, Transform transform, Model *model, LPCSTR tag = "default");
 	void draw(XMMATRIX view_projection, bool use_default_cb = true, D3D11_PRIMITIVE_TOPOLOGY mode = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 
@@ -40,7 +40,7 @@ public:
 protected:
 	LPCSTR name_;
 	LPCSTR tag_;
-	Model model_;
+	Model *model_;
 	SoundEngine sound_;
 	float collision_radius_;
 	GameData game_data_;

@@ -14,13 +14,13 @@ GameObject::GameObject()
 GameObject::GameObject(LPCSTR name, LPCSTR tag)
 {
 	dx_handle_ = D3Dfw::get_instance();
-	device_ = dx_handle_->device;
-	immediate_context_ = dx_handle_->immediate_context;
+	device_ = dx_handle_->get_device();
+	immediate_context_ = dx_handle_->get_immediate_context();
 	this->name_ = name;
 	this->tag_ = tag;
 }
 
-GameObject::GameObject(LPCSTR name, const Transform transform, const Model model, LPCSTR tag) : GameObject(name, tag)
+GameObject::GameObject(LPCSTR name, const Transform transform, Model *model, LPCSTR tag) : GameObject(name, tag)
 {
 	this->transform = transform;
 	this->model_ = model;
@@ -29,7 +29,7 @@ GameObject::GameObject(LPCSTR name, const Transform transform, const Model model
 
 void GameObject::draw(XMMATRIX view_projection, bool use_default_cb, D3D11_PRIMITIVE_TOPOLOGY mode)
 {
-	model_.draw(transform.world* view_projection, use_default_cb, mode);
+	model_->draw(transform.world* view_projection, use_default_cb, mode);
 }
 
 
@@ -68,7 +68,7 @@ void GameObject::update(VGTime timer)
 bool GameObject::collided(GameObject target) const
 {
 	const SphereCollider tar_collider = target.get_model()->get_collision_sphere();
-	const SphereCollider orig_collider = model_.get_collision_sphere();
+	const SphereCollider orig_collider = model_->get_collision_sphere();
 
 	return dist(tar_collider.local_position * target.transform.local_position, orig_collider.local_position * transform.local_position) < tar_collider.collision_radius + orig_collider.collision_radius;
 }
@@ -80,12 +80,12 @@ LPCSTR GameObject::get_name() const
 
 Model* GameObject::get_model()
 {
-	return &model_;
+	return model_;
 }
 
 void GameObject::cleanup()
 {
-	model_.cleanup();
+	model_->cleanup();
 }
 
 

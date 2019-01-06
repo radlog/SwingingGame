@@ -3,21 +3,24 @@
 
 // CONSTRUCTOR methods
 
-Model::Model()
-{
-}
+
 
 // loads the main constructor of the Model class in addition with an .obj file with the path defined by char * filename
-Model::Model(ID3D11Device * device, ID3D11DeviceContext * context, char * filename, const CB_STATE state) : Model(device, context, state)
+Model::Model(const LPCSTR filename, const CB_STATE state) : Model(state)
 {
 	load_obj_model(filename);
 }
 
 // main constructor of the Model class to initialize a state and pass the device and context instances
-Model::Model(ID3D11Device * device, ID3D11DeviceContext * context, const CB_STATE state)
+Model::Model(const CB_STATE state)
 {
-	this->device_ = device;
-	this->immediate_context_ = context;
+	dx_handle_ = D3Dfw::get_instance();
+
+	this->device_ = dx_handle_->get_device();
+	this->immediate_context_ = dx_handle_->get_immediate_context();
+
+	if (device_ == nullptr || immediate_context_ == nullptr ) return;
+
 	this->state_ = state;
 	switch (state)
 	{
@@ -40,7 +43,7 @@ Model::~Model()
 }
 
 // load an .obj file with char * filename defining the path of it
-HRESULT Model::load_obj_model(char * filename)
+HRESULT Model::load_obj_model(const LPCSTR filename)
 {
 	obj_file_model_ = new ObjFileModel(filename, device_, immediate_context_);
 	objfile_ = filename;

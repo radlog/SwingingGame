@@ -21,7 +21,7 @@ private:
 
 //////////////////////////////////////////////////
 
-	int load_file(char* filename);
+	int load_file(LPCSTR filename);
 
 	char* fbuffer_;
 	long fbuffersize_; // filesize
@@ -51,7 +51,7 @@ public:
 
 	string filename;
 
-	ObjFileModel(char* filename, ID3D11Device* device, ID3D11DeviceContext* context);
+	ObjFileModel(LPCSTR filename, ID3D11Device* device, ID3D11DeviceContext* context);
 	~ObjFileModel();
 
 	void draw(void) const;

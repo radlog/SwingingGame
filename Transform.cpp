@@ -14,7 +14,7 @@ Transform::Transform() : local_scale(XMVectorSet(1.0, 1.0, 1.0, 0.0)), local_rot
 	world = XMMatrixScalingFromVector(local_scale) * XMMatrixRotationQuaternion(local_rotation) * XMMatrixTranslationFromVector(local_position);
 }
 
-Transform::Transform(XMVECTOR scale, XMVECTOR rotation, XMVECTOR position)
+Transform::Transform(const XMVECTOR scale, const XMVECTOR rotation, const XMVECTOR position)
 {
 	local_scale = scale;
 	local_rotation = rotation;
@@ -29,13 +29,13 @@ Transform::~Transform()
 
 XMMATRIX Transform::calculate_world_transform()
 {	
-	world = XMMatrixScalingFromVector(local_scale) * XMMatrixRotationQuaternion(local_rotation) * XMMatrixTranslationFromVector(local_position);
-	return world;
+	return world = XMMatrixScalingFromVector(local_scale) * XMMatrixRotationQuaternion(local_rotation) * XMMatrixTranslationFromVector(local_position);	
 }
 
 void Transform::translate(const XMVECTOR position)
 {
 	local_position = position;
+	calculate_world_transform();
 }
 
 
@@ -61,26 +61,32 @@ void Transform::rotate(const float pitch, const float yaw, const float roll)
 	local_left = -local_right;
 	local_up = XMVector4Transform(world_up, rot_matrix);
 	local_down = -local_up;
+	calculate_world_transform();
 }
 
-void Transform::scale(float x, float y, float z) const
+void Transform::scale(const float x, const float y, const float z)
 {
+	local_scale = XMVectorSet(x, y, z, 0.0f);
+	calculate_world_transform();
 }
 
 void Transform::translate(const XMVECTOR direction, const float speed)
 {
 	local_position += direction * speed;
+	calculate_world_transform();
 }
 
 void Transform::forward(const float speed)
 {
 	local_position += local_forward * speed;
+	calculate_world_transform();
 }
 
 void Transform::horizontal_forward(const float speed)
 {
 	const auto forward_new = XMVector3Normalize(XMVECTOR(XMVectorSet(local_forward.x, 0, local_forward.z, 0)));
 	local_position += forward_new * speed;
+	calculate_world_transform();
 }
 
 void Transform::right(const float speed)
@@ -103,6 +109,8 @@ void Transform::look_at(XMVECTOR target)
 
 void Transform::apply_force(XMVECTOR force)
 {
+	local_position += force;
+	calculate_world_transform();
 }
 
 

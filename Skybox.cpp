@@ -13,11 +13,11 @@ Skybox::Skybox()
 Skybox::Skybox(const LPCSTR texture_name) : GameObject(texture_name)
 {
 	POS_TEX_VERTEX* skybox_desc = Geometry::create_textured_skybox(20.0f);
-	model_ = Model(dx_handle_->device, dx_handle_->immediate_context);
+	model_ = new Model();
 	char filename[] = "skybox_shader.hlsl";
-	model_.set_shader_file(filename);
-	model_.load_texture(texture_name);
-	model_.load_geo_model(skybox_desc, 36, sizeof(POS_TEX_VERTEX));
+	model_->set_shader_file(filename);
+	model_->load_texture(texture_name);
+	model_->load_geo_model(skybox_desc, 36, sizeof(POS_TEX_VERTEX));
 	init_depth_stencil_states();
 	init_rasterizer();
 
@@ -27,11 +27,11 @@ Skybox::Skybox(const LPCSTR name, Transform transform, Model model): Skybox(name
 {
 }
 
-void Skybox::draw(const XMMATRIX view_projection, const D3D11_PRIMITIVE_TOPOLOGY mode)
+void Skybox::draw(const XMMATRIX view_projection, const D3D11_PRIMITIVE_TOPOLOGY mode) const
 {
 	//immediateContext->RSSetState(rasterizerSky);
 	immediate_context_->OMSetDepthStencilState(depth_write_sky_,0);
-	model_.draw(transform.world* view_projection, mode);
+	model_->draw(transform.world* view_projection, mode);
 	immediate_context_->OMSetDepthStencilState(depth_write_solid_, 0);
 	//immediateContext->RSSetState(rasterizerSolid);
 }

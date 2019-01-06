@@ -14,9 +14,10 @@ public:
 	void clear_rtv() const;
 	Input *input;
 
-	ID3D11Device *device;
-	ID3D11DeviceContext *immediate_context;
-	IDXGISwapChain *swap_chain = nullptr;
+	ID3D11Device *get_device() const;
+	ID3D11DeviceContext *get_immediate_context() const;
+	IDXGISwapChain *get_swap_chain() const;
+	
 private:
 	D3Dfw();
 	~D3Dfw();
@@ -24,6 +25,9 @@ private:
 	void cleanup() const;
 	char g_title_[100] = "Swing to Win(g)";
 
+	ID3D11Device *device_;
+	ID3D11DeviceContext *immediate_context_;
+	IDXGISwapChain *swap_chain_ = nullptr;
 
 	ID3D11Buffer *vertex_buffer_;
 	ID3D11VertexShader *v_shader_;

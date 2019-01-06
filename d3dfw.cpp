@@ -100,8 +100,8 @@ HRESULT D3Dfw::initialise_dx() {
 		driver_type_ = driver_type;
 		hr = D3D11CreateDeviceAndSwapChain(nullptr, driver_type_, nullptr,
 			create_device_flags, feature_levels, num_feature_levels,
-			D3D11_SDK_VERSION, &sd, &swap_chain,
-			&device, &feature_level_, &immediate_context);
+			D3D11_SDK_VERSION, &sd, &swap_chain_,
+			&device_, &feature_level_, &immediate_context_);
 		if (SUCCEEDED(hr))
 			break;
 	}
@@ -112,12 +112,12 @@ HRESULT D3Dfw::initialise_dx() {
 
 
 	ID3D11Texture2D* buffer_texture = nullptr;
-	hr = swap_chain->GetBuffer(0, __uuidof(ID3D11Texture2D),
+	hr = swap_chain_->GetBuffer(0, __uuidof(ID3D11Texture2D),
 		reinterpret_cast<LPVOID*>(&buffer_texture));
 
 	if (FAILED(hr)) return hr;
 
-	hr = device->CreateRenderTargetView(buffer_texture, nullptr, &render_target_view_);
+	hr = device_->CreateRenderTargetView(buffer_texture, nullptr, &render_target_view_);
 
 	buffer_texture->Release();
 
@@ -138,7 +138,7 @@ HRESULT D3Dfw::initialise_dx() {
 	tex_2d_desc.Usage = D3D11_USAGE_DEFAULT;
 
 	ID3D11Texture2D *pZBufferTexture;
-	hr = device->CreateTexture2D(&tex_2d_desc, nullptr, &pZBufferTexture);
+	hr = device_->CreateTexture2D(&tex_2d_desc, nullptr, &pZBufferTexture);
 
 	if (FAILED(hr)) return hr;
 
@@ -149,10 +149,10 @@ HRESULT D3Dfw::initialise_dx() {
 	dsv_desc.Format = tex_2d_desc.Format;
 	dsv_desc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 
-	device->CreateDepthStencilView(pZBufferTexture, &dsv_desc, &z_buffer_);
+	device_->CreateDepthStencilView(pZBufferTexture, &dsv_desc, &z_buffer_);
 	pZBufferTexture->Release();
 
-	immediate_context->OMSetRenderTargets(1, &render_target_view_, z_buffer_);
+	immediate_context_->OMSetRenderTargets(1, &render_target_view_, z_buffer_);
 
 	D3D11_VIEWPORT viewport;
 
@@ -163,7 +163,7 @@ HRESULT D3Dfw::initialise_dx() {
 	viewport.MinDepth = 0.0f;
 	viewport.MaxDepth = 1.0f;
 
-	immediate_context->RSSetViewports(1, &viewport);
+	immediate_context_->RSSetViewports(1, &viewport);
 
 
 	return S_OK;
@@ -178,14 +178,29 @@ HRESULT D3Dfw::initialise_input()
 void D3Dfw::clear_rtv() const
 {
 	float rgba_clear_colour[4] = { 0.0f,0.0f,0.0f,1.0f };
-	immediate_context->ClearRenderTargetView(render_target_view_, rgba_clear_colour);
-	immediate_context->ClearDepthStencilView(z_buffer_, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+	immediate_context_->ClearRenderTargetView(render_target_view_, rgba_clear_colour);
+	immediate_context_->ClearDepthStencilView(z_buffer_, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+}
+
+ID3D11Device* D3Dfw::get_device() const
+{
+	return device_;
+}
+
+ID3D11DeviceContext* D3Dfw::get_immediate_context() const
+{
+	return immediate_context_;
+}
+
+IDXGISwapChain* D3Dfw::get_swap_chain() const
+{
+	return swap_chain_;
 }
 
 void D3Dfw::cleanup() const
 {
-	if (device) device->Release();
-	if (immediate_context) immediate_context->Release();
+	if (device_) device_->Release();
+	if (immediate_context_) immediate_context_->Release();
 	if (v_shader_) v_shader_->Release();
 	if (p_shader_) p_shader_->Release();
 	if (vs_) vs_->Release();
@@ -196,5 +211,5 @@ void D3Dfw::cleanup() const
 	if (vertex_buffer_) vertex_buffer_->Release();
 	if (render_target_view_) render_target_view_->Release();
 	if (z_buffer_) z_buffer_->Release();
-	if (swap_chain) swap_chain->Release();
+	if (swap_chain_) swap_chain_->Release();
 }

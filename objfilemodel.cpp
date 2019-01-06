@@ -25,9 +25,9 @@ vector<XMVECTOR>  ObjFileModel::get_vertex_positions() const
 }
 
 // load object from obj file in constructor
-ObjFileModel::ObjFileModel(char* filename, ID3D11Device* device, ID3D11DeviceContext* context)
+ObjFileModel::ObjFileModel(LPCSTR filename, ID3D11Device* device, ID3D11DeviceContext* context)
 {
-	device = device;
+	device_ = device;
 	immediate_context_ = context;
 
 	if(load_file(filename)==0)
@@ -51,7 +51,7 @@ ObjFileModel::ObjFileModel(char* filename, ID3D11Device* device, ID3D11DeviceCon
 // basic loader - only deals with vertices v, texcoords vt, normals vn 
 //              - only copes with triangular meshes (no quads)
 //              - doesn't deal with textures or materials
-int ObjFileModel::load_file(char* fname)
+int ObjFileModel::load_file(LPCSTR fname)
 {
 	FILE* pFile = fopen(fname, "r"); // if changed to bin format will read carriage return \r (0d) as well as \n (0a) into fbuffer, may need to add \r checks(but seemed to work with basic test)
 	if (pFile==NULL) { DXTRACE_MSG("Failed to open model file");DXTRACE_MSG(fname); return 0 ;}
