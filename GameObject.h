@@ -42,9 +42,12 @@ public:
 	Model* get_model() const;
 
 	void set_model(Model *model);
+	void add_child(GameObject *child);
+	bool remove_child(GameObject *child);
 
 	virtual void cleanup();
 protected:
+	vector<GameObject*> children_;
 	LPCSTR name_;
 	LPCSTR tag_ = "default_object";
 	Model *model_;

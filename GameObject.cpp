@@ -28,47 +28,83 @@ GameObject::GameObject(const LPCSTR name, Model *model, const Transform transfor
 
 void GameObject::draw(const XMMATRIX view_projection, const bool use_default_cb, const D3D11_PRIMITIVE_TOPOLOGY mode)
 {
-	model_->draw(transform.get_world()* view_projection, use_default_cb, mode);
+	if (model_) model_->draw(transform.get_world()* view_projection, use_default_cb, mode);
+	for (int i = 0; i < children_.size(); i++)
+	{
+		children_[i]->draw(view_projection, use_default_cb, mode);
+	}
 }
 
 void GameObject::move_horizontal_forward(float speed)
 {
 	transform.horizontal_forward(speed);
+	for (int i = 0; i < children_.size(); i++)
+	{
+		children_[i]->move_horizontal_forward(speed);
+	}
 }
 
 void GameObject::move_horizontal_backward(float speed)
 {
 	transform.horizontal_forward(-speed);
+	for (int i = 0; i < children_.size(); i++)
+	{
+		children_[i]->move_horizontal_backward(speed);
+	}
 }
 
 void GameObject::move_forward(float speed)
 {
 	transform.forward(speed);
+	for (int i = 0; i < children_.size(); i++)
+	{
+		children_[i]->move_forward(speed);
+	}
 }
 
 void GameObject::move_backward(float speed)
 {
 	transform.forward(-speed);
+	for (int i = 0; i < children_.size(); i++)
+	{
+		children_[i]->move_backward(speed);
+	}
 }
 
 void GameObject::move_right(float speed)
 {
 	transform.right(speed);
+	for (int i = 0; i < children_.size(); i++)
+	{
+		children_[i]->move_right(speed);
+	}
 }
 
 void GameObject::move_left(float speed)
 {
 	transform.right(-speed);
+	for (int i = 0; i < children_.size(); i++)
+	{
+		children_[i]->move_left(speed);
+	}
 }
 
 void GameObject::move_up(float speed)
 {
 	transform.up(speed);
+	for (int i = 0; i < children_.size(); i++)
+	{
+		children_[i]->move_up(speed);
+	}
 }
 
 void GameObject::move_down(float speed)
 {
 	transform.up(-speed);
+	for (int i = 0; i < children_.size(); i++)
+	{
+		children_[i]->move_down(speed);
+	}
 }
 
 
@@ -86,7 +122,6 @@ void GameObject::start()
 
 void GameObject::update(VGTime timer)
 {
-
 	if (is_kinetic_)
 	{
 		if (!is_grounded_)
@@ -99,6 +134,10 @@ void GameObject::update(VGTime timer)
 		{
 			air_time_ = 0.0f;
 		}
+	}
+	for (int i = 0; i < children_.size(); i++)
+	{
+		children_[i]->update(timer);
 	}
 
 }
@@ -125,6 +164,25 @@ Model* GameObject::get_model() const
 void GameObject::set_model(Model* model)
 {
 	model_ = model;
+}
+
+void GameObject::add_child(GameObject* child)
+{
+	children_.push_back(child);
+}
+
+bool GameObject::remove_child(GameObject* child)
+{
+	for(int i =0; i < children_.size(); i++)
+	{
+		if(child == children_[i])
+		{
+			children_.erase(children_.begin() + i);
+			return true;
+		}
+		if (children_[i]->remove_child(child) == true) return true;
+	}
+	return false;
 }
 
 void GameObject::cleanup()

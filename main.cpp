@@ -97,8 +97,9 @@ int WINAPI WinMain(const HINSTANCE instance, const HINSTANCE prev_instance, cons
 		}
 		else {
 			//UpdateAI();
-			dx_handle->input->update_input(camera, timer);
-			//dx_handle->input->update_input(&player, timer);
+			//dx_handle->input->update_input(camera, timer);
+			player.update(*timer);
+			dx_handle->input->update_input(&upper_platforms[0], timer);
 			//UpdateSound();
 			//UpdateGraphics();
 			render_frame();
@@ -113,14 +114,13 @@ int WINAPI WinMain(const HINSTANCE instance, const HINSTANCE prev_instance, cons
 
 void render_frame(void)
 {
-	const XMMATRIX view_projection = camera->calculate_view_projection();
-
+	const XMMATRIX view_projection = player.get_camera()->calculate_view_projection();
+	const XMMATRIX sky_lock = XMMatrixTranslationFromVector(player.get_camera()->transform.get_local_position()) * view_projection;
 	// clear the render target view
 	dx_handle->clear_rtv();
 
 	// draw here
-	//test.Draw(view_projection);
-	skybox.draw(XMMatrixTranslationFromVector(camera->transform.get_local_position()) * view_projection);
+	skybox.draw(sky_lock);
 	//upperPlatforms[0].update(*timer);
 	//upperPlatforms[0].Draw(view_projection);
 	//upperPlatforms[1].update(*timer);
@@ -133,11 +133,11 @@ void render_frame(void)
 	//	upperPlatforms[0].transform.right(timer->deltaTime() * 10);
 	//}
 	//UpdateLava(view_projection, timer->totalTime());
-
+	player.draw(view_projection);
 
 	test_floor.draw(view_projection);
 
-	player.draw(view_projection);
+
 
 	//DebugUTIL(timer->deltaTime());
 	debug_util(timer->get_fps());
@@ -245,6 +245,7 @@ void load_content()
 		lower_platforms[i] = GameObject(&"upperPlatform"[i], platform, Transform(platform_scale, rotation, XMVectorSet((i + 4) * plat_collision_radius * 3, 0, 1.0f, 0.0f)));
 	}
 
+	//player.add_child(camera);
 	//LoadLava();
 
 	timer->start();

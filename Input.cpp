@@ -12,56 +12,6 @@ Input::~Input()
 {
 }
 
-Input::Input(Character * actor)
-{
-	this->actor_ = actor;
-}
-
-void Input::handle_input(WPARAM key)
-{
-	//if(actor )
-	//State state = actor->get_State();
-
-	//switch (state)
-	//{
-	//case Crouching:
-	//	break;
-	//case Standing:
-	//	break;
-	//case Airborne:
-	//	break;		
-	//case Moving:
-	//	break;
-	//case Accelerating:
-	//	break;
-	//case Hooking:
-	//	break;
-	//}
-
-
-	switch (key)
-	{
-		// represets move forward
-	case 0x57:
-
-		break;
-		// represets move left
-	case 0x41:
-		break;
-		// represets move back
-	case 0x53:
-		break;
-		// represets move right
-	case 0x44:
-		break;
-		// represents jump
-	case VK_SPACE:
-		break;
-		// represents crouch
-	case VK_LCONTROL:
-		break;
-	}
-}
 
 HRESULT Input::initialise_input(const HINSTANCE instance, const HWND hwnd)
 {
@@ -143,13 +93,11 @@ HRESULT Input::update_input(GameObject* actor, VGTime* game_time)
 
 	if (paused_) return S_OK;
 
-	if(fps_)	mouse_moved(actor, game_time);
-
 	if (is_key_pressed(DIK_ESCAPE)) DestroyWindow(hwnd_);
 
 	// TODO: spawn gameobject
 	//if (IsKeyPressed(DIK_P)) GameObject();
-
+	if (fps_) mouse_moved(actor, game_time);
 	
 	if (is_key_pressed(DIK_SPACE))
 		if (is_key_pressed(DIK_LSHIFT))
@@ -167,6 +115,8 @@ HRESULT Input::update_input(GameObject* actor, VGTime* game_time)
 	if (is_key_pressed(DIK_RIGHT)) actor->transform.rotate_fixed(0, static_cast<float>(game_time->delta_time() * rot_speed_/10), 0);
 	if (is_key_pressed(DIK_UP)) actor->transform.rotate_fixed(static_cast<float>(-game_time->delta_time() * rot_speed_/10), 0, 0);
 	if (is_key_pressed(DIK_DOWN)) actor->transform.rotate_fixed(static_cast<float>(game_time->delta_time() * rot_speed_/10), 0, 0);
+
+
 
 	return S_OK;
 }

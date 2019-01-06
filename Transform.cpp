@@ -67,39 +67,39 @@ void Transform::rotate(const float pitch, const float yaw, const float roll)
 void Transform::scale(const float x, const float y, const float z)
 {
 	local_scale_ = XMVectorSet(x, y, z, 0.0f);
-	//calculate_world_transform();
+	calculate_world_transform();
 }
 
 void Transform::translate(const XMVECTOR direction, const float speed)
 {	
 	local_position_ += XMVector4Normalize(direction) * speed;
-	//calculate_world_transform();
+	calculate_world_transform();
 }
 
 void Transform::forward(const float speed)
 {
 	local_position_ += XMVector4Normalize(local_forward_) * speed;
-	//calculate_world_transform();
+	calculate_world_transform();
 }
 
 void Transform::horizontal_forward(const float speed)
 {
 	const auto forward_new = XMVector3Normalize(XMVECTOR(XMVectorSet(local_forward_.x, 0, local_forward_.z, 0)));
 	local_position_ += XMVector4Normalize(forward_new) * speed;
-	//calculate_world_transform();
+	calculate_world_transform();
 }
 
 void Transform::right(const float speed)
 {
 	local_position_ += XMVector4Normalize(local_right_) * speed;
-	//calculate_world_transform();
+	calculate_world_transform();
 }
 
 void Transform::up(const float speed)
 {
 	const auto up_new = XMVector3Normalize(XMVECTOR(XMVectorSet(0, local_up_.y, 0, 0)));
 	local_position_ += XMVector4Normalize(up_new) * speed;
-	//calculate_world_transform();
+	calculate_world_transform();
 }
 
 void Transform::look_at(XMVECTOR target)
@@ -120,7 +120,7 @@ XMVECTOR Transform::get_local_position() const
 void Transform::apply_force(XMVECTOR force)
 {
 	local_position_ += XMVector4Normalize(force);
-	//calculate_world_transform();
+	calculate_world_transform();
 }
 
 

@@ -11,7 +11,7 @@ Player::~Player()
 {
 }
 
-Player::Player(const LPCSTR name,const bool fps) : Character(name)
+Player::Player(const LPCSTR name, const bool fps) : Character(name)
 {
 
 }
@@ -22,18 +22,31 @@ Player::Player(LPCSTR name, Model* model, Transform transform, bool fps) : Chara
 	if (fps)
 	{
 		camera_ = new Camera();
+		camera_->transform = transform;
+		children_.push_back(camera_);
 	}
 }
 
 
-void Player::update_input() const
+void Player::update_input(VGTime timer) 
 {
-
+	dx_handle_->input->update_input(this, &timer);
 }
 
-void Player::update(const VGTime timer) {
+void Player::update(VGTime timer) {
 	GameObject::update(timer);
-	update_input();
+	update_input(timer);
+	update_camera();
+}
+
+void Player::update_camera()
+{
+	camera_->transform = transform;
+}
+
+Camera* Player::get_camera()
+{
+	return camera_;
 }
 
 

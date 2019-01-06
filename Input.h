@@ -2,8 +2,7 @@
 #include "VGTime.h"
 #include "Character.h"
 
-#ifndef INPUT_H
-#define INPUT_H
+
 class GameObject;
 class Character;
 
@@ -13,8 +12,6 @@ public:
 	Input();
 	~Input();
 
-	explicit Input(Character* actor);
-	void handle_input(WPARAM key);
 	HRESULT initialise_input(HINSTANCE instance, HWND hwnd);
 
 	HRESULT update_input(GameObject* actor, VGTime* game_time);
@@ -46,4 +43,3 @@ private:
 	long mouse_y_ = mouse_y_center_;
 
 };
-#endif
