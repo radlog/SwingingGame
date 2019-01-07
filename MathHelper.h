@@ -19,24 +19,24 @@ inline XMVECTOR cross(const XMVECTOR v1, const XMVECTOR v2)
 // calculates the normal of 3 vectors representing a triangle of a plane
 inline XMVECTOR normal(const XMVECTOR v1, const XMVECTOR v2, const XMVECTOR v3)
 {
-	const XMVECTOR n1 = v1 - v2;
-	const XMVECTOR n2 = v1 - v3;
-	const XMVECTOR c = cross(n1, n2);
-	const float length = sqrt(pow(c.x, 2) + pow(c.y, 2) + pow(c.z, 2));
+	const auto n1 = v1 - v2;
+	const auto n2 = v1 - v3;
+	const auto c = cross(n1, n2);
+	const auto length = sqrt(pow(c.x, 2) + pow(c.y, 2) + pow(c.z, 2));
 	return XMVectorSet(c.x / length, c.y / length, c.z / length, 0);
 }
 
 // plane equation
 inline Plane get_plane(const XMVECTOR v1, const XMVECTOR v2, const XMVECTOR v3)
 {
-	const XMVECTOR norm =  normal(v1, v2, v3);
-	const float d_offset =  -dot(v1, norm);
+	const auto norm =  normal(v1, v2, v3);
+	const auto d_offset =  -dot(v1, norm);
 
 	return Plane{ norm, d_offset };
 }
-
-bool is_point_on_plane(const Plane plane, const XMVECTOR point)
+// determines whether the given point is on the given plane
+inline bool is_point_on_plane(const Plane plane, const XMVECTOR point)
 {
-	const XMVECTOR n = plane.normal;
+	const auto n = plane.normal;
 	return (n.x * point.x) + (n.y * point.y) + (n.z * point.z) + plane.offset == 0;
 }

@@ -29,99 +29,99 @@ GameObject::GameObject(const LPCSTR name, Model *model, const Transform transfor
 void GameObject::draw(const XMMATRIX view_projection, const bool use_default_cb, const D3D11_PRIMITIVE_TOPOLOGY mode)
 {
 	if (model_) model_->draw(transform.get_world()* view_projection, use_default_cb, mode);
-	for (int i = 0; i < children_.size(); i++)
+	for (auto& i : children_)
 	{
-		children_[i]->draw(view_projection, use_default_cb, mode);
+		i->draw(view_projection, use_default_cb, mode);
 	}
 }
 
 void GameObject::move_horizontal_forward(float speed)
 {
 	transform.horizontal_forward(speed);
-	for (int i = 0; i < children_.size(); i++)
+	for (auto& i : children_)
 	{
-		children_[i]->move_horizontal_forward(speed);
+		i->move_horizontal_forward(speed);
 	}
 }
 
 void GameObject::move_horizontal_backward(float speed)
 {
 	transform.horizontal_forward(-speed);
-	for (int i = 0; i < children_.size(); i++)
+	for (auto& i : children_)
 	{
-		children_[i]->move_horizontal_backward(speed);
+		i->move_horizontal_backward(speed);
 	}
 }
 
 void GameObject::move_forward(float speed)
 {
 	transform.forward(speed);
-	for (int i = 0; i < children_.size(); i++)
+	for (auto& i : children_)
 	{
-		children_[i]->move_forward(speed);
+		i->move_forward(speed);
 	}
 }
 
 void GameObject::move_backward(float speed)
 {
 	transform.forward(-speed);
-	for (int i = 0; i < children_.size(); i++)
+	for (auto& i : children_)
 	{
-		children_[i]->move_backward(speed);
+		i->move_backward(speed);
 	}
 }
 
 void GameObject::move_right(float speed)
 {
 	transform.right(speed);
-	for (int i = 0; i < children_.size(); i++)
+	for (auto& i : children_)
 	{
-		children_[i]->move_right(speed);
+		i->move_right(speed);
 	}
 }
 
 void GameObject::move_left(float speed)
 {
 	transform.right(-speed);
-	for (int i = 0; i < children_.size(); i++)
+	for (auto& i : children_)
 	{
-		children_[i]->move_left(speed);
+		i->move_left(speed);
 	}
 }
 
 void GameObject::move_up(float speed)
 {
 	transform.up(speed);
-	for (int i = 0; i < children_.size(); i++)
+	for (auto& i : children_)
 	{
-		children_[i]->move_up(speed);
+		i->move_up(speed);
 	}
 }
 
 void GameObject::move_down(float speed)
 {
 	transform.up(-speed);
-	for (int i = 0; i < children_.size(); i++)
+	for (auto& i : children_)
 	{
-		children_[i]->move_down(speed);
+		i->move_down(speed);
 	}
 }
 
 void GameObject::rotate_fixed(float pitch, float yaw, float roll)
 {
 	transform.rotate_fixed(pitch, yaw, roll);
-	for (int i = 0; i < children_.size(); i++)
+	for (auto& i : children_)
 	{
-		children_[i]->rotate_fixed(pitch, yaw, roll);
+		i->rotate_fixed(pitch, yaw, roll);
 	}
 }
 
 void GameObject::rotate(float pitch, float yaw, float roll)
 {
 	transform.rotate(pitch, yaw, roll);
-	for (int i = 0; i < children_.size(); i++)
+	for (auto& i : children_)
 	{
-		children_[i]->rotate(pitch, yaw, roll);
+		i->rotate(pitch, yaw, roll);
 	}
 }
 
@@ -145,12 +145,14 @@ void GameObject::start()
 
 void GameObject::update(VGTime timer)
 {
+	//is_kinetic_ = false;
 	if (!is_kinetic_)
 	{
+		//is_grounded_ = false;
 		if (!is_grounded_)
 		{
 			air_time_ += timer.delta_time();
-			const double falling_velocity = Physics3D::gravity * (air_time_*air_time_);
+			const auto falling_velocity = Physics3D::gravity * (air_time_*air_time_);
 			transform.up(falling_velocity * timer.delta_time());
 		}
 		else
@@ -158,9 +160,9 @@ void GameObject::update(VGTime timer)
 			air_time_ = 0.0f;
 		}
 	}
-	for (int i = 0; i < children_.size(); i++)
+	for (auto& i : children_)
 	{
-		children_[i]->update(timer);
+		i->update(timer);
 	}
 
 }
@@ -168,8 +170,8 @@ void GameObject::update(VGTime timer)
 
 bool GameObject::collided(GameObject target) const
 {
-	const SphereCollider tar_collider = target.get_model()->get_collision_sphere();
-	const SphereCollider orig_collider = model_->get_collision_sphere();
+	const auto tar_collider = target.get_model()->get_collision_sphere();
+	const auto orig_collider = model_->get_collision_sphere();
 
 	return dist(tar_collider.local_position * target.transform.get_local_position(), orig_collider.local_position * transform.get_local_position()) < tar_collider.collision_radius + orig_collider.collision_radius;
 }
@@ -196,14 +198,14 @@ void GameObject::add_child(GameObject* child)
 
 bool GameObject::remove_child(GameObject* child)
 {
-	for(int i =0; i < children_.size(); i++)
+	for(auto i =0; i < children_.size(); i++)
 	{
 		if(child == children_[i])
 		{
 			children_.erase(children_.begin() + i);
 			return true;
 		}
-		if (children_[i]->remove_child(child) == true) return true;
+		if (children_[i]->remove_child(child)) return true;
 	}
 	return false;
 }

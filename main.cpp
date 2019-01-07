@@ -99,6 +99,7 @@ int WINAPI WinMain(const HINSTANCE instance, const HINSTANCE prev_instance, cons
 			//UpdateAI();
 			//dx_handle->input->update_input(camera, timer);
 			player.update(*timer);
+			//upper_platforms[0].update(*timer);
 			//dx_handle->input->update_input(&upper_platforms[0], timer);
 			//UpdateSound();
 			//UpdateGraphics();
@@ -222,7 +223,7 @@ void load_content()
 	platform->load_geo_model(platform_placeholder, 36, sizeof(POS_TEX_NORM_COL_VERTEX));
 	platform->load_texture("assets/FloatingIsland_DIFFUSE.png");
 
-	player = Player("player1", platform);
+	player = Player("player1", platform, Transform(XMVectorSet(1,1,1,0),XMQuaternionIdentity(),XMVectorSet(0,10,0,0)));
 
 	float plat_collision_radius = platform->get_collision_sphere().collision_radius;
 	plat_collision_radius = 2.0f;

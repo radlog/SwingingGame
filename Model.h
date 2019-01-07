@@ -57,9 +57,9 @@ protected:
 	string shader_file_ = "default_shader.hlsl";
 	string objfile_;
 
-	D3Dfw* dx_handle_;
-	ID3D11Device *device_;
-	ID3D11DeviceContext *immediate_context_;
+	D3Dfw* dx_handle_; // directX instance handle
+	ID3D11Device *device_; // hardware device
+	ID3D11DeviceContext *immediate_context_; // device context
 
 
 	ID3D11VertexShader *v_shader_;

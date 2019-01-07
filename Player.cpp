@@ -27,6 +27,7 @@ Player::Player(LPCSTR name, Model* model, const Transform transform, const bool 
 		camera_->transform = transform;
 		children_.push_back(camera_);
 	}
+	is_kinetic_ = false;
 }
 
 
