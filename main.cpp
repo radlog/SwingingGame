@@ -6,8 +6,15 @@
 #include <d2d1.h>
 #include "Floor.h"
 #include "Player.h"
+#include "Cube.h"
+
 //using namespace std;
 D3Dfw *dx_handle = D3Dfw::get_instance();
+
+vector<GameObject> gameobjects;
+
+GameObject cube_one;
+GameObject cube_two;
 
 double time_since_last_frame = 0;
 double second = 1;
@@ -23,9 +30,9 @@ Camera *camera;
 const int upper_platform_count = 100; // 3000 * 3312 vertices seems to slow down the process when rotating -> consider optimizations for rotations
 const int middle_platform_count = 100;
 const int lower_platform_count = 100;
-GameObject upper_platforms[upper_platform_count];
-GameObject middle_platforms[middle_platform_count];
-GameObject lower_platforms[lower_platform_count];
+vector<GameObject> upper_platforms;
+vector<GameObject> middle_platforms;
+vector<GameObject> lower_platforms;
 
 // text render factory and format
 IDWriteFactory *dwrite_factory;
@@ -60,6 +67,7 @@ void load_lava();
 
 void render_frame(void);
 void draw_map(XMMATRIX view_projection);
+void update(VGTime timer);
 void update_ai();
 void update_sound();
 void update_graphics();
@@ -99,6 +107,7 @@ int WINAPI WinMain(const HINSTANCE instance, const HINSTANCE prev_instance, cons
 			//UpdateAI();
 			//dx_handle->input->update_input(camera, timer);
 			player.update(*timer);
+			update(*timer);
 			//upper_platforms[0].update(*timer);
 			//dx_handle->input->update_input(&upper_platforms[0], timer);
 			//UpdateSound();
@@ -127,13 +136,20 @@ void render_frame(void)
 	//upperPlatforms[1].update(*timer);
 	//upperPlatforms[1].Draw(view_projection);
 
-	
-	draw_map(view_projection);
-	//if(!upperPlatforms[0].collided(upperPlatforms[1]))
+
+	//draw_map(view_projection);
+	//for(auto& i: gameobjects)
 	//{
-	//	upperPlatforms[0].transform.right(timer->deltaTime() * 10);
+	//	i.draw(view_projection);
 	//}
-	//UpdateLava(view_projection, timer->totalTime());
+	if (!cube_one.collided(cube_two))
+	{
+		cube_one.transform.right(timer->delta_time() * 10);
+	}
+
+	cube_one.draw(view_projection);
+	cube_two.draw(view_projection);
+	//update_lava(view_projection, timer->total_time());
 	player.draw(view_projection);
 
 	test_floor.draw(view_projection);
@@ -152,11 +168,33 @@ void render_frame(void)
 void draw_map(const XMMATRIX view_projection)
 {
 	for (size_t i = 0; i < upper_platform_count; i++)
-{
-	upper_platforms[i].draw(view_projection/*,D3D11_PRIMITIVE_TOPOLOGY_POINTLIST*/);
-	middle_platforms[i].draw(view_projection/*,D3D11_PRIMITIVE_TOPOLOGY_POINTLIST*/);
-	lower_platforms[i].draw(view_projection/*,D3D11_PRIMITIVE_TOPOLOGY_POINTLIST*/);
+	{
+		upper_platforms[i].draw(view_projection/*,D3D11_PRIMITIVE_TOPOLOGY_POINTLIST*/);
+		middle_platforms[i].draw(view_projection/*,D3D11_PRIMITIVE_TOPOLOGY_POINTLIST*/);
+		lower_platforms[i].draw(view_projection/*,D3D11_PRIMITIVE_TOPOLOGY_POINTLIST*/);
+	}
 }
+
+
+
+void update(VGTime timer)
+{
+	// test
+	/*if (player.collided(test_floor))
+	{
+		player.set_grounded(true);
+	}*/
+	for (auto& i : gameobjects)
+	{
+		i.update(timer);
+		/*for(auto& j : gameobjects)
+		{
+			if(i.collided(j))
+			{
+
+			}
+		}*/
+	}
 }
 
 void end_game()
@@ -183,7 +221,7 @@ void update_graphics()
 
 void update_lava(const XMMATRIX view_projection, const float time)
 {
-	lava_floor.get_model()->update_constant_buffer_time_scaled(lava_floor.transform.get_world() * view_projection,view_projection, directional_light_shines_from, directional_light_colour, ambient_light_colour, time);
+	lava_floor.get_model()->update_constant_buffer_time_scaled(lava_floor.transform.get_world() * view_projection, view_projection, directional_light_shines_from, directional_light_colour, ambient_light_colour, time);
 	lava_floor.draw(view_projection);// , false, D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
 }
 
@@ -205,8 +243,8 @@ void load_lava()
 
 void load_content()
 {
-	const XMVECTOR platform_scale = XMVectorSet(1.0f, 1.0f, 1.0f, 0.0f);
-	const XMVECTOR rotation = XMQuaternionIdentity();
+	const auto scale = XMVectorSplatOne();
+	const auto rotation = XMQuaternionIdentity();
 
 
 	camera = new Camera();
@@ -214,43 +252,60 @@ void load_content()
 	skybox = Skybox("assets/purple_nebular.dds");
 	test_floor = Floor("assets/crate.jpg");
 
-	//char filename[] = "assets/FloatingIsland_001.obj";
-
-	model_test = new Model("assets/Sphere.obj");
-	model_test->load_texture("assets/FloatingIsland_DIFFUSE.png");
-	POS_TEX_NORM_COL_VERTEX* platform_placeholder =  Geometry::cube_ptnc(1.0f);
+	UINT numverts;
+	POS_TEX_NORM_COL_VERTEX* platform_placeholder = Geometry::cube_ptnc(&numverts);
 	platform = new Model(CB_STATE_SIMPLE);
-	platform->load_geo_model(platform_placeholder, 36, sizeof(POS_TEX_NORM_COL_VERTEX));
+	platform->load_geo_model(platform_placeholder, numverts, sizeof(POS_TEX_NORM_COL_VERTEX));
 	platform->load_texture("assets/FloatingIsland_DIFFUSE.png");
-
-	player = Player("player1", platform, Transform(XMVectorSet(1,1,1,0),XMQuaternionIdentity(),XMVectorSet(0,10,0,0)));
-
-	float plat_collision_radius = platform->get_collision_sphere().collision_radius;
-	plat_collision_radius = 2.0f;
-
-	//player = Player("player1", platform);	
+	auto *cube = new Cube();
 
 
-	for (size_t i = 0; i < upper_platform_count; i++)
-	{
-		upper_platforms[i] = GameObject(&"upperPlatform"[i], platform, Transform(platform_scale, rotation, XMVectorSet((i+4) * plat_collision_radius * 3, 0, 1.0f, 0.0f)));
-	}
+	player = Player("player1", cube, Transform(XMVectorSet(1, 1, 1, 0), XMQuaternionIdentity(), XMVectorSet(0, 10, -40, 0)));
+	player.get_model()->col
 
-	for (size_t i = 0; i < middle_platform_count; i++)
-	{
-		middle_platforms[i] = GameObject(&"upperPlatform"[i], platform, Transform(platform_scale, rotation, XMVectorSet((i + 4) * plat_collision_radius * 3, 0, 1.0f, 0.0f)));
-	}
+	cube_one = GameObject("cube_one", cube, Transform(scale, rotation, XMVectorSet(0, 0, 1.0f, 0.0f)));
+	cube_two = GameObject("cube_two", cube, Transform(scale, rotation, XMVectorSet(10, 0, 1.0f, 0.0f)));
 
-	for (size_t i = 0; i < lower_platform_count; i++)
-	{
-		lower_platforms[i] = GameObject(&"upperPlatform"[i], platform, Transform(platform_scale, rotation, XMVectorSet((i + 4) * plat_collision_radius * 3, 0, 1.0f, 0.0f)));
-	}
 
+
+
+
+
+
+
+
+
+
+
+	//auto plat_collision_radius = platform->get_collision_sphere().collision_radius;
+	//plat_collision_radius = 2.0f;
+
+
+	//// initialise upper platforms
+	//for (size_t i = 0; i < upper_platform_count; i++)
+	//{
+	//	upper_platforms.push_back(GameObject("upperPlatform", platform, Transform(platform_scale, rotation, XMVectorSet(i * plat_collision_radius * 3, 0, 1.0f, 0.0f))));
+	//}
+	//// initialise middle platforms
+	//for (size_t i = 0; i < middle_platform_count; i++)
+	//{
+	//	middle_platforms.push_back(GameObject("middlePlatform", platform, Transform(platform_scale, rotation, XMVectorSet(i * plat_collision_radius * 3, 0, 1.0f, 0.0f))));
+	//}
+	//// initialise lower platforms
+	//for (size_t i = 0; i < lower_platform_count; i++)
+	//{
+	//	lower_platforms.push_back(GameObject("lowerPlatform", platform, Transform(platform_scale, rotation, XMVectorSet(i * plat_collision_radius * 3, 0, 1.0f, 0.0f))));
+	//}
+
+	//gameobjects.insert(gameobjects.end(), upper_platforms.begin(), upper_platforms.end());
+	//gameobjects.insert(gameobjects.end(), middle_platforms.begin(), middle_platforms.end());
+	//gameobjects.insert(gameobjects.end(), lower_platforms.begin(), lower_platforms.end());
 	//player.add_child(&upper_platforms[0]);
 	//LoadLava();
 
 	timer->start();
 }
+
 
 HRESULT init_dx(const HINSTANCE instance, HINSTANCE prev_instance, const LPSTR lp_cmd_line, const int n_cmd_show)
 {
@@ -281,8 +336,7 @@ HRESULT init_dx(const HINSTANCE instance, HINSTANCE prev_instance, const LPSTR l
 	return hr;
 }
 
-
-LRESULT CALLBACK wnd_proc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK wnd_proc(const HWND hwnd, const UINT message, const WPARAM w_param, const LPARAM l_param)
 {
 	PAINTSTRUCT ps;
 	HDC hdc;
@@ -290,20 +344,22 @@ LRESULT CALLBACK wnd_proc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	switch (message)
 	{
 	case WM_PAINT:
-		hdc = BeginPaint(hWnd, &ps);
-		EndPaint(hWnd, &ps);
+		hdc = BeginPaint(hwnd, &ps);
+		EndPaint(hwnd, &ps);
 		break;
 	case WM_DESTROY:
 		PostQuitMessage(0);
 		break;
 	default:
-		return DefWindowProc(hWnd, message, wParam, lParam);
+		return DefWindowProc(hwnd, message, w_param, l_param);
 	}
 	return 0;
 }
 
 
+/*
 HRESULT initialise_window(HINSTANCE hInstance, int nCmdShow)
 {
 	return 0;
 }
+*/

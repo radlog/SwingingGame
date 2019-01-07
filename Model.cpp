@@ -3,8 +3,6 @@
 
 // CONSTRUCTOR methods
 
-
-
 // loads the main constructor of the Model class in addition with an .obj file with the path defined by char * filename
 Model::Model(const LPCSTR filename, const CB_STATE state) : Model(state)
 {
@@ -57,13 +55,8 @@ HRESULT Model::load_obj_model(const LPCSTR filename)
 
 	update_default_vertex_buffer(vertices_, vert_size_  * numverts_);
 	create_index_buffer();
-	//CalculateOrigin();
-	//InitializeCollider();
-#ifdef RELEASE
-	//OutputDebugString("Calc origin");
-	CalculateOrigin();
-	InitializeCollider();
-#endif
+	calculate_origin();
+	initialize_sphere_collider();
 
 	return 0;
 }
@@ -71,35 +64,29 @@ HRESULT Model::load_obj_model(const LPCSTR filename)
 // loads primitive topology shapes using indices
 HRESULT Model::load_geo_model(void* vertices, const UINT num_verts, const UINT single_vertex_bytesize, unsigned int *indices, const UINT num_indices)
 {
-	HRESULT hr = S_OK;
-
-	hr = load_geo_model(vertices, num_verts, single_vertex_bytesize);
+	auto hr = load_geo_model(vertices, num_verts, single_vertex_bytesize);
 	this->indices_ = indices;
 	this->num_indices_ = num_indices;
 	hr = create_index_buffer();
+	//ZeroMemory(&num_indices_, sizeof(num_indices_));
+	initialize_sphere_collider();
 
 	return hr;
 }
 
-// loads primitive topology shapes using only vertices, the number of them and their single bytesize
-HRESULT Model::load_geo_model(void* vertices, UINT numverts, UINT single_vertex_bytesize)
+// loads primitive topology shapes using only vertices, the number of them, their single bytesize and the objects origin
+HRESULT Model::load_geo_model(void* vertices, const UINT numverts, const UINT single_vertex_bytesize)
 {
-	HRESULT hr = S_OK;
 	vert_size_ = single_vertex_bytesize;
 	this->vertices_ = vertices;
 	this->numverts_ = numverts;
-	ZeroMemory(&num_indices_, sizeof(num_indices_));
-	hr = update_default_vertex_buffer(vertices, vert_size_  * numverts);
 
-#ifdef RELEASE
-	//OutputDebugString("Calc origin");
-	hr = CalculateOrigin();
-	hr = InitializeCollider();
-#endif
+	const auto hr = update_default_vertex_buffer(vertices, vert_size_ * numverts);
+
+	initialize_sphere_collider();
 
 	return hr;
 }
-
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -112,7 +99,7 @@ HRESULT Model::load_geo_model(void* vertices, UINT numverts, UINT single_vertex_
 
 void Model::draw(const XMMATRIX view_projection, const bool use_simple_cb, const D3D11_PRIMITIVE_TOPOLOGY mode)
 {
-	// use the simple constant buffer, if no other was specifically defined. same counts for the topology mode
+	// use the simple constant buffer, if no other was specifically defined
 	if (use_simple_cb) {
 		cb_simple_.world_view_projection = view_projection;
 		immediate_context_->UpdateSubresource(constant_buffer_, 0, nullptr, &cb_simple_, 0, 0);
@@ -352,10 +339,11 @@ void Model::calculate_origin()
 	origin_ = min_outer_vector_ - max_outer_vector_;
 }
 
-void Model::initialize_collider()
+void Model::initialize_sphere_collider()
 {
 	sphere_collider_.local_position = origin_;
 	sphere_collider_.collision_radius = sqrt(pow(min_outer_vector_.x - max_outer_vector_.x, 2) + pow(min_outer_vector_.y - max_outer_vector_.y, 2) + pow(min_outer_vector_.z - max_outer_vector_.z, 2));
+	sphere_collider_.collision_radius = 1;
 }
 
 HRESULT Model::create_constant_buffer_full()
@@ -438,10 +426,10 @@ void* Model::get_constant_buffer_state()
 {
 	switch (state_)
 	{
-	case CB_STATE_FULL: return &cb_full_; break;
-	case CB_STATE_LIGHTED: return &cb_lighted_;; break;
-	case CB_STATE_TIME_SCALED:return &cb_time_scaled_lighted_;; break;
-	default: return &cb_simple_;; break;
+		case CB_STATE_FULL: return &cb_full_; 
+		case CB_STATE_LIGHTED: return &cb_lighted_;
+		case CB_STATE_TIME_SCALED: return &cb_time_scaled_lighted_;
+		default: return &cb_simple_;
 	}
 }
 

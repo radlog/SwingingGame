@@ -10,21 +10,42 @@ GameObject::GameObject()
 {
 }
 
-
-GameObject::GameObject(const LPCSTR name)
+GameObject::GameObject(const LPCSTR name, const TAG tag) : model_(nullptr)
 {
 	dx_handle_ = D3Dfw::get_instance();
 	device_ = dx_handle_->get_device();
 	immediate_context_ = dx_handle_->get_immediate_context();
-	this->name_ = name;
+	name_ = name;
+	tag_ = tag;
 }
 
-GameObject::GameObject(const LPCSTR name, Model *model, const Transform transform) : GameObject(name)
+GameObject::GameObject(const LPCSTR name, Model *model, const Transform transform, const TAG tag) : GameObject(name, tag)
 {
 	this->transform = transform;
-	this->model_ = model;
+	model_ = model;	
 }
 
+void GameObject::update(VGTime timer)
+{
+	if (!is_kinetic_)
+	{
+		if (!is_grounded_)
+		{
+			air_time_ += timer.delta_time();
+			const auto falling_velocity = Physics3D::gravity * (air_time_*air_time_);
+			transform.up(falling_velocity * timer.delta_time());
+		}
+		else
+		{
+			air_time_ = 0.0f;
+		}
+	}
+	for (auto& i : children_)
+	{
+		i->update(timer);
+	}
+
+}
 
 void GameObject::draw(const XMMATRIX view_projection, const bool use_default_cb, const D3D11_PRIMITIVE_TOPOLOGY mode)
 {
@@ -32,6 +53,15 @@ void GameObject::draw(const XMMATRIX view_projection, const bool use_default_cb,
 	for (auto& i : children_)
 	{
 		i->draw(view_projection, use_default_cb, mode);
+	}
+}
+
+void GameObject::translate(XMVECTOR direction, float speed)
+{
+	transform.translate(direction, speed);
+	for (auto& i : children_)
+	{
+		i->translate(direction, speed);
 	}
 }
 
@@ -125,11 +155,10 @@ void GameObject::rotate(float pitch, float yaw, float roll)
 	}
 }
 
-vector<GameObject*> GameObject::get_children()
+vector<GameObject*> GameObject::get_children() const
 {
 	return children_;
 }
-
 
 void GameObject::spawn(XMVECTOR position)
 {
@@ -143,37 +172,42 @@ void GameObject::start()
 {
 }
 
-void GameObject::update(VGTime timer)
-{
-	//is_kinetic_ = false;
-	if (!is_kinetic_)
-	{
-		//is_grounded_ = false;
-		if (!is_grounded_)
-		{
-			air_time_ += timer.delta_time();
-			const auto falling_velocity = Physics3D::gravity * (air_time_*air_time_);
-			transform.up(falling_velocity * timer.delta_time());
-		}
-		else
-		{
-			air_time_ = 0.0f;
-		}
-	}
-	for (auto& i : children_)
-	{
-		i->update(timer);
-	}
-
-}
-
-
 bool GameObject::collided(GameObject target) const
 {
-	const auto tar_collider = target.get_model()->get_collision_sphere();
-	const auto orig_collider = model_->get_collision_sphere();
+	const auto s_tar_collider = target.get_model()->get_collision_sphere();
+	const auto s_orig_collider = model_->get_collision_sphere();
 
-	return dist(tar_collider.local_position * target.transform.get_local_position(), orig_collider.local_position * transform.get_local_position()) < tar_collider.collision_radius + orig_collider.collision_radius;
+	if (dist(s_tar_collider.local_position + target.transform.get_local_position(),
+		s_orig_collider.local_position + transform.get_local_position()) >= s_tar_collider.collision_radius +
+		s_orig_collider.collision_radius)
+		return false;
+
+	return true;
+
+	switch (tag_)
+	{
+	case DEFAULT:
+
+	case GROUND:
+
+		break;
+	case MODEL:
+
+		break;
+	case POLY:
+
+		break;
+	case CHARACTER:
+
+		break;
+	case PLAYER:
+
+		break;
+	default:
+		return false;
+	}
+
+	return false;
 }
 
 LPCSTR GameObject::get_name() const
@@ -198,9 +232,9 @@ void GameObject::add_child(GameObject* child)
 
 bool GameObject::remove_child(GameObject* child)
 {
-	for(auto i =0; i < children_.size(); i++)
+	for (auto i = 0; i < children_.size(); i++)
 	{
-		if(child == children_[i])
+		if (child == children_[i])
 		{
 			children_.erase(children_.begin() + i);
 			return true;
@@ -208,6 +242,11 @@ bool GameObject::remove_child(GameObject* child)
 		if (children_[i]->remove_child(child)) return true;
 	}
 	return false;
+}
+
+void GameObject::set_grounded(bool grounded)
+{
+	is_grounded_ = grounded;
 }
 
 void GameObject::cleanup()

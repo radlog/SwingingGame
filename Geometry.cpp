@@ -11,60 +11,10 @@ Geometry::~Geometry()
 {
 }
 
-POS_TEX_NORM_VERTEX* Geometry::cube_ptn(const float scale)
+POS_TEX_VERTEX* Geometry::create_skybox(UINT *numverts, const float scale)
 {
-
-	const auto cube = new POS_TEX_NORM_VERTEX[36]
-	{
-		// back face 
-		{XMFLOAT3(-scale, scale, scale),   XMFLOAT2(0.0f,0.0f), XMFLOAT3(0.0f,0.0f,1.0f)},  
-		{XMFLOAT3(-scale, -scale, scale),  XMFLOAT2(0.0f,1.0f), XMFLOAT3(0.0f,0.0f,1.0f)},  
-		{XMFLOAT3(scale, scale, scale),    XMFLOAT2(1.0f,0.0f), XMFLOAT3(0.0f,0.0f,1.0f)},  
-		{XMFLOAT3(scale, scale, scale),    XMFLOAT2(1.0f,0.0f), XMFLOAT3(0.0f,0.0f,1.0f)},  
-		{XMFLOAT3(-scale, -scale, scale),  XMFLOAT2(0.0f,1.0f), XMFLOAT3(0.0f,0.0f,1.0f)},  
-		{XMFLOAT3(scale, -scale, scale),   XMFLOAT2(1.0f,1.0f), XMFLOAT3(0.0f,0.0f,1.0f)},  
-		// front face																		
-		{XMFLOAT3(-scale, -scale, -scale), XMFLOAT2(0.0f,1.0f), XMFLOAT3(0.0f,0.0f,-1.0f)}, 
-		{XMFLOAT3(-scale, scale, -scale),  XMFLOAT2(0.0f,0.0f), XMFLOAT3(0.0f,0.0f,-1.0f)}, 
-		{XMFLOAT3(scale, scale, -scale),   XMFLOAT2(1.0f,0.0f), XMFLOAT3(0.0f,0.0f,-1.0f)}, 
-		{XMFLOAT3(-scale, -scale, -scale), XMFLOAT2(0.0f,1.0f), XMFLOAT3(0.0f,0.0f,-1.0f)}, 
-		{XMFLOAT3(scale, scale, -scale),   XMFLOAT2(1.0f,0.0f), XMFLOAT3(0.0f,0.0f,-1.0f)}, 
-		{XMFLOAT3(scale, -scale, -scale),  XMFLOAT2(1.0f,1.0f), XMFLOAT3(0.0f,0.0f,-1.0f)}, 
-		// left face														,				
-		{XMFLOAT3(-scale, -scale, -scale), XMFLOAT2(0.0f,1.0f), XMFLOAT3(-1.0f,0.0f,0.0f)}, 
-		{XMFLOAT3(-scale, -scale, scale),  XMFLOAT2(0.0f,0.0f), XMFLOAT3(-1.0f,0.0f,0.0f)}, 
-		{XMFLOAT3(-scale, scale, -scale),  XMFLOAT2(1.0f,1.0f), XMFLOAT3(-1.0f,0.0f,0.0f)}, 
-		{XMFLOAT3(-scale, -scale, scale),  XMFLOAT2(0.0f,0.0f), XMFLOAT3(-1.0f,0.0f,0.0f)}, 
-		{XMFLOAT3(-scale, scale, scale),   XMFLOAT2(1.0f,0.0f), XMFLOAT3(-1.0f,0.0f,0.0f)}, 
-		{XMFLOAT3(-scale, scale, -scale),  XMFLOAT2(1.0f,1.0f), XMFLOAT3(-1.0f,0.0f,0.0f)}, 
-		// right face														,				
-		{XMFLOAT3(scale, -scale, scale),   XMFLOAT2(0.0f,0.0f), XMFLOAT3(1.0f,0.0f,0.0f)}, 
-		{XMFLOAT3(scale, -scale, -scale),  XMFLOAT2(0.0f,1.0f), XMFLOAT3(1.0f,0.0f,0.0f)}, 
-		{XMFLOAT3(scale, scale, -scale),   XMFLOAT2(1.0f,1.0f), XMFLOAT3(1.0f,0.0f,0.0f)}, 
-		{XMFLOAT3(scale, scale, scale),    XMFLOAT2(1.0f,0.0f), XMFLOAT3(1.0f,0.0f,0.0f)}, 
-		{XMFLOAT3(scale, -scale, scale),   XMFLOAT2(0.0f,0.0f), XMFLOAT3(1.0f,0.0f,0.0f)}, 
-		{XMFLOAT3(scale, scale, -scale),   XMFLOAT2(1.0f,1.0f), XMFLOAT3(1.0f,0.0f,0.0f)}, 
-		// bottom face														,				
-		{XMFLOAT3(scale, -scale, -scale),  XMFLOAT2(1.0f,1.0f), XMFLOAT3(0.0f,-1.0f,0.0f)}, 
-		{XMFLOAT3(scale, -scale, scale),   XMFLOAT2(1.0f,0.0f), XMFLOAT3(0.0f,-1.0f,0.0f)}, 
-		{XMFLOAT3(-scale, -scale, -scale), XMFLOAT2(0.0f,1.0f), XMFLOAT3(0.0f,-1.0f,0.0f)}, 
-		{XMFLOAT3(scale, -scale, scale),   XMFLOAT2(1.0f,0.0f), XMFLOAT3(0.0f,-1.0f,0.0f)}, 
-		{XMFLOAT3(-scale, -scale, scale),  XMFLOAT2(0.0f,0.0f), XMFLOAT3(0.0f,-1.0f,0.0f)}, 
-		{XMFLOAT3(-scale, -scale, -scale), XMFLOAT2(0.0f,1.0f), XMFLOAT3(0.0f,-1.0f,0.0f)}, 
-		// top face										 					,				
-		{XMFLOAT3(scale, scale, scale),    XMFLOAT2(1.0f,0.0f), XMFLOAT3(0.0f,1.0f,0.0f) }, 
-		{XMFLOAT3(scale, scale, -scale),   XMFLOAT2(1.0f,1.0f), XMFLOAT3(0.0f,1.0f,0.0f) }, 
-		{XMFLOAT3(-scale, scale, -scale),  XMFLOAT2(0.0f,1.0f), XMFLOAT3(0.0f,1.0f,0.0f) }, 
-		{XMFLOAT3(-scale, scale, scale),   XMFLOAT2(0.0f,0.0f), XMFLOAT3(0.0f,1.0f,0.0f) }, 
-		{XMFLOAT3(scale, scale, scale),    XMFLOAT2(1.0f,0.0f), XMFLOAT3(0.0f,1.0f,0.0f) }, 
-		{XMFLOAT3(-scale, scale, -scale),  XMFLOAT2(0.0f,1.0f), XMFLOAT3(0.0f,1.0f,0.0f) }
-	};
-	return cube;
-}
-
-POS_TEX_VERTEX* Geometry::create_skybox(const float scale)
-{
-	const auto skybox = new POS_TEX_VERTEX[36]
+	*numverts = cube_num_verts;
+	const auto skybox = new POS_TEX_VERTEX[*numverts]
 	{
 		// back face 
 		{XMFLOAT3(-scale, -scale, scale),   XMFLOAT2(0.0f,0.0f)},
@@ -110,12 +60,68 @@ POS_TEX_VERTEX* Geometry::create_skybox(const float scale)
 		{XMFLOAT3(-scale, scale, -scale), 	XMFLOAT2(0.0f,1.0f)}
 	};
 
+
+
 	return skybox;
 }
 
-POS_COL_TEX_VERTEX* Geometry::cube_ptc(const float scale)
+POS_TEX_NORM_VERTEX* Geometry::cube_ptn(UINT *numverts, const float scale)
 {
-	const auto cube = new POS_COL_TEX_VERTEX[36]
+	*numverts = cube_num_verts;
+	const auto cube = new POS_TEX_NORM_VERTEX[*numverts]
+	{
+		// back face 
+		{XMFLOAT3(-scale, scale, scale),   XMFLOAT2(0.0f,0.0f), XMFLOAT3(0.0f,0.0f,1.0f)},
+		{XMFLOAT3(-scale, -scale, scale),  XMFLOAT2(0.0f,1.0f), XMFLOAT3(0.0f,0.0f,1.0f)},
+		{XMFLOAT3(scale, scale, scale),    XMFLOAT2(1.0f,0.0f), XMFLOAT3(0.0f,0.0f,1.0f)},
+		{XMFLOAT3(scale, scale, scale),    XMFLOAT2(1.0f,0.0f), XMFLOAT3(0.0f,0.0f,1.0f)},
+		{XMFLOAT3(-scale, -scale, scale),  XMFLOAT2(0.0f,1.0f), XMFLOAT3(0.0f,0.0f,1.0f)},
+		{XMFLOAT3(scale, -scale, scale),   XMFLOAT2(1.0f,1.0f), XMFLOAT3(0.0f,0.0f,1.0f)},
+		// front face																		
+		{XMFLOAT3(-scale, -scale, -scale), XMFLOAT2(0.0f,1.0f), XMFLOAT3(0.0f,0.0f,-1.0f)},
+		{XMFLOAT3(-scale, scale, -scale),  XMFLOAT2(0.0f,0.0f), XMFLOAT3(0.0f,0.0f,-1.0f)},
+		{XMFLOAT3(scale, scale, -scale),   XMFLOAT2(1.0f,0.0f), XMFLOAT3(0.0f,0.0f,-1.0f)},
+		{XMFLOAT3(-scale, -scale, -scale), XMFLOAT2(0.0f,1.0f), XMFLOAT3(0.0f,0.0f,-1.0f)},
+		{XMFLOAT3(scale, scale, -scale),   XMFLOAT2(1.0f,0.0f), XMFLOAT3(0.0f,0.0f,-1.0f)},
+		{XMFLOAT3(scale, -scale, -scale),  XMFLOAT2(1.0f,1.0f), XMFLOAT3(0.0f,0.0f,-1.0f)},
+		// left face														,				
+		{XMFLOAT3(-scale, -scale, -scale), XMFLOAT2(0.0f,1.0f), XMFLOAT3(-1.0f,0.0f,0.0f)},
+		{XMFLOAT3(-scale, -scale, scale),  XMFLOAT2(0.0f,0.0f), XMFLOAT3(-1.0f,0.0f,0.0f)},
+		{XMFLOAT3(-scale, scale, -scale),  XMFLOAT2(1.0f,1.0f), XMFLOAT3(-1.0f,0.0f,0.0f)},
+		{XMFLOAT3(-scale, -scale, scale),  XMFLOAT2(0.0f,0.0f), XMFLOAT3(-1.0f,0.0f,0.0f)},
+		{XMFLOAT3(-scale, scale, scale),   XMFLOAT2(1.0f,0.0f), XMFLOAT3(-1.0f,0.0f,0.0f)},
+		{XMFLOAT3(-scale, scale, -scale),  XMFLOAT2(1.0f,1.0f), XMFLOAT3(-1.0f,0.0f,0.0f)},
+		// right face														,				
+		{XMFLOAT3(scale, -scale, scale),   XMFLOAT2(0.0f,0.0f), XMFLOAT3(1.0f,0.0f,0.0f)},
+		{XMFLOAT3(scale, -scale, -scale),  XMFLOAT2(0.0f,1.0f), XMFLOAT3(1.0f,0.0f,0.0f)},
+		{XMFLOAT3(scale, scale, -scale),   XMFLOAT2(1.0f,1.0f), XMFLOAT3(1.0f,0.0f,0.0f)},
+		{XMFLOAT3(scale, scale, scale),    XMFLOAT2(1.0f,0.0f), XMFLOAT3(1.0f,0.0f,0.0f)},
+		{XMFLOAT3(scale, -scale, scale),   XMFLOAT2(0.0f,0.0f), XMFLOAT3(1.0f,0.0f,0.0f)},
+		{XMFLOAT3(scale, scale, -scale),   XMFLOAT2(1.0f,1.0f), XMFLOAT3(1.0f,0.0f,0.0f)},
+		// bottom face														,				
+		{XMFLOAT3(scale, -scale, -scale),  XMFLOAT2(1.0f,1.0f), XMFLOAT3(0.0f,-1.0f,0.0f)},
+		{XMFLOAT3(scale, -scale, scale),   XMFLOAT2(1.0f,0.0f), XMFLOAT3(0.0f,-1.0f,0.0f)},
+		{XMFLOAT3(-scale, -scale, -scale), XMFLOAT2(0.0f,1.0f), XMFLOAT3(0.0f,-1.0f,0.0f)},
+		{XMFLOAT3(scale, -scale, scale),   XMFLOAT2(1.0f,0.0f), XMFLOAT3(0.0f,-1.0f,0.0f)},
+		{XMFLOAT3(-scale, -scale, scale),  XMFLOAT2(0.0f,0.0f), XMFLOAT3(0.0f,-1.0f,0.0f)},
+		{XMFLOAT3(-scale, -scale, -scale), XMFLOAT2(0.0f,1.0f), XMFLOAT3(0.0f,-1.0f,0.0f)},
+		// top face										 					,				
+		{XMFLOAT3(scale, scale, scale),    XMFLOAT2(1.0f,0.0f), XMFLOAT3(0.0f,1.0f,0.0f) },
+		{XMFLOAT3(scale, scale, -scale),   XMFLOAT2(1.0f,1.0f), XMFLOAT3(0.0f,1.0f,0.0f) },
+		{XMFLOAT3(-scale, scale, -scale),  XMFLOAT2(0.0f,1.0f), XMFLOAT3(0.0f,1.0f,0.0f) },
+		{XMFLOAT3(-scale, scale, scale),   XMFLOAT2(0.0f,0.0f), XMFLOAT3(0.0f,1.0f,0.0f) },
+		{XMFLOAT3(scale, scale, scale),    XMFLOAT2(1.0f,0.0f), XMFLOAT3(0.0f,1.0f,0.0f) },
+		{XMFLOAT3(-scale, scale, -scale),  XMFLOAT2(0.0f,1.0f), XMFLOAT3(0.0f,1.0f,0.0f) }
+	};
+
+
+	return cube;
+}
+
+POS_COL_TEX_VERTEX* Geometry::cube_ptc(UINT *numverts, const float scale)
+{
+	*numverts = cube_num_verts;
+	const auto cube = new POS_COL_TEX_VERTEX[*numverts]
 	{
 		// back face 
 		{ XMFLOAT3(-scale, scale, scale), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f), XMFLOAT2(0.0f,0.0f) },
@@ -160,12 +166,15 @@ POS_COL_TEX_VERTEX* Geometry::cube_ptc(const float scale)
 		{ XMFLOAT3(scale, scale, scale), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f), XMFLOAT2(1.0f,0.0f) },
 		{ XMFLOAT3(-scale, scale, -scale), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f), XMFLOAT2(0.0f,1.0f) }
 	};
+
+
 	return cube;
 }
 
-POS_TEX_NORM_COL_VERTEX* Geometry::cube_ptnc(const float scale)
+POS_TEX_NORM_COL_VERTEX* Geometry::cube_ptnc(UINT *numverts, const float scale)
 {
-	const auto cube = new POS_TEX_NORM_COL_VERTEX[36]
+	*numverts = cube_num_verts;
+	const auto cube = new POS_TEX_NORM_COL_VERTEX[*numverts]
 	{
 		// back face 
 		{ XMFLOAT3(-scale, scale, scale),   XMFLOAT2(0.0f,0.0f), XMFLOAT3(0.0f,0.0f,1.0f),  XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f) },
@@ -210,6 +219,8 @@ POS_TEX_NORM_COL_VERTEX* Geometry::cube_ptnc(const float scale)
 	{ XMFLOAT3(scale, scale, scale),    XMFLOAT2(1.0f,0.0f), XMFLOAT3(0.0f,1.0f,0.0f) , XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f) },
 	{ XMFLOAT3(-scale, scale, -scale),  XMFLOAT2(0.0f,1.0f), XMFLOAT3(0.0f,1.0f,0.0f) , XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f) }
 	};
+
+
 	return cube;
 }
 
@@ -246,53 +257,55 @@ void Geometry::plane_ittn(POS_TEX_NORM_COL_VERTEX** plane, unsigned int **indice
 	*indices = plane_indices;
 }
 
-POS_COL_VERTEX* Geometry::cube_pc(const float scale)
-{
-	POS_COL_VERTEX color_cube[] =
-	{
-		// back face 
-		{XMFLOAT3(-scale, scale, scale), XMFLOAT4(1, 0.0f, 0.0f, 1)},
-		{XMFLOAT3(-scale, -scale, scale), XMFLOAT4(1, 0.0f, 0.0f, 1)},
-		{XMFLOAT3(scale, scale, scale), XMFLOAT4(1, 0.0f, 0.0f, 1)},
-		{XMFLOAT3(scale, scale, scale), XMFLOAT4(1, 0.0f, 0.0f, 1)},
-		{XMFLOAT3(-scale, -scale, scale),XMFLOAT4(1, 0.0f, 0.0f, 1)},
-		{XMFLOAT3(scale, -scale, scale), XMFLOAT4(1, 0.0f, 0.0f, 1)},
-		// front face
-		{XMFLOAT3(-scale, -scale, -scale), XMFLOAT4(1, 0.0f, 0.0f, 1)},
-		{XMFLOAT3(-scale, scale, -scale), XMFLOAT4(1, 0.0f, 0.0f, 1)},
-		{XMFLOAT3(scale, scale, -scale),  XMFLOAT4(1, 0.0f, 0.0f, 1)},
-		{XMFLOAT3(-scale, -scale, -scale),  XMFLOAT4(1, 0.0f, 0.0f, 1)},
-		{XMFLOAT3(scale, scale, -scale),  XMFLOAT4(1, 0.0f, 0.0f, 1)},
-		{XMFLOAT3(scale, -scale, -scale),  XMFLOAT4(1, 0.0f, 0.0f, 1)},
-		// left face
-		{XMFLOAT3(-scale, -scale, -scale), XMFLOAT4(0.0f, 0.0f, 1, 1)},
-		{XMFLOAT3(-scale, -scale, scale), XMFLOAT4(0.0f, 0.0f, 1, 1)},
-		{XMFLOAT3(-scale, scale, -scale), XMFLOAT4(0.0f, 0.0f, 1, 1)},
-		{XMFLOAT3(-scale, -scale, scale), XMFLOAT4(0.0f, 0.0f, 1, 1)},
-		{XMFLOAT3(-scale, scale, scale), XMFLOAT4(0.0f, 0.0f, 1, 1)},
-		{XMFLOAT3(-scale, scale, -scale), XMFLOAT4(0.0f, 0.0f, 1, 1)},
-		// right face
-		{XMFLOAT3(scale, -scale, scale),  XMFLOAT4(0.0f, 0.0f, 1, 1)},
-		{XMFLOAT3(scale, -scale, -scale),  XMFLOAT4(0.0f, 0.0f, 1, 1)},
-		{XMFLOAT3(scale, scale, -scale),  XMFLOAT4(0.0f, 0.0f, 1, 1)},
-		{XMFLOAT3(scale, scale, scale), XMFLOAT4(0.0f, 0.0f, 1, 1)},
-		{XMFLOAT3(scale, -scale, scale),  XMFLOAT4(0.0f, 0.0f, 1, 1)},
-		{XMFLOAT3(scale, scale, -scale),  XMFLOAT4(0.0f, 0.0f, 1, 1)},
-		// bottom face
-		{XMFLOAT3(scale, -scale, -scale), XMFLOAT4(0.0f, 1, 0.0f, 1)},
-		{XMFLOAT3(scale, -scale, scale), XMFLOAT4(0.0f, 1, 0.0f, 1)},
-		{XMFLOAT3(-scale, -scale, -scale), XMFLOAT4(0.0f, 1, 0.0f, 1)},
-		{XMFLOAT3(scale, -scale, scale), XMFLOAT4(0.0f, 1, 0.0f, 1)},
-		{XMFLOAT3(-scale, -scale, scale), XMFLOAT4(0.0f, 1, 0.0f, 1)},
-		{XMFLOAT3(-scale, -scale, -scale), XMFLOAT4(0.0f, 1, 0.0f, 1)},
-		// top face
-		{XMFLOAT3(scale, scale, scale), XMFLOAT4(0.0f, 1, 0.0f, 1)},
-		{XMFLOAT3(scale, scale, -scale),XMFLOAT4(0.0f, 1, 0.0f, 1)},
-		{XMFLOAT3(-scale, scale, -scale), XMFLOAT4(0.0f, 1, 0.0f, 1)},
-		{XMFLOAT3(-scale, scale, scale), XMFLOAT4(0.0f, 1, 0.0f, 1)},
-		{XMFLOAT3(scale, scale, scale), XMFLOAT4(0.0f, 1, 0.0f, 1)},
-		{XMFLOAT3(-scale, scale, -scale), XMFLOAT4(0.0f, 1, 0.0f, 1)}
-	};
-
-	return color_cube;
-}
+// NOTE::this method is not used in this solution. I still want to keep it for testing
+//POS_COL_VERTEX* Geometry::cube_pc(const float scale)
+//{
+//	POS_COL_VERTEX color_cube[] =
+//	{
+//		// back face 
+//		{XMFLOAT3(-scale, scale, scale), XMFLOAT4(1, 0.0f, 0.0f, 1)},
+//		{XMFLOAT3(-scale, -scale, scale), XMFLOAT4(1, 0.0f, 0.0f, 1)},
+//		{XMFLOAT3(scale, scale, scale), XMFLOAT4(1, 0.0f, 0.0f, 1)},
+//		{XMFLOAT3(scale, scale, scale), XMFLOAT4(1, 0.0f, 0.0f, 1)},
+//		{XMFLOAT3(-scale, -scale, scale),XMFLOAT4(1, 0.0f, 0.0f, 1)},
+//		{XMFLOAT3(scale, -scale, scale), XMFLOAT4(1, 0.0f, 0.0f, 1)},
+//		// front face
+//		{XMFLOAT3(-scale, -scale, -scale), XMFLOAT4(1, 0.0f, 0.0f, 1)},
+//		{XMFLOAT3(-scale, scale, -scale), XMFLOAT4(1, 0.0f, 0.0f, 1)},
+//		{XMFLOAT3(scale, scale, -scale),  XMFLOAT4(1, 0.0f, 0.0f, 1)},
+//		{XMFLOAT3(-scale, -scale, -scale),  XMFLOAT4(1, 0.0f, 0.0f, 1)},
+//		{XMFLOAT3(scale, scale, -scale),  XMFLOAT4(1, 0.0f, 0.0f, 1)},
+//		{XMFLOAT3(scale, -scale, -scale),  XMFLOAT4(1, 0.0f, 0.0f, 1)},
+//		// left face
+//		{XMFLOAT3(-scale, -scale, -scale), XMFLOAT4(0.0f, 0.0f, 1, 1)},
+//		{XMFLOAT3(-scale, -scale, scale), XMFLOAT4(0.0f, 0.0f, 1, 1)},
+//		{XMFLOAT3(-scale, scale, -scale), XMFLOAT4(0.0f, 0.0f, 1, 1)},
+//		{XMFLOAT3(-scale, -scale, scale), XMFLOAT4(0.0f, 0.0f, 1, 1)},
+//		{XMFLOAT3(-scale, scale, scale), XMFLOAT4(0.0f, 0.0f, 1, 1)},
+//		{XMFLOAT3(-scale, scale, -scale), XMFLOAT4(0.0f, 0.0f, 1, 1)},
+//		// right face
+//		{XMFLOAT3(scale, -scale, scale),  XMFLOAT4(0.0f, 0.0f, 1, 1)},
+//		{XMFLOAT3(scale, -scale, -scale),  XMFLOAT4(0.0f, 0.0f, 1, 1)},
+//		{XMFLOAT3(scale, scale, -scale),  XMFLOAT4(0.0f, 0.0f, 1, 1)},
+//		{XMFLOAT3(scale, scale, scale), XMFLOAT4(0.0f, 0.0f, 1, 1)},
+//		{XMFLOAT3(scale, -scale, scale),  XMFLOAT4(0.0f, 0.0f, 1, 1)},
+//		{XMFLOAT3(scale, scale, -scale),  XMFLOAT4(0.0f, 0.0f, 1, 1)},
+//		// bottom face
+//		{XMFLOAT3(scale, -scale, -scale), XMFLOAT4(0.0f, 1, 0.0f, 1)},
+//		{XMFLOAT3(scale, -scale, scale), XMFLOAT4(0.0f, 1, 0.0f, 1)},
+//		{XMFLOAT3(-scale, -scale, -scale), XMFLOAT4(0.0f, 1, 0.0f, 1)},
+//		{XMFLOAT3(scale, -scale, scale), XMFLOAT4(0.0f, 1, 0.0f, 1)},
+//		{XMFLOAT3(-scale, -scale, scale), XMFLOAT4(0.0f, 1, 0.0f, 1)},
+//		{XMFLOAT3(-scale, -scale, -scale), XMFLOAT4(0.0f, 1, 0.0f, 1)},
+//		// top face
+//		{XMFLOAT3(scale, scale, scale), XMFLOAT4(0.0f, 1, 0.0f, 1)},
+//		{XMFLOAT3(scale, scale, -scale),XMFLOAT4(0.0f, 1, 0.0f, 1)},
+//		{XMFLOAT3(-scale, scale, -scale), XMFLOAT4(0.0f, 1, 0.0f, 1)},
+//		{XMFLOAT3(-scale, scale, scale), XMFLOAT4(0.0f, 1, 0.0f, 1)},
+//		{XMFLOAT3(scale, scale, scale), XMFLOAT4(0.0f, 1, 0.0f, 1)},
+//		{XMFLOAT3(-scale, scale, -scale), XMFLOAT4(0.0f, 1, 0.0f, 1)}
+//	};
+//
+//
+//	return color_cube;
+//}

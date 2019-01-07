@@ -42,22 +42,3 @@ void LavaFloor::draw(const XMMATRIX view_projection, const bool use_default_cb, 
 	GameObject::draw(view_projection, use_default_cb, mode);
 }
 
-void LavaFloor::spawn(XMVECTOR position)
-{
-}
-
-void LavaFloor::render()
-{
-}
-
-void LavaFloor::start()
-{
-}
-
-void LavaFloor::update(VGTime timer)
-{
-}
-
-void LavaFloor::cleanup()
-{
-}

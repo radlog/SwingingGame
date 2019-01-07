@@ -10,11 +10,6 @@ public:
 
 	void draw(XMMATRIX view_projection, bool use_default_cb = false, D3D11_PRIMITIVE_TOPOLOGY mode = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	void spawn(XMVECTOR position) override;
-	void render() override;
-	void start() override;
-	void update(VGTime timer) override;
-	void cleanup() override;
 private:
 	ID3D11ShaderResourceView *noise_texture_;
 	ID3D11ShaderResourceView *normal_texture_;

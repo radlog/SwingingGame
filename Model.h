@@ -4,11 +4,7 @@
 
 class D3Dfw;
 
-struct SphereCollider
-{
-	XMVECTOR local_position;
-	float collision_radius;
-};
+
 
 enum CB_STATE
 {
@@ -28,7 +24,7 @@ public:
 	HRESULT load_obj_model(LPCSTR filename);
 	HRESULT load_geo_model(void* vertices, UINT num_verts, UINT single_vertex_bytesize, unsigned int *indices, UINT
 	                       num_indices);
-	HRESULT load_geo_model(void* vertices, UINT numverts, UINT single_vertex_bytesize);
+	HRESULT load_geo_model(void* vertices, const UINT numverts, const UINT single_vertex_bytesize);
 
 	void set_shader_file(char* shader_file);
 
@@ -61,7 +57,6 @@ protected:
 	ID3D11Device *device_; // hardware device
 	ID3D11DeviceContext *immediate_context_; // device context
 
-
 	ID3D11VertexShader *v_shader_;
 	ID3D11PixelShader *p_shader_;
 	ID3DBlob *vs_, *ps_;
@@ -81,12 +76,12 @@ protected:
 
 	UINT numverts_;
 	UINT vert_size_;
-	void *vertices_;
+	void *vertices_; // this is a void pointer, because a vertex can have different types of structures
 	UINT num_indices_;
 	unsigned int *indices_;
 
 	void calculate_origin();
-	void initialize_collider();
+	void initialize_sphere_collider();
 
 	bool recalc_origin_ = false;
 

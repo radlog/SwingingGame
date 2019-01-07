@@ -13,6 +13,17 @@ class D3Dfw;
 class GameObject
 {
 
+	// tag defines the collision type and how interaction between collided objects work
+	enum TAG
+	{
+		DEFAULT = 0,
+		GROUND = 1,
+		MODEL = 2,
+		POLY = 3,
+		CHARACTER = 4,
+		PLAYER = 5
+	};
+
 public:
 	GameObject();
 	virtual ~GameObject();
@@ -21,14 +32,14 @@ public:
 	 * \brief initialises a gameobject with a name
 	 * \param name name of the object
 	 */
-	explicit GameObject(LPCSTR name);
+	explicit GameObject(LPCSTR name, TAG tag = DEFAULT);
 	/**
 	 * \brief initialises a gameobject with name, mode, transform
 	 * \param name name of the object
 	 * \param model gameobject's model
 	 * \param transform initial gameobject's transform
 	 */
-	GameObject(LPCSTR name, Model *model, const Transform transform);
+	GameObject(LPCSTR name, Model *model, const Transform transform, TAG tag = DEFAULT);
 	/**
 	 * \brief draw the objects model with provided view_projection, default constant buffer flag, topology mode
 	 * \param view_projection pass in cameras view projection
@@ -37,6 +48,7 @@ public:
 	 */
 	virtual void draw(XMMATRIX view_projection, bool use_default_cb = true, D3D11_PRIMITIVE_TOPOLOGY mode = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
+	virtual void translate(XMVECTOR direction, float speed); // moves the object in a direction at a given speed
 	virtual void move_horizontal_forward(float speed); // moves the object forward horizontally ignoring the up/down rotation at a given speed 
 	virtual void move_horizontal_backward(float speed); // moves the object backward horizontally ignoring the up/down rotation at a given speed 
 	virtual void move_forward(float speed); // moves the object forward at a given speed 
@@ -48,8 +60,9 @@ public:
 	virtual void rotate_fixed(float pitch, float yaw, float roll); // rotates the object at given axis rotations pitch, yaw, roll with rotation lock at 89 degrees to prevent inverted axis
 	virtual void rotate(float pitch, float yaw, float roll); // rotates the object at given axis rotations pitch, yaw, roll
 
-	vector<GameObject*> get_children(); // returns the list of children this object has
+	vector<GameObject*> get_children() const; // returns the list of children this object has
 
+	// TODO: make transform private or find out how to make it an interface or how to make a better abstraction 
 	Transform transform; // the transform of the object
 
 
@@ -65,33 +78,27 @@ public:
 	void add_child(GameObject *child); // add a child object
 	bool remove_child(GameObject *child); // remove a child safely(only if it is in the children list)
 
+	void set_grounded(bool grounded); // sets object grounded
+
 	virtual void cleanup(); // cleanup pointers to prevent memory leaks
 protected:
 	vector<GameObject*> children_; // pointer to children list of gameobject
 	LPCSTR name_; // name
-	LPCSTR tag_ = "default_object"; // tag
+	TAG tag_; // tag
 	Model *model_; // model
 	//SoundEngine sound_; // sound engine instance
-	float collision_radius_; // collision radius for sphere collision
 	GameData game_data_; // game data that hold track of running game values
 	D3Dfw* dx_handle_; // directX handle 
 
 	double air_time_ = 0; // time the object is in air
-	bool is_grounded_; // whether the object has ground under its feet
-	bool is_kinetic_; // kinetic objects are not affected by physics and or gravity
+	bool is_grounded_ = false; // whether the object has ground under its feet
+	bool is_kinetic_ = false; // kinetic objects are not affected by physics and or gravity
 
 	ID3D11Device* device_; // pointer to the hardware device
 	ID3D11DeviceContext* immediate_context_; // pointer to the device context
 
-	// collision type defines how interaction between collided objects work
-	enum COLLISION_TYPE
-	{
-		DEFAULT = 0,
-		GROUND = 1,
-		MODEL = 2,
-		POLY = 3,
-		CHARACTER = 4,
-		PLAYER = 5
-	};
+
+
+
 
 };

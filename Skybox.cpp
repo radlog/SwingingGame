@@ -12,12 +12,13 @@ Skybox::Skybox()
 
 Skybox::Skybox(const LPCSTR texture_name) : GameObject(texture_name)
 {
-	POS_TEX_VERTEX* skybox_desc = Geometry::create_skybox(20.0f);
+	UINT numverts;
+	POS_TEX_VERTEX* skybox_desc = Geometry::create_skybox(&numverts, 20.0f);
 	model_ = new Model();
 	char filename[] = "skybox_shader.hlsl";
 	model_->set_shader_file(filename);
 	model_->load_texture(texture_name);
-	model_->load_geo_model(skybox_desc, 36, sizeof(POS_TEX_VERTEX));
+	model_->load_geo_model(skybox_desc, numverts, sizeof(POS_TEX_VERTEX));
 	init_depth_stencil_states();
 	init_rasterizer();
 
@@ -74,22 +75,3 @@ void Skybox::cleanup() const
 	if (depth_write_sky_) depth_write_sky_->Release();
 }
 
-void Skybox::spawn(XMVECTOR position)
-{
-}
-
-void Skybox::render()
-{
-}
-
-void Skybox::start()
-{
-}
-
-void Skybox::update(VGTime timer)
-{
-}
-
-void Skybox::cleanup()
-{
-}

@@ -21,11 +21,5 @@ private:
 	HRESULT init_rasterizer();
 	HRESULT init_depth_stencil_states();
 	void cleanup() const;
-public:
-	void spawn(XMVECTOR position) override;
-	void render() override;
-	void start() override;
-	void update(VGTime timer) override;
-	void cleanup() override;
 };
 
