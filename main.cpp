@@ -261,7 +261,6 @@ void load_content()
 
 
 	player = Player("player1", cube, Transform(XMVectorSet(1, 1, 1, 0), XMQuaternionIdentity(), XMVectorSet(0, 10, -40, 0)));
-	player.get_model()->col
 
 	cube_one = GameObject("cube_one", cube, Transform(scale, rotation, XMVectorSet(0, 0, 1.0f, 0.0f)));
 	cube_two = GameObject("cube_two", cube, Transform(scale, rotation, XMVectorSet(10, 0, 1.0f, 0.0f)));

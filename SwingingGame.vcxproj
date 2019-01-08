@@ -161,6 +161,7 @@
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Character.cpp" />
     <ClCompile Include="Collectable.cpp" />
+    <ClCompile Include="Collider.cpp" />
     <ClCompile Include="Command.cpp" />
     <ClCompile Include="Cube.cpp" />
     <ClCompile Include="d3dfw.cpp" />
@@ -230,6 +231,7 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Character.h" />
     <ClInclude Include="Collectable.h" />
+    <ClInclude Include="Collider.h" />
     <ClInclude Include="Command.h" />
     <ClInclude Include="Cube.h" />
     <ClInclude Include="d3dfw.h" />
