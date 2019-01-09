@@ -42,14 +42,14 @@ struct POS_TEX_NORM_COL_VERTEX
 // Colliders
 
 // structure representing a sphere used for collision detection
-struct SphereCollider
-{
-	XMVECTOR local_position;
-	float collision_radius;
-};
+//struct SphereCollider
+//{
+//	XMVECTOR local_position;
+//	float collision_radius;
+//};
 
 // structure representing a plane used for collision detection
-struct PlaneCollider
+struct Plane
 {
 	XMVECTOR normal; // normal of a plane
 	float offset; // offset of the normal

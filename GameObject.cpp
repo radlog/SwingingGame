@@ -1,7 +1,6 @@
 #include "GameObject.h"
 #include "Physics3D.h"
 
-
 GameObject::~GameObject()
 {
 }
@@ -40,11 +39,8 @@ void GameObject::update(VGTime timer)
 			air_time_ = 0.0f;
 		}
 	}
-	for (auto& i : children_)
-	{
-		i->update(timer);
-	}
 
+	update_transform(&transform.get_local_world());
 }
 
 void GameObject::draw(const XMMATRIX view_projection, const bool use_default_cb, const D3D11_PRIMITIVE_TOPOLOGY mode)
@@ -56,58 +52,34 @@ void GameObject::draw(const XMMATRIX view_projection, const bool use_default_cb,
 	}
 }
 
-void GameObject::translate(XMVECTOR direction, float speed)
+void GameObject::translate(const XMVECTOR direction, const float speed)
 {
 	transform.translate(direction, speed);
-	for (auto& i : children_)
-	{
-		i->translate(direction, speed);
-	}
 }
 
 void GameObject::move_horizontal_forward(float speed)
 {
 	transform.horizontal_forward(speed);
-	for (auto& i : children_)
-	{
-		i->move_horizontal_forward(speed);
-	}
 }
 
 void GameObject::move_horizontal_backward(float speed)
 {
 	transform.horizontal_forward(-speed);
-	for (auto& i : children_)
-	{
-		i->move_horizontal_backward(speed);
-	}
 }
 
 void GameObject::move_forward(float speed)
 {
 	transform.forward(speed);
-	for (auto& i : children_)
-	{
-		i->move_forward(speed);
-	}
 }
 
 void GameObject::move_backward(float speed)
 {
 	transform.forward(-speed);
-	for (auto& i : children_)
-	{
-		i->move_backward(speed);
-	}
 }
 
 void GameObject::move_right(float speed)
 {
 	transform.right(speed);
-	for (auto& i : children_)
-	{
-		i->move_right(speed);
-	}
 }
 
 void GameObject::move_left(float speed)
@@ -160,6 +132,11 @@ vector<GameObject*> GameObject::get_children() const
 	return children_;
 }
 
+void GameObject::set_kinetic(const bool kinetic)
+{
+	is_kinetic_ = kinetic;
+}
+
 void GameObject::spawn(XMVECTOR position)
 {
 }
@@ -172,43 +149,56 @@ void GameObject::start()
 {
 }
 
-bool GameObject::collided(GameObject target) const
+void GameObject::update_transform(XMMATRIX *world)
 {
-	const auto s_tar_collider = target.get_model()->get_collision_sphere();
-	const auto s_orig_collider = model_->get_collision_sphere();
+	XMMATRIX local_world = transform.get_local_world() * * world;
+	transform.set_world(local_world);
 
-	if (dist(s_tar_collider.local_position + target.transform.get_local_position(),
-		s_orig_collider.local_position + transform.get_local_position()) >= s_tar_collider.collision_radius +
-		s_orig_collider.collision_radius)
-		return false;
-
-	return true;
-
-	switch (tag_)
+	// update transform of children
+	for(auto& i : children_)
 	{
-	case DEFAULT:
-
-	case GROUND:
-
-		break;
-	case MODEL:
-
-		break;
-	case POLY:
-
-		break;
-	case CHARACTER:
-
-		break;
-	case PLAYER:
-
-		break;
-	default:
-		return false;
+		i->update_transform(&local_world);
 	}
 
-	return false;
 }
+
+//bool GameObject::collided(GameObject target) const
+//{
+//	const auto s_tar_collider = target.get_model()->get_collision_sphere();
+//	const auto s_orig_collider = model_->get_collision_sphere();
+//
+//	if (dist(s_tar_collider.local_position + target.transform.get_local_position(),
+//		s_orig_collider.local_position + transform.get_local_position()) >= s_tar_collider.collision_radius +
+//		s_orig_collider.collision_radius)
+//		return false;
+//
+//	return true;
+//
+//	switch (tag_)
+//	{
+//	case DEFAULT:
+//
+//	case GROUND:
+//
+//		break;
+//	case MODEL:
+//
+//		break;
+//	case POLY:
+//
+//		break;
+//	case CHARACTER:
+//
+//		break;
+//	case PLAYER:
+//
+//		break;
+//	default:
+//		return false;
+//	}
+//
+//	return false;
+//}
 
 LPCSTR GameObject::get_name() const
 {
@@ -248,6 +238,28 @@ void GameObject::set_grounded(bool grounded)
 {
 	is_grounded_ = grounded;
 }
+
+
+void GameObject::set_collider(const Collider col)
+{
+	collider_ = col;
+}
+
+void GameObject::update_collision_tree(XMMATRIX* world, float scale)
+{
+	XMMATRIX local_world = XMMatrixIdentity() * transform.get_world();
+	local_world *= *world;
+	transform.set_world_scale(transform.get_local_scale() * scale);
+	
+	XMVECTOR sphere_collision_origin;
+	if (model_)
+		sphere_collision_origin = sphere_collider_.get_origin();
+	else
+		sphere_collision_origin = XMVectorSet(0, 0, 0, 0);
+
+	sphere_collision_origin = XMVector3Transform(sphere_collision_origin, local_world);
+}
+
 
 void GameObject::cleanup()
 {

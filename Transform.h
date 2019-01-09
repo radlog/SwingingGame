@@ -24,7 +24,10 @@ public:
 
 	void look_at(XMVECTOR target);
 	XMMATRIX get_world();
+	//void set_world();
 	XMVECTOR get_local_position() const;
+	void set_world(const XMMATRIX& local_world);
+	XMMATRIX get_local_world() const;
 
 
 	static const XMVECTOR world_up;
@@ -36,7 +39,9 @@ public:
 
 	void apply_force(XMVECTOR force);
 
-protected:
+	XMVECTOR get_local_scale();
+	XMVECTOR get_world_scale() const;
+	void set_world_scale(XMVECTOR scale);
 
 
 private:
@@ -50,11 +55,14 @@ private:
 	XMVECTOR local_forward_ = XMVectorSet(0.0, 0.0, 1.0, 0.0);
 	XMVECTOR local_backward_ = -local_forward_;
 
+	XMVECTOR world_scale_;
+	XMVECTOR world_rotation_;
+	XMVECTOR world_position_;
+	XMMATRIX world_;
+
 	XMVECTOR local_scale_;
 	XMVECTOR local_rotation_;
 	XMVECTOR local_position_;
-	XMMATRIX world_;
-
-
+	XMMATRIX local_world_;
 };
 

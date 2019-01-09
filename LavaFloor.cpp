@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "LavaFloor.h"
+#include "Model.h"
 
 
 LavaFloor::LavaFloor()

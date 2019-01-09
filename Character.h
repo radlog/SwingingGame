@@ -3,6 +3,8 @@
 #include "Collectable.h"
 
 
+class Model;
+
 // defines physical movement states of the character
 enum STATE {
 	STANDING,

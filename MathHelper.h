@@ -27,15 +27,15 @@ inline XMVECTOR normal(const XMVECTOR v1, const XMVECTOR v2, const XMVECTOR v3)
 }
 
 // plane equation
-inline PlaneCollider get_plane(const XMVECTOR v1, const XMVECTOR v2, const XMVECTOR v3)
+inline Plane get_plane(const XMVECTOR v1, const XMVECTOR v2, const XMVECTOR v3)
 {
 	const auto norm =  normal(v1, v2, v3);
 	const auto d_offset =  -dot(v1, norm);
 
-	return PlaneCollider{ norm, d_offset };
+	return Plane{ norm, d_offset };
 }
 // determines whether the given point is on the given plane
-inline bool is_point_on_plane(const PlaneCollider plane, const XMVECTOR point)
+inline bool is_point_on_plane(const Plane plane, const XMVECTOR point)
 {
 	const auto n = plane.normal;
 	return (n.x * point.x) + (n.y * point.y) + (n.z * point.z) + plane.offset == 0;

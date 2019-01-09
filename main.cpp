@@ -7,6 +7,7 @@
 #include "Floor.h"
 #include "Player.h"
 #include "Cube.h"
+#include "Model.h"
 
 //using namespace std;
 D3Dfw *dx_handle = D3Dfw::get_instance();
@@ -15,6 +16,8 @@ vector<GameObject> gameobjects;
 
 GameObject cube_one;
 GameObject cube_two;
+GameObject cube_three;
+GameObject cube_four;
 
 double time_since_last_frame = 0;
 double second = 1;
@@ -105,8 +108,11 @@ int WINAPI WinMain(const HINSTANCE instance, const HINSTANCE prev_instance, cons
 		}
 		else {
 			//UpdateAI();
-			//dx_handle->input->update_input(camera, timer);
+			//dx_handle->input->update_input(&cube_one, timer);
 			player.update(*timer);
+			cube_one.move_right(timer->delta_time() * 10);
+			cube_one.update(*timer);
+			cube_four.update(*timer);
 			update(*timer);
 			//upper_platforms[0].update(*timer);
 			//dx_handle->input->update_input(&upper_platforms[0], timer);
@@ -142,13 +148,13 @@ void render_frame(void)
 	//{
 	//	i.draw(view_projection);
 	//}
-	if (!cube_one.collided(cube_two))
-	{
-		cube_one.transform.right(timer->delta_time() * 10);
-	}
+	//if (!cube_one.collided(cube_two))
+	//{
+		
+	//}
 
 	cube_one.draw(view_projection);
-	cube_two.draw(view_projection);
+	//cube_two.draw(view_projection);
 	//update_lava(view_projection, timer->total_time());
 	player.draw(view_projection);
 
@@ -157,7 +163,7 @@ void render_frame(void)
 
 
 	//DebugUTIL(timer->deltaTime());
-	debug_util(timer->get_fps());
+	//debug_util(timer->get_fps());
 	// swap back buffer with front buffer
 	dx_handle->get_swap_chain()->Present(0, 0);
 
@@ -263,8 +269,17 @@ void load_content()
 	player = Player("player1", cube, Transform(XMVectorSet(1, 1, 1, 0), XMQuaternionIdentity(), XMVectorSet(0, 10, -40, 0)));
 
 	cube_one = GameObject("cube_one", cube, Transform(scale, rotation, XMVectorSet(0, 0, 1.0f, 0.0f)));
-	cube_two = GameObject("cube_two", cube, Transform(scale, rotation, XMVectorSet(10, 0, 1.0f, 0.0f)));
+	cube_two = GameObject("cube_two", cube, Transform(scale, rotation, XMVectorSet(10, 0, 0.0f, 0.0f)));
 
+	cube_three = GameObject("cube_two", cube, Transform(scale, rotation, XMVectorSet(20, 0, 0.0f, 0.0f)));
+	cube_four = GameObject("cube_two", cube, Transform(scale, rotation, XMVectorSet(20, 0, 0.0f, 0.0f)));
+
+	cube_one.set_kinetic(true);
+	cube_two.set_kinetic(true);
+
+	cube_one.add_child(&cube_two);
+	cube_one.add_child(&cube_three);
+	//cube_three.add_child(&cube_four);
 
 
 

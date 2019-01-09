@@ -5,7 +5,9 @@
 #include "SoundEngine.h"
 #include "GameData.h"
 #include "MathHelper.h"
+#include "SphereCollider.h"
 
+class Model;
 class VGTime;
 class D3Dfw;
 
@@ -61,16 +63,19 @@ public:
 	virtual void rotate(float pitch, float yaw, float roll); // rotates the object at given axis rotations pitch, yaw, roll
 
 	vector<GameObject*> get_children() const; // returns the list of children this object has
+	void set_kinetic(bool kinetic);
 
 	// TODO: make transform private or find out how to make it an interface or how to make a better abstraction 
 	Transform transform; // the transform of the object
 
 
+
 	virtual void spawn(XMVECTOR position);
 	virtual void render(); // render frame
 	virtual void start();
+	virtual void update_transform(XMMATRIX *world);
 	virtual void update(VGTime timer); // update gameobject's physics and interactions with the game world
-	bool collided(GameObject target) const; // says whether the object collided with another gameobject
+	//bool collided(GameObject target) const; // says whether the object collided with another gameobject
 	LPCSTR get_name() const; // return objects name
 	Model* get_model() const; // return objects model
 
@@ -79,6 +84,9 @@ public:
 	bool remove_child(GameObject *child); // remove a child safely(only if it is in the children list)
 
 	void set_grounded(bool grounded); // sets object grounded
+
+	void set_collider(Collider col);
+	void update_collision_tree(XMMATRIX *world, float scale);
 
 	virtual void cleanup(); // cleanup pointers to prevent memory leaks
 protected:
@@ -97,8 +105,7 @@ protected:
 	ID3D11Device* device_; // pointer to the hardware device
 	ID3D11DeviceContext* immediate_context_; // pointer to the device context
 
-
-
-
+	Collider collider_;
+	SphereCollider sphere_collider_;
 
 };

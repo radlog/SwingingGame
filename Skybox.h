@@ -7,7 +7,7 @@ public:
 	Skybox();
 
 	explicit Skybox(LPCSTR texture_name);
-	Skybox(LPCSTR name, Transform transform, Model model);
+	Skybox(LPCSTR name, Transform transform, BaseModel model);
 	void draw(XMMATRIX view_projection, D3D11_PRIMITIVE_TOPOLOGY mode = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 private:

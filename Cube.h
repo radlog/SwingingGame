@@ -1,5 +1,5 @@
 #pragma once
-#include "Model.h"
+#include "BaseModel.h"
 
 enum VERTEX_FORMAT
 {

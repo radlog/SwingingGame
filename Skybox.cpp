@@ -24,7 +24,7 @@ Skybox::Skybox(const LPCSTR texture_name) : GameObject(texture_name)
 
 }
 
-Skybox::Skybox(const LPCSTR name, Transform transform, Model model): Skybox(name)
+Skybox::Skybox(const LPCSTR name, Transform transform, BaseModel model): Skybox(name)
 {
 }
 

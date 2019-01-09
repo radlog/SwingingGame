@@ -35,7 +35,7 @@ Floor::Floor(LPCSTR texture, int tiles, float scale) : GameObject(texture)
 	
 }
 
-PlaneCollider Floor::get_collider()
+Plane Floor::get_collider()
 {
 	const auto local_position = transform.get_local_position();
 	const auto v1 = XMLoadFloat3(&plane_vertices_[0].pos) + local_position;

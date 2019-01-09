@@ -173,6 +173,7 @@
     <ClCompile Include="InputHandler.cpp" />
     <ClCompile Include="LavaFloor.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="BaseModel.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="objfilemodel.cpp" />
     <ClCompile Include="Obstacle.cpp" />
@@ -190,6 +191,7 @@
     <ClCompile Include="Geometry.cpp" />
     <ClCompile Include="Skybox.cpp" />
     <ClCompile Include="SoundEngine.cpp" />
+    <ClCompile Include="SphereCollider.cpp" />
     <ClCompile Include="Transform.cpp" />
     <ClCompile Include="VGTime.cpp" />
   </ItemGroup>
@@ -245,6 +247,7 @@
     <ClInclude Include="LavaFloor.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="MathHelper.h" />
+    <ClInclude Include="BaseModel.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="objfilemodel.h" />
     <ClInclude Include="Obstacle.h" />
@@ -255,6 +258,7 @@
     <ClInclude Include="resource.h" />
     <ClInclude Include="Skybox.h" />
     <ClInclude Include="SoundEngine.h" />
+    <ClInclude Include="SphereCollider.h" />
     <ClInclude Include="Transform.h" />
     <ClInclude Include="VGTime.h" />
   </ItemGroup>
