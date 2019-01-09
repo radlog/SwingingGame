@@ -189,7 +189,7 @@ HRESULT BaseModel::set_input_layout(D3D11_INPUT_ELEMENT_DESC iedesc[], const int
 	return hr;
 }
 
-void BaseModel::set_shader_file(char * shader_file)
+void BaseModel::set_shader_file(LPCSTR shader_file)
 {
 	this->shader_file_ = shader_file;
 	compile_shaders();

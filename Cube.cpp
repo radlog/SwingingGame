@@ -1,7 +1,7 @@
 #include "Cube.h"
 
 
-Cube::Cube(LPCSTR texture, VERTEX_FORMAT vertex_format, CB_STATE state) : Model(state)
+Cube::Cube(LPCSTR texture, const VERTEX_FORMAT vertex_format, const CB_STATE state) : Model(state)
 {
 	UINT numverts;
 	switch(vertex_format) 

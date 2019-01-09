@@ -1,4 +1,8 @@
 #pragma once
+
+extern const float chase_radius;
+extern const float chase_speed;
+
 class Enemy : public Character
 {
 	// enemy type ground unit or swinging unit
@@ -6,7 +10,7 @@ class Enemy : public Character
 		GROUNDER,
 		SWINGER
 	};
-
+	
 	
 public:
 	Enemy();
@@ -23,7 +27,6 @@ public:
 
 	void chase_target(GameObject *target, VGTime *timer);
 
-private:
-	float chase_radius_ = 10.0f;
+	
 };
 

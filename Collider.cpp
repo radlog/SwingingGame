@@ -12,7 +12,7 @@ Collider::~Collider()
 }
 
 
-bool Collider::check_collision(Collider col)
+bool Collider::check_collision(Collider *col)
 {
 	return false;
 }

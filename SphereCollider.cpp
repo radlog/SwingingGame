@@ -19,3 +19,14 @@ XMVECTOR SphereCollider::get_origin()
 {
 	return origin_;
 }
+
+bool SphereCollider::check_collision(Collider* col)
+{
+	if(typeid(&col) == typeid(SphereCollider))
+	{
+		const auto s = dynamic_cast<SphereCollider*>(col);
+		return sphere_to_sphere_collision(*s);
+	}
+
+	
+}

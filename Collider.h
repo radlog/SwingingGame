@@ -6,7 +6,7 @@ public:
 	Collider();
 	virtual ~Collider();
 
-	virtual bool check_collision(Collider col);	
+	virtual bool check_collision(Collider *col);	
 
 };
 

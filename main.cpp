@@ -50,8 +50,8 @@ Input input;
 bool enable_glowing = false;
 
 
-XMVECTOR directional_light_shines_from = XMVectorSet(0.0f, 0.5f, -1.0f, 0.0f);
-XMVECTOR directional_light_colour = XMVectorSet(1.0f, 1.0f, 0.0f, 1.0f); // green
+XMVECTOR directional_light_shines_from = XMVectorSet(0.0f, 0.5f, 1.0f, 0.0f);
+XMVECTOR directional_light_colour = XMVectorSet(1.0f, 1.0f, 1.0f, 1.0f); // green
 XMVECTOR ambient_light_colour = XMVectorSet(0.1f, 0.1f, 0.1f, 1.0f); // dark grey
 
 
@@ -140,7 +140,7 @@ void render_frame(Camera *camera)
 	dx_handle->clear_rtv();
 
 	// draw here
-	skybox.draw(sky_lock);
+	//skybox.draw(sky_lock);
 	//upperPlatforms[0].update(*timer);
 	//upperPlatforms[0].Draw(view_projection);
 	//upperPlatforms[1].update(*timer);
@@ -156,8 +156,8 @@ void render_frame(Camera *camera)
 	//{
 		
 	//}
-
-	cube_one.draw(view_projection);
+	cube_one.get_model()->update_constant_buffer_full(lava_floor.transform.get_world() * view_projection, view_projection, directional_light_shines_from, directional_light_colour, ambient_light_colour, XMVectorSplatOne(), timer->delta_time());
+	cube_one.draw(view_projection, false);
 	//cube_two.draw(view_projection);
 	//update_lava(view_projection, timer->total_time());
 	player.draw(view_projection);
@@ -266,7 +266,9 @@ void load_content()
 	platform = new Model(CB_STATE_SIMPLE);
 	platform->load_geo_model(platform_placeholder, numverts, sizeof(POS_TEX_NORM_COL_VERTEX));
 	platform->load_texture("assets/FloatingIsland_DIFFUSE.png");
-	auto *cube = new Cube();
+	auto *cube = new Cube("",TEXTURED_COLORED_LIGHTED,CB_STATE_FULL);
+	cube->set_shader_file("lighted_shader.hlsl");
+	
 
 	model_test = new Model("assets/cube.obj");
 	model_test->load_texture("assets/lava_selfmade_DIFFUSE.png");
@@ -276,16 +278,16 @@ void load_content()
 	
 
 	cube_one = GameObject("cube_one", cube, Transform(scale, rotation, XMVectorSet(0, 0, 1.0f, 0.0f)));
-	cube_two = GameObject("cube_two", cube, Transform(scale, rotation, XMVectorSet(10, 0, 0.0f, 0.0f)));
+	//cube_two = GameObject("cube_two", cube, Transform(scale, rotation, XMVectorSet(10, 0, 0.0f, 0.0f)));
 
-	cube_three = GameObject("cube_two", cube, Transform(scale, rotation, XMVectorSet(20, 0, 0.0f, 0.0f)));
-	cube_four = GameObject("cube_two", cube, Transform(scale, rotation, XMVectorSet(20, 0, 0.0f, 0.0f)));
+	//cube_three = GameObject("cube_two", cube, Transform(scale, rotation, XMVectorSet(20, 0, 0.0f, 0.0f)));
+	//cube_four = GameObject("cube_two", cube, Transform(scale, rotation, XMVectorSet(20, 0, 0.0f, 0.0f)));
 
 	cube_one.set_kinetic(true);
-	cube_two.set_kinetic(true);
+	//cube_two.set_kinetic(true);
 
-	cube_one.add_child(&cube_two);
-	cube_one.add_child(&cube_three);
+	//cube_one.add_child(&cube_two);
+	//cube_one.add_child(&cube_three);
 	//cube_three.add_child(&cube_four);
 
 

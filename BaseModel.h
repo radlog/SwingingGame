@@ -26,7 +26,7 @@ public:
 	                       num_indices);
 	HRESULT load_geo_model(void* vertices, const UINT numverts, const UINT single_vertex_bytesize);
 
-	void set_shader_file(char* shader_file);
+	void set_shader_file(LPCSTR shader_file);
 
 	virtual void draw(XMMATRIX view_projection, bool use_simple_cb, D3D11_PRIMITIVE_TOPOLOGY mode = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	void cleanup() const;
