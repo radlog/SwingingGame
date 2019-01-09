@@ -23,10 +23,15 @@ Player::Player(LPCSTR name, Model* model, const Transform transform, const bool 
 	if (model == nullptr) model_ = new Model("assets/crate.jpg"); // 
 	if (fps)
 	{
-		camera_ = new Camera();
-		camera_->transform = transform;
-		children_.push_back(camera_);
+		fps_camera_ = new Camera();
+		//this->transform = Transform(XMVectorSplatOne(), XMQuaternionRotationRollPitchYaw(70, 0, 0), XMVectorSet(0, 100, 0, 0));
+		fps_camera_->transform = transform;
+		children_.push_back(fps_camera_);
 	}
+	top_down_camera_ = new Camera();
+	top_down_camera_->transform = Transform(XMVectorSplatOne(), XMQuaternionIdentity(), XMVectorSet(0, 100, 0, 0));
+	top_down_camera_->rotate(XMConvertToRadians(90), 0, 0);
+	//camera_->transform = Transform(XMVectorSplatOne(),XMQuaternionRotationRollPitchYaw(45,0,0), XMVectorSet(0,100,0,0));
 	is_kinetic_ = true;
 }
 
@@ -47,13 +52,19 @@ void Player::update(VGTime timer) {
 
 void Player::update_camera() const
 {
-	camera_->transform = transform;
+	// TODO:: update map transform optionally
+	fps_camera_->transform = transform;
 }
 
 
-Camera* Player::get_camera() const
+Camera* Player::get_fps_camera() const
 {
-	return camera_;
+	return fps_camera_;
+}
+
+Camera* Player::get_top_down_camera() const
+{
+	return top_down_camera_;
 }
 
 

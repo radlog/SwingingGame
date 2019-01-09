@@ -7,6 +7,7 @@
 #include "MathHelper.h"
 #include "SphereCollider.h"
 
+
 class Model;
 class VGTime;
 class D3Dfw;
@@ -82,7 +83,6 @@ public:
 	void set_model(Model *model); // manually set the objects model
 	void add_child(GameObject *child); // add a child object
 	bool remove_child(GameObject *child); // remove a child safely(only if it is in the children list)
-
 	void set_grounded(bool grounded); // sets object grounded
 
 	void set_collider(Collider col);

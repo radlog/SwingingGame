@@ -39,9 +39,11 @@ public:
 	 * \brief get the Camera member of the class
 	 * \return Camera
 	 */
-	Camera *get_camera() const;
+	Camera *get_fps_camera() const;
+	Camera *get_top_down_camera() const;
 
 protected:
-	Camera *camera_ = nullptr; //the camera attached to the player
+	Camera *fps_camera_ = nullptr; //the camera attached to the player
+	Camera *top_down_camera_ = nullptr; // represents the minimap shown at the right upper corner of the view
 };
 

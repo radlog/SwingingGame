@@ -8,6 +8,7 @@
 #include "Player.h"
 #include "Cube.h"
 #include "Model.h"
+#include "Enemy.h"
 
 //using namespace std;
 D3Dfw *dx_handle = D3Dfw::get_instance();
@@ -18,6 +19,7 @@ GameObject cube_one;
 GameObject cube_two;
 GameObject cube_three;
 GameObject cube_four;
+Enemy enemy;
 
 double time_since_last_frame = 0;
 double second = 1;
@@ -68,7 +70,7 @@ LRESULT CALLBACK wnd_proc(HWND, UINT, WPARAM, LPARAM);
 void load_content();
 void load_lava();
 
-void render_frame(void);
+void render_frame(Camera *camera);
 void draw_map(XMMATRIX view_projection);
 void update(VGTime timer);
 void update_ai();
@@ -110,7 +112,7 @@ int WINAPI WinMain(const HINSTANCE instance, const HINSTANCE prev_instance, cons
 			//UpdateAI();
 			//dx_handle->input->update_input(&cube_one, timer);
 			player.update(*timer);
-			cube_one.move_right(timer->delta_time() * 10);
+			//cube_one.move_right(timer->delta_time() * 10);
 			cube_one.update(*timer);
 			cube_four.update(*timer);
 			update(*timer);
@@ -118,7 +120,9 @@ int WINAPI WinMain(const HINSTANCE instance, const HINSTANCE prev_instance, cons
 			//dx_handle->input->update_input(&upper_platforms[0], timer);
 			//UpdateSound();
 			//UpdateGraphics();
-			render_frame();
+			enemy.chase_target(&player,timer);
+			render_frame(player.get_fps_camera());
+			//render_frame(player.get_top_down_camera());
 		}
 	}
 
@@ -128,10 +132,10 @@ int WINAPI WinMain(const HINSTANCE instance, const HINSTANCE prev_instance, cons
 
 
 
-void render_frame(void)
+void render_frame(Camera *camera)
 {
-	const XMMATRIX view_projection = player.get_camera()->calculate_view_projection();
-	const XMMATRIX sky_lock = XMMatrixTranslationFromVector(player.get_camera()->transform.get_local_position()) * view_projection;
+	const XMMATRIX view_projection = camera->calculate_view_projection();
+	const XMMATRIX sky_lock = XMMatrixTranslationFromVector(camera->transform.get_local_position()) * view_projection;
 	// clear the render target view
 	dx_handle->clear_rtv();
 
@@ -159,8 +163,7 @@ void render_frame(void)
 	player.draw(view_projection);
 
 	test_floor.draw(view_projection);
-
-
+	enemy.draw(view_projection);
 
 	//DebugUTIL(timer->deltaTime());
 	//debug_util(timer->get_fps());
@@ -265,8 +268,12 @@ void load_content()
 	platform->load_texture("assets/FloatingIsland_DIFFUSE.png");
 	auto *cube = new Cube();
 
-
+	model_test = new Model("assets/cube.obj");
+	model_test->load_texture("assets/lava_selfmade_DIFFUSE.png");
+	
 	player = Player("player1", cube, Transform(XMVectorSet(1, 1, 1, 0), XMQuaternionIdentity(), XMVectorSet(0, 10, -40, 0)));
+	//player = Player("player1", cube, Transform(XMVectorSplatOne(), XMQuaternionIdentity(), XMVectorSet(0, 0, 0, 0)));
+	
 
 	cube_one = GameObject("cube_one", cube, Transform(scale, rotation, XMVectorSet(0, 0, 1.0f, 0.0f)));
 	cube_two = GameObject("cube_two", cube, Transform(scale, rotation, XMVectorSet(10, 0, 0.0f, 0.0f)));
@@ -282,7 +289,7 @@ void load_content()
 	//cube_three.add_child(&cube_four);
 
 
-
+	enemy = Enemy("enemy", model_test, Transform(scale, rotation, XMVectorSet(0, 10, 0.0f, 0.0f)));
 
 
 

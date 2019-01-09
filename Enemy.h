@@ -7,14 +7,23 @@ class Enemy : public Character
 		SWINGER
 	};
 
+	
 public:
 	Enemy();
 	~Enemy();
+	
+	explicit Enemy(LPCSTR name);
+	explicit Enemy(LPCSTR name, Model *model, Transform transform = Transform());
 
 	/**
 	 * \brief causes the enemy to attack a character
 	 * \param target character to be attacked
 	 */
 	void attack(Character target) const;
+
+	void chase_target(GameObject *target, VGTime *timer);
+
+private:
+	float chase_radius_ = 10.0f;
 };
 
