@@ -23,12 +23,13 @@ Floor::Floor(LPCSTR texture, int tiles, float scale) : GameObject(texture)
 	this->tiles_ = tiles;
 	this->scale_ = scale;
 
-	model_ = new Model();
+	model_ = new Model(CB_STATE_SIMPLE, MESH);
 	Geometry::plane_ittn(&plane_vertices_, &plane_indices_, tiles);
 	model_->load_geo_model(plane_vertices_, (tiles + 1)*(tiles + 1), sizeof(POS_TEX_NORM_COL_VERTEX), plane_indices_, tiles * tiles * 6);
 	model_->load_texture();
 
 	transform = Transform(XMVectorSet(scale, 1.0f, scale, 0.0f), XMQuaternionIdentity(), XMVectorSet((-tiles * scale) / 2, -10.0f, (-tiles * scale) / 2, 0.0f));
+
 	
 }
 

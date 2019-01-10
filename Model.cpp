@@ -4,7 +4,7 @@
 
 Model::Model(const LPCSTR filename, const CB_STATE state, const COLLIDER_TYPE col_type) : BaseModel(filename, state)
 {
-
+	calculate_origin();
 	switch (col_type)
 	{
 		case SPHERE: initialize_sphere_collider();  break;
