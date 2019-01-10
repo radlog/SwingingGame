@@ -1,6 +1,6 @@
 #include "Geometry.h"
 
-
+const float scale = 1.0f;
 
 Geometry::Geometry()
 {
@@ -11,7 +11,7 @@ Geometry::~Geometry()
 {
 }
 
-POS_TEX_VERTEX* Geometry::create_skybox(UINT *numverts, const float scale)
+POS_TEX_VERTEX* Geometry::create_skybox(UINT *numverts)
 {
 	*numverts = cube_num_verts;
 	const auto skybox = new POS_TEX_VERTEX[*numverts]
@@ -65,7 +65,7 @@ POS_TEX_VERTEX* Geometry::create_skybox(UINT *numverts, const float scale)
 	return skybox;
 }
 
-POS_TEX_NORM_VERTEX* Geometry::cube_ptn(UINT *numverts, const float scale)
+POS_TEX_NORM_VERTEX* Geometry::cube_ptn(UINT *numverts)
 {
 	*numverts = cube_num_verts;
 	const auto cube = new POS_TEX_NORM_VERTEX[*numverts]
@@ -118,7 +118,7 @@ POS_TEX_NORM_VERTEX* Geometry::cube_ptn(UINT *numverts, const float scale)
 	return cube;
 }
 
-POS_COL_TEX_VERTEX* Geometry::cube_ptc(UINT *numverts, const float scale)
+POS_COL_TEX_VERTEX* Geometry::cube_ptc(UINT *numverts)
 {
 	*numverts = cube_num_verts;
 	const auto cube = new POS_COL_TEX_VERTEX[*numverts]
@@ -171,7 +171,7 @@ POS_COL_TEX_VERTEX* Geometry::cube_ptc(UINT *numverts, const float scale)
 	return cube;
 }
 
-POS_TEX_NORM_COL_VERTEX* Geometry::cube_ptnc(UINT *numverts, const float scale)
+POS_TEX_NORM_COL_VERTEX* Geometry::cube_ptnc(UINT *numverts)
 {
 	*numverts = cube_num_verts;
 	const auto cube = new POS_TEX_NORM_COL_VERTEX[*numverts]
@@ -224,7 +224,7 @@ POS_TEX_NORM_COL_VERTEX* Geometry::cube_ptnc(UINT *numverts, const float scale)
 	return cube;
 }
 
-void Geometry::plane_ittn(POS_TEX_NORM_COL_VERTEX** plane, unsigned int **indices, const UINT tiles, const float scale)
+void Geometry::plane_ittn(POS_TEX_NORM_COL_VERTEX** plane, unsigned int **indices, const UINT tiles)
 {
 	const auto plane_vertices = new POS_TEX_NORM_COL_VERTEX[(tiles + 1)*(tiles + 1)];
 	const auto plane_indices = new unsigned int[tiles* tiles * 6];

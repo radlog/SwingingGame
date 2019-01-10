@@ -63,11 +63,11 @@ public:
 
 
 
-	static POS_TEX_VERTEX* create_skybox(UINT *numverts, float scale = 1.0f); // create a textured skybox with a scale and return vertex structure pointer	
-	static POS_TEX_NORM_VERTEX* cube_ptn(UINT *numverts, float scale = 1.0f); // create a cube with position, texture, normal, scale and return vertex structure pointer	
-	static POS_COL_TEX_VERTEX* cube_ptc(UINT *numverts, float scale = 1.0f); // create a cube with position, texture, color, scale and return vertex structure pointer
-	static POS_TEX_NORM_COL_VERTEX* cube_ptnc(UINT *numverts, float scale = 1.0f); // create a cube with position, texture, normal, color, scale and return vertex structure pointer
-	static void plane_ittn(POS_TEX_NORM_COL_VERTEX **plane, unsigned int **indices, UINT tiles, float scale = 1.0f); // create an indexed, tiled, texture, normal, scaled plane
+	static POS_TEX_VERTEX* create_skybox(UINT *numverts); // create a textured skybox with a scale and return vertex structure pointer	
+	static POS_TEX_NORM_VERTEX* cube_ptn(UINT *numverts); // create a cube with position, texture, normal, scale and return vertex structure pointer	
+	static POS_COL_TEX_VERTEX* cube_ptc(UINT *numverts); // create a cube with position, texture, color, scale and return vertex structure pointer
+	static POS_TEX_NORM_COL_VERTEX* cube_ptnc(UINT *numverts); // create a cube with position, texture, normal, color, scale and return vertex structure pointer
+	static void plane_ittn(POS_TEX_NORM_COL_VERTEX **plane, unsigned int **indices, UINT tiles); // create an indexed, tiled, texture, normal, scaled plane
 
 private:
 

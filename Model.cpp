@@ -4,21 +4,23 @@
 
 Model::Model(const LPCSTR filename, const CB_STATE state, const COLLIDER_TYPE col_type) : BaseModel(filename, state)
 {
+
 	switch (col_type)
 	{
 		case SPHERE: initialize_sphere_collider();  break;
 		case MESH: initialize_mesh_collider(); break;
-		default: initialize_sphere_collider();
+		default: break;
 	}
 }
 
 Model::Model(const CB_STATE state, const COLLIDER_TYPE col_type) : BaseModel(state)
 {
+	calculate_origin();
 	switch(col_type)
 	{
 		case SPHERE: initialize_sphere_collider();  break;
-		case MESH: initialize_mesh_collider(); break;
-		default: initialize_sphere_collider();
+		case MESH: initialize_mesh_collider(); break;		
+		default: break;
 	}
 }
 
@@ -31,25 +33,33 @@ void Model::draw(const XMMATRIX view_projection, const bool use_simple_cb, const
 	BaseModel::draw(view_projection, use_simple_cb, mode);
 }
 
-void Model::add_sphere_collider(SphereCollider* col)
+void Model::add_sphere_collider(SphereCollider* col) const
 {
-	collider_ = *col;
+	*collider_ = static_cast<Collider>(*col);
 }
 
-void Model::add_mesh_collider(MeshCollider* col)
+void Model::add_mesh_collider(MeshCollider* col) const
 {	
-	collider_ = *col;
+	*collider_ = static_cast<Collider>(*col);
+}
+
+Collider* Model::get_collider() const
+{
+	return collider_;
 }
 
 void Model::initialize_sphere_collider()
 {
 	calculate_origin();
-	collider_ = static_cast<Collider>(SphereCollider());
+	float radius = 0;
+	if(obj_file_model_ != nullptr) radius = dist(min_outer_vector_, max_outer_vector_);
+	else radius = 1.0f;
+	collider_ = new SphereCollider(origin_, radius);
 }
 
 void Model::initialize_mesh_collider()
 {
 	calculate_origin();
-	collider_ = static_cast<Collider>(MeshCollider());
+	collider_ = new MeshCollider();
 }
 

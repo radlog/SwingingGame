@@ -116,13 +116,13 @@ int WINAPI WinMain(const HINSTANCE instance, const HINSTANCE prev_instance, cons
 
 			if (!cube_one.check_collision(&cube_two))
 			{
-				cube_one.transform.translate(Transform::world_right, timer->delta_time() * 10);
+				cube_one.translate(Transform::world_right, timer->delta_time() * 10);
 			}
-			cube_one.update(*timer);
-			cube_two.update(*timer);
-			cube_three.update(*timer);
-			cube_four.update(*timer);
-			cube_five.update(*timer);
+			//cube_one.update(*timer);
+			//cube_two.update(*timer);
+			//cube_three.update(*timer);
+			//cube_four.update(*timer);
+			//cube_five.update(*timer);
 
 			//cube_four.update(*timer);
 			update(*timer);
@@ -130,7 +130,7 @@ int WINAPI WinMain(const HINSTANCE instance, const HINSTANCE prev_instance, cons
 			//dx_handle->input->update_input(&upper_platforms[0], timer);
 			//UpdateSound();
 			//UpdateGraphics();
-			enemy.chase_target(&player, timer);
+			//enemy.chase_target(&player, timer);
 			render_frame(player.get_fps_camera());
 			//render_frame(player.get_top_down_camera());
 		}
@@ -282,6 +282,7 @@ void load_content()
 	platform->load_texture("assets/FloatingIsland_DIFFUSE.png");
 	//auto *cube = new Cube("",TEXTURED_COLORED_LIGHTED,CB_STATE_FULL);
 	auto *cube = new Cube();
+	
 	//cube->set_shader_file("lighted_shader.hlsl");
 
 
@@ -299,8 +300,6 @@ void load_content()
 	cube_four = GameObject("cube_four", cube, Transform(scale, rotation, XMVectorSet(5, 0, 0.0f, 0.0f)));
 	cube_five = GameObject("cube_five", cube, Transform(scale, rotation, XMVectorSet(10, 0, 0.0f, 0.0f)));
 
-	cube_one.add_sphere_collider();
-	cube_one.add_sphere_collider();
 
 	cube_one.set_kinetic(true);
 	cube_two.set_kinetic(true);

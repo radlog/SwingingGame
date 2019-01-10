@@ -6,6 +6,7 @@
 #include "GameData.h"
 #include "MathHelper.h"
 #include "SphereCollider.h"
+#include "MeshCollider.h"
 
 
 class Model;
@@ -34,6 +35,7 @@ public:
 	/**
 	 * \brief initialises a gameobject with a name
 	 * \param name name of the object
+	 * \param tag
 	 */
 	explicit GameObject(LPCSTR name, TAG tag = DEFAULT);
 	/**
@@ -41,6 +43,7 @@ public:
 	 * \param name name of the object
 	 * \param model gameobject's model
 	 * \param transform initial gameobject's transform
+	 * \param tag
 	 */
 	GameObject(LPCSTR name, Model *model, const Transform transform, TAG tag = DEFAULT);
 	/**
@@ -81,7 +84,7 @@ public:
 	bool remove_child(GameObject *child); // remove a child safely(only if it is in the children list)
 	void set_grounded(bool grounded); // sets object grounded
 
-	void set_collider(Collider col);
+	void set_collider(Collider *col);
 	void update_collision_tree(XMMATRIX *world, float scale);
 
 	virtual void cleanup(); // cleanup pointers to prevent memory leaks
@@ -101,6 +104,6 @@ protected:
 	ID3D11Device* device_; // pointer to the hardware device
 	ID3D11DeviceContext* immediate_context_; // pointer to the device context
 
-	Collider collider_;
+	Collider *collider_;
 
 };

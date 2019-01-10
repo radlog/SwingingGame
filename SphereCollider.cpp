@@ -1,7 +1,7 @@
 #include "SphereCollider.h"
 
 
-SphereCollider::SphereCollider(): origin_(XMVectorSet(0,0,0,0)), radius_(0)
+SphereCollider::SphereCollider(): radius_(0)
 {
 }
 
@@ -18,17 +18,16 @@ SphereCollider::~SphereCollider()
 
 bool SphereCollider::sphere_to_sphere_collision(const SphereCollider col) const
 {
-	return dist(col.origin_, origin_) >= col.radius_ + radius_;		
-}
-
-XMVECTOR SphereCollider::get_origin()
-{
-	return origin_;
+	// return
+	const auto distance = dist(col.world_, world_);
+	const auto limit = col.radius_ + radius_;
+	const auto bla = distance <= limit;
+	return bla;
 }
 
 bool SphereCollider::check_collision(Collider* col)
 {
-	if(typeid(&col) == typeid(SphereCollider))
+	if(typeid(*col).name() == typeid(SphereCollider).name())
 	{
 		const auto s = dynamic_cast<SphereCollider*>(col);
 		return sphere_to_sphere_collision(*s);

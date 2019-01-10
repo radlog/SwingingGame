@@ -5,6 +5,7 @@ class MeshCollider :
 {
 public:
 	MeshCollider();
+	MeshCollider(XMVECTOR normal, float offset);
 	~MeshCollider();
 	bool check_collision(Collider* col) override;
 

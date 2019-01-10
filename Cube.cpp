@@ -22,6 +22,8 @@ Cube::Cube(LPCSTR texture, const VERTEX_FORMAT vertex_format, const CB_STATE sta
 		default: break; 
 	}
 
+	initialize_sphere_collider();
+
 	numverts_ = numverts;
 
 	origin_ = XMVectorSet(0, 0, 0, 0);

@@ -6,6 +6,10 @@ MeshCollider::MeshCollider()
 {
 }
 
+MeshCollider::MeshCollider(XMVECTOR normal, float offset)
+{
+}
+
 
 MeshCollider::~MeshCollider()
 {

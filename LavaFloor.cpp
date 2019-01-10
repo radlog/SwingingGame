@@ -20,7 +20,7 @@ LavaFloor::LavaFloor(const LPCSTR texture, const LPCSTR texture_normal, const LP
 	unsigned int *plane_indices;
 
 	model_ = new Model(CB_STATE_TIME_SCALED);
-	Geometry::plane_ittn(&plane_vertices, &plane_indices, tiles, scale);
+	Geometry::plane_ittn(&plane_vertices, &plane_indices, tiles);
 	model_->load_geo_model(plane_vertices, (tiles + 1)*(tiles + 1), sizeof(POS_TEX_NORM_COL_VERTEX), plane_indices, tiles * tiles * 6);
 	char lava_shader[] = "lava_shader.hlsl";
 	model_->set_shader_file(lava_shader);

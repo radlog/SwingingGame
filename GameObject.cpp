@@ -1,6 +1,7 @@
 #include "GameObject.h"
 #include "Physics3D.h"
 
+
 GameObject::~GameObject()
 {
 }
@@ -9,7 +10,7 @@ GameObject::GameObject()
 {
 }
 
-GameObject::GameObject(const LPCSTR name, const TAG tag) : model_(nullptr)
+GameObject::GameObject(const LPCSTR name, const TAG tag) : model_(nullptr), collider_(nullptr)
 {
 	dx_handle_ = D3Dfw::get_instance();
 	device_ = dx_handle_->get_device();
@@ -21,7 +22,27 @@ GameObject::GameObject(const LPCSTR name, const TAG tag) : model_(nullptr)
 GameObject::GameObject(const LPCSTR name, Model *model, const Transform transform, const TAG tag) : GameObject(name, tag)
 {
 	this->transform = transform;
-	model_ = model;	
+	model_ = model;
+
+	const auto col = model_->get_collider();
+	if (col != nullptr) {
+		auto col_id = typeid(*col).name();
+		if (col_id == typeid(SphereCollider).name())
+		{
+			const auto s = sizeof(SphereCollider);
+			malloc(s);
+			collider_ = new Collider();
+			memcpy(collider_, model_->get_collider(), s);
+		}
+		else
+		{
+			const auto s = sizeof(MeshCollider);
+			malloc(s);
+			collider_ = new Collider();
+			memcpy(collider_, model_->get_collider(), s);
+		}
+	}
+	if (collider_) collider_->set_world_position(collider_->get_origin() + transform.get_local_position());
 }
 
 void GameObject::update(VGTime timer)
@@ -32,7 +53,7 @@ void GameObject::update(VGTime timer)
 		{
 			air_time_ += timer.delta_time();
 			const auto falling_velocity = Physics3D::gravity * (air_time_*air_time_);
-			transform.translate(Transform::world_up,falling_velocity * timer.delta_time());
+			transform.translate(Transform::world_up, falling_velocity * timer.delta_time());
 		}
 		else
 		{
@@ -55,6 +76,8 @@ void GameObject::draw(const XMMATRIX view_projection, const bool use_default_cb,
 void GameObject::translate(const XMVECTOR direction, const float speed)
 {
 	transform.translate(direction, speed);
+	if (collider_) collider_->set_world_position(collider_->get_origin() + transform.get_local_position());
+
 }
 
 void GameObject::rotate_fixed(float pitch, float yaw, float roll)
@@ -91,19 +114,15 @@ bool GameObject::get_kinetic() const
 	return is_kinetic_;
 }
 
-void GameObject::add_sphere_collider() const
-{
-
-}
 
 Collider* GameObject::get_collider()
 {
-	return &collider_;
+	return collider_;
 }
 
 bool GameObject::check_collision(GameObject* target)
 {
-	return collider_.check_collision(target->get_collider());
+	return collider_->check_collision(target->get_collider());
 }
 
 
@@ -125,7 +144,7 @@ void GameObject::update_transform(XMMATRIX *world)
 	transform.set_world(local_world);
 
 	// update transform of children
-	for(auto& i : children_)
+	for (auto& i : children_)
 	{
 		i->update_transform(&local_world);
 	}
@@ -212,7 +231,7 @@ void GameObject::set_grounded(bool grounded)
 }
 
 
-void GameObject::set_collider(const Collider col)
+void GameObject::set_collider(Collider *col)
 {
 	collider_ = col;
 }
@@ -222,7 +241,7 @@ void GameObject::update_collision_tree(XMMATRIX* world, float scale)
 	XMMATRIX local_world = XMMatrixIdentity() * transform.get_world();
 	local_world *= *world;
 	transform.set_world_scale(transform.get_local_scale() * scale);
-	
+
 	/*XMVECTOR sphere_collision_origin;
 	if (model_)
 		sphere_collision_origin = collider_.get_origin();

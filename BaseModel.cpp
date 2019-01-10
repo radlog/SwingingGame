@@ -60,6 +60,21 @@ HRESULT BaseModel::load_obj_model(const LPCSTR filename)
 	return 0;
 }
 
+// loads primitive topology shapes using only vertices, the number of them and their single bytesize
+HRESULT BaseModel::load_geo_model(void* vertices, const UINT numverts, const UINT single_vertex_bytesize)
+{
+	vert_size_ = single_vertex_bytesize;
+	this->vertices_ = vertices;
+	this->numverts_ = numverts;
+
+	origin_ = XMVectorZero();
+
+	const auto hr = update_default_vertex_buffer(vertices, vert_size_ * numverts);
+
+
+	return hr;
+}
+
 // loads primitive topology shapes using indices
 HRESULT BaseModel::load_geo_model(void* vertices, const UINT num_verts, const UINT single_vertex_bytesize, unsigned int *indices, const UINT num_indices)
 {
@@ -72,17 +87,7 @@ HRESULT BaseModel::load_geo_model(void* vertices, const UINT num_verts, const UI
 	return hr;
 }
 
-// loads primitive topology shapes using only vertices, the number of them, their single bytesize and the objects origin
-HRESULT BaseModel::load_geo_model(void* vertices, const UINT numverts, const UINT single_vertex_bytesize)
-{
-	vert_size_ = single_vertex_bytesize;
-	this->vertices_ = vertices;
-	this->numverts_ = numverts;
 
-	const auto hr = update_default_vertex_buffer(vertices, vert_size_ * numverts);
-
-	return hr;
-}
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -310,6 +315,7 @@ void BaseModel::update() const
 void BaseModel::calculate_origin()
 {
 
+	if (obj_file_model_ == nullptr) return;
 	vector<XMVECTOR> positions = obj_file_model_->get_vertex_positions();
 	min_outer_vector_ = positions[0];
 	max_outer_vector_ = positions[1];
