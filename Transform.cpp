@@ -10,7 +10,7 @@ const XMVECTOR Transform::world_backward = -world_forward;
 
 
 Transform::Transform() : local_scale_(XMVectorSet(1.0, 1.0, 1.0, 0.0)), local_rotation_(XMQuaternionIdentity()), local_position_(XMVectorSet(0.0, 0.0, 0.0, 0.0))
-{	
+{
 	world_ = XMMatrixScalingFromVector(local_scale_) * XMMatrixRotationQuaternion(local_rotation_) * XMMatrixTranslationFromVector(local_position_);
 }
 
@@ -29,8 +29,8 @@ Transform::~Transform()
 }
 
 XMMATRIX Transform::calculate_world_transform()
-{	
-	return world_ = XMMatrixScalingFromVector(local_scale_) * XMMatrixRotationQuaternion(local_rotation_) * XMMatrixTranslationFromVector(local_position_);	
+{
+	return world_ = XMMatrixScalingFromVector(local_scale_) * XMMatrixRotationQuaternion(local_rotation_) * XMMatrixTranslationFromVector(local_position_);
 }
 
 void Transform::translate(const XMVECTOR position)
@@ -72,40 +72,14 @@ void Transform::scale(const float x, const float y, const float z)
 }
 
 void Transform::translate(const XMVECTOR direction, const float speed)
-{	
+{
 	local_position_ += XMVector4Normalize(direction) * speed;
-	calculate_world_transform();
-}
-
-void Transform::forward(const float speed)
-{
-	local_position_ += XMVector4Normalize(local_forward_) * speed;
-	calculate_world_transform();
-}
-
-void Transform::horizontal_forward(const float speed)
-{
-	const auto forward_new = XMVector3Normalize(XMVECTOR(XMVectorSet(local_forward_.x, 0, local_forward_.z, 0)));
-	local_position_ += XMVector4Normalize(forward_new) * speed;
-	calculate_world_transform();
-}
-
-void Transform::right(const float speed)
-{
-	local_position_ += XMVector4Normalize(local_right_) * speed;
-	calculate_world_transform();
-}
-
-void Transform::up(const float speed)
-{
-	const auto up_new = XMVector3Normalize(XMVECTOR(XMVectorSet(0, local_up_.y, 0, 0)));
-	local_position_ += XMVector4Normalize(up_new) * speed;
 	calculate_world_transform();
 }
 
 void Transform::look_at(XMVECTOR target)
 {
-
+	
 }
 
 XMMATRIX Transform::get_world()
@@ -147,6 +121,26 @@ XMVECTOR Transform::get_world_scale() const
 void Transform::set_world_scale(XMVECTOR scale)
 {
 	world_scale_ = scale;
+}
+
+XMVECTOR Transform::get_local_forward() const
+{
+	return XMVector3Normalize(local_forward_);
+}
+
+XMVECTOR Transform::get_local_forward_horizontal() const
+{
+	return XMVector3Normalize(XMVectorSet(local_forward_.x, 0, local_forward_.z, 0));
+}
+
+XMVECTOR Transform::get_local_up() const
+{
+	return XMVector3Normalize(local_up_);
+}
+
+XMVECTOR Transform::get_local_right() const
+{
+	return XMVector3Normalize(local_right_);
 }
 
 

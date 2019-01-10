@@ -5,6 +5,12 @@ SphereCollider::SphereCollider(): origin_(XMVectorSet(0,0,0,0)), radius_(0)
 {
 }
 
+SphereCollider::SphereCollider(XMVECTOR origin, float radius)
+{
+	origin_ = origin;
+	radius_ = radius;
+}
+
 
 SphereCollider::~SphereCollider()
 {

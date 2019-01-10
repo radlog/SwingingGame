@@ -6,12 +6,12 @@ Character::Character()
 
 }
 
-Character::Character(LPCSTR name) : GameObject(name)
+Character::Character(const LPCSTR name) : GameObject(name)
 {
 
 }
 
-Character::Character(LPCSTR name, Model *model, Transform transform) : GameObject(name, model, transform)
+Character::Character(const LPCSTR name, Model *model, const Transform transform) : GameObject(name, model, transform)
 {
 }
 

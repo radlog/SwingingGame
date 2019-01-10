@@ -19,6 +19,7 @@ GameObject cube_one;
 GameObject cube_two;
 GameObject cube_three;
 GameObject cube_four;
+GameObject cube_five;
 Enemy enemy;
 
 double time_since_last_frame = 0;
@@ -112,15 +113,24 @@ int WINAPI WinMain(const HINSTANCE instance, const HINSTANCE prev_instance, cons
 			//UpdateAI();
 			//dx_handle->input->update_input(&cube_one, timer);
 			player.update(*timer);
-			//cube_one.move_right(timer->delta_time() * 10);
+
+			if (!cube_one.check_collision(&cube_two))
+			{
+				cube_one.transform.translate(Transform::world_right, timer->delta_time() * 10);
+			}
 			cube_one.update(*timer);
+			cube_two.update(*timer);
+			cube_three.update(*timer);
 			cube_four.update(*timer);
+			cube_five.update(*timer);
+
+			//cube_four.update(*timer);
 			update(*timer);
 			//upper_platforms[0].update(*timer);
 			//dx_handle->input->update_input(&upper_platforms[0], timer);
 			//UpdateSound();
 			//UpdateGraphics();
-			enemy.chase_target(&player,timer);
+			enemy.chase_target(&player, timer);
 			render_frame(player.get_fps_camera());
 			//render_frame(player.get_top_down_camera());
 		}
@@ -154,10 +164,14 @@ void render_frame(Camera *camera)
 	//}
 	//if (!cube_one.collided(cube_two))
 	//{
-		
+
 	//}
-	cube_one.get_model()->update_constant_buffer_full(lava_floor.transform.get_world() * view_projection, view_projection, directional_light_shines_from, directional_light_colour, ambient_light_colour, XMVectorSplatOne(), timer->delta_time());
-	cube_one.draw(view_projection, false);
+	//cube_one.get_model()->update_constant_buffer_full(lava_floor.transform.get_world() * view_projection, view_projection, directional_light_shines_from, directional_light_colour, ambient_light_colour, XMVectorSplatOne(), timer->delta_time());
+	cube_one.draw(view_projection);
+	cube_two.draw(view_projection);
+	cube_three.draw(view_projection);
+	cube_four.draw(view_projection);
+	cube_five.draw(view_projection);
 	//cube_two.draw(view_projection);
 	//update_lava(view_projection, timer->total_time());
 	player.draw(view_projection);
@@ -266,24 +280,34 @@ void load_content()
 	platform = new Model(CB_STATE_SIMPLE);
 	platform->load_geo_model(platform_placeholder, numverts, sizeof(POS_TEX_NORM_COL_VERTEX));
 	platform->load_texture("assets/FloatingIsland_DIFFUSE.png");
-	auto *cube = new Cube("",TEXTURED_COLORED_LIGHTED,CB_STATE_FULL);
-	cube->set_shader_file("lighted_shader.hlsl");
-	
+	//auto *cube = new Cube("",TEXTURED_COLORED_LIGHTED,CB_STATE_FULL);
+	auto *cube = new Cube();
+	//cube->set_shader_file("lighted_shader.hlsl");
+
 
 	model_test = new Model("assets/cube.obj");
 	model_test->load_texture("assets/lava_selfmade_DIFFUSE.png");
-	
-	player = Player("player1", cube, Transform(XMVectorSet(1, 1, 1, 0), XMQuaternionIdentity(), XMVectorSet(0, 10, -40, 0)));
+
+	player = Player("player1");
+	player.transform = Transform(XMVectorSplatOne(), XMQuaternionIdentity(), XMVectorSet(0, 0, -10, 0));
 	//player = Player("player1", cube, Transform(XMVectorSplatOne(), XMQuaternionIdentity(), XMVectorSet(0, 0, 0, 0)));
-	
 
-	cube_one = GameObject("cube_one", cube, Transform(scale, rotation, XMVectorSet(0, 0, 1.0f, 0.0f)));
-	//cube_two = GameObject("cube_two", cube, Transform(scale, rotation, XMVectorSet(10, 0, 0.0f, 0.0f)));
 
-	//cube_three = GameObject("cube_two", cube, Transform(scale, rotation, XMVectorSet(20, 0, 0.0f, 0.0f)));
-	//cube_four = GameObject("cube_two", cube, Transform(scale, rotation, XMVectorSet(20, 0, 0.0f, 0.0f)));
+	cube_one = GameObject("cube_one", cube, Transform(scale, rotation, XMVectorSet(-10, 0, 0.0f, 0.0f)));
+	cube_two = GameObject("cube_two", cube, Transform(scale, rotation, XMVectorSet(-5, 0, 0.0f, 0.0f)));
+	cube_three = GameObject("cube_three", cube, Transform(scale, rotation, XMVectorSet(0, 0, 0.0f, 0.0f)));
+	cube_four = GameObject("cube_four", cube, Transform(scale, rotation, XMVectorSet(5, 0, 0.0f, 0.0f)));
+	cube_five = GameObject("cube_five", cube, Transform(scale, rotation, XMVectorSet(10, 0, 0.0f, 0.0f)));
+
+	cube_one.add_sphere_collider();
+	cube_one.add_sphere_collider();
 
 	cube_one.set_kinetic(true);
+	cube_two.set_kinetic(true);
+	cube_three.set_kinetic(true);
+	cube_four.set_kinetic(true);
+	cube_five.set_kinetic(true);
+	
 	//cube_two.set_kinetic(true);
 
 	//cube_one.add_child(&cube_two);

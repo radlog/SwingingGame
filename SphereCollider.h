@@ -5,6 +5,7 @@ class SphereCollider :
 {
 public:
 	SphereCollider();
+	SphereCollider(XMVECTOR origin, float radius);
 	~SphereCollider();
 
 	bool sphere_to_sphere_collision(const SphereCollider col) const;

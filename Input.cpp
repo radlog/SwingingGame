@@ -90,33 +90,60 @@ HRESULT Input::update_input(GameObject* actor, VGTime* game_time)
 		}
 	}
 
-	if (is_key_released(DIK_L)) 
+	if (is_key_released(DIK_L))
 		paused_ = !paused_;
 
 	if (paused_) return S_OK;
 
 	if (is_key_pressed(DIK_ESCAPE)) DestroyWindow(hwnd_);
 
+
+	auto direction = XMVectorZero();
+
+	if (is_key_released(DIK_F)) locked_ = !locked_;
+
 	// TODO: spawn gameobject
 	//if (IsKeyPressed(DIK_P)) GameObject();
 	if (fps_) mouse_moved(actor, game_time);
-	
+
 	if (is_key_pressed(DIK_SPACE))
 		if (is_key_pressed(DIK_LSHIFT))
-			actor->move_down(static_cast<float> (game_time->delta_time() * move_speed_));
+			direction = -actor->transform.get_local_up();
 		else
-			actor->move_up(static_cast<float> (game_time->delta_time() * move_speed_));
+			direction = actor->transform.get_local_up();
 
-	if (is_key_pressed(DIK_A)) actor->move_left(game_time->delta_time() * move_speed_);
-	if (is_key_pressed(DIK_D)) actor->move_right(game_time->delta_time() * move_speed_);
-	if (is_key_pressed(DIK_W)) actor->move_horizontal_forward(game_time->delta_time() * move_speed_);
-	if (is_key_pressed(DIK_S)) actor->move_horizontal_backward(game_time->delta_time() * move_speed_);
+	if (is_key_released(DIK_G)) actor->set_kinetic(!actor->get_kinetic());
+
+	if (is_key_pressed(DIK_A)) direction += -actor->transform.get_local_right();
+	if (is_key_pressed(DIK_D)) direction += actor->transform.get_local_right();
+	if (is_key_pressed(DIK_W))
+	{
+		if (locked_)direction += actor->transform.get_local_forward_horizontal();
+		else direction += actor->transform.get_local_forward();
+	}
+	if (is_key_pressed(DIK_S))
+	{
+		if (locked_)direction += -actor->transform.get_local_forward_horizontal();
+		else direction += -actor->transform.get_local_forward();
+	}
+
+	if (is_key_pressed(DIK_LEFT)) actor->rotate_fixed(0, static_cast<float>(-game_time->delta_time() * rot_speed_ / 10), 0);
+	if (is_key_pressed(DIK_RIGHT)) actor->rotate_fixed(0, static_cast<float>(game_time->delta_time() * rot_speed_ / 10), 0);
+	if (is_key_pressed(DIK_UP)) actor->rotate_fixed(static_cast<float>(-game_time->delta_time() * rot_speed_ / 10), 0, 0);
+	if (is_key_pressed(DIK_DOWN)) actor->rotate_fixed(static_cast<float>(game_time->delta_time() * rot_speed_ / 10), 0, 0);
 
 
-	if (is_key_pressed(DIK_LEFT)) actor->rotate_fixed(0, static_cast<float>(-game_time->delta_time() * rot_speed_ /10), 0);
-	if (is_key_pressed(DIK_RIGHT)) actor->rotate_fixed(0, static_cast<float>(game_time->delta_time() * rot_speed_/10), 0);
-	if (is_key_pressed(DIK_UP)) actor->rotate_fixed(static_cast<float>(-game_time->delta_time() * rot_speed_/10), 0, 0);
-	if (is_key_pressed(DIK_DOWN)) actor->rotate_fixed(static_cast<float>(game_time->delta_time() * rot_speed_/10), 0, 0);
+	actor->translate(direction, game_time->delta_time() * move_speed_);
+	//if (is_key_pressed(DIK_A)) actor->move_left(game_time->delta_time() * move_speed_);
+	//if (is_key_pressed(DIK_D)) actor->move_right(game_time->delta_time() * move_speed_);
+	//if (is_key_pressed(DIK_W)) actor->move_horizontal_forward(game_time->delta_time() * move_speed_);
+	//if (is_key_pressed(DIK_S)) actor->move_horizontal_backward(game_time->delta_time() * move_speed_);
+
+
+	//if (is_key_pressed(DIK_LEFT)) actor->rotate_fixed(0, static_cast<float>(-game_time->delta_time() * rot_speed_ /10), 0);
+	//if (is_key_pressed(DIK_RIGHT)) actor->rotate_fixed(0, static_cast<float>(game_time->delta_time() * rot_speed_/10), 0);
+	//if (is_key_pressed(DIK_UP)) actor->rotate_fixed(static_cast<float>(-game_time->delta_time() * rot_speed_/10), 0, 0);
+	//if (is_key_pressed(DIK_DOWN)) actor->rotate_fixed(static_cast<float>(game_time->delta_time() * rot_speed_/10), 0, 0);
 
 
 
@@ -125,7 +152,7 @@ HRESULT Input::update_input(GameObject* actor, VGTime* game_time)
 
 void Input::mouse_moved(GameObject* actor, VGTime* game_time)
 {
-	actor->rotate_fixed( game_time->delta_time() * rot_speed_ * double(mouse_state_.lY), game_time->delta_time() * rot_speed_ * double(mouse_state_.lX), 0);
+	actor->rotate_fixed(game_time->delta_time() * rot_speed_ * double(mouse_state_.lY), game_time->delta_time() * rot_speed_ * double(mouse_state_.lX), 0);
 
 	mouse_x_ = mouse_x_center_;
 	mouse_y_ = mouse_y_center_;

@@ -35,14 +35,14 @@ Floor::Floor(LPCSTR texture, int tiles, float scale) : GameObject(texture)
 	
 }
 
-Plane Floor::get_collider()
-{
-	const auto local_position = transform.get_local_position();
-	const auto v1 = XMLoadFloat3(&plane_vertices_[0].pos) + local_position;
-	const auto v2 = XMLoadFloat3(&plane_vertices_[tiles_ + 1].pos) + local_position;
-	const auto v3 = XMLoadFloat3(&plane_vertices_[(tiles_ + 1) * (tiles_ + 1)].pos) + local_position;
-	return plane_collider_ = get_plane(v1, v2, v3);
-}
+//Plane Floor::get_collider()
+//{
+//	const auto local_position = transform.get_local_position();
+//	const auto v1 = XMLoadFloat3(&plane_vertices_[0].pos) + local_position;
+//	const auto v2 = XMLoadFloat3(&plane_vertices_[tiles_ + 1].pos) + local_position;
+//	const auto v3 = XMLoadFloat3(&plane_vertices_[(tiles_ + 1) * (tiles_ + 1)].pos) + local_position;
+//	return plane_collider_ = get_plane(v1, v2, v3);
+//}
 
 
 

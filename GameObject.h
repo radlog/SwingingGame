@@ -52,19 +52,15 @@ public:
 	virtual void draw(XMMATRIX view_projection, bool use_default_cb = true, D3D11_PRIMITIVE_TOPOLOGY mode = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	virtual void translate(XMVECTOR direction, float speed); // moves the object in a direction at a given speed
-	virtual void move_horizontal_forward(float speed); // moves the object forward horizontally ignoring the up/down rotation at a given speed 
-	virtual void move_horizontal_backward(float speed); // moves the object backward horizontally ignoring the up/down rotation at a given speed 
-	virtual void move_forward(float speed); // moves the object forward at a given speed 
-	virtual void move_backward(float speed); // moves the object backward at a given speed 
-	virtual void move_right(float speed); // moves the object right at a given speed 
-	virtual void move_left(float speed); // moves the object left at a given speed 
-	virtual void move_up(float speed); // moves the object up at a given speed 
-	virtual void move_down(float speed); // moves the object down at a given speed 
 	virtual void rotate_fixed(float pitch, float yaw, float roll); // rotates the object at given axis rotations pitch, yaw, roll with rotation lock at 89 degrees to prevent inverted axis
 	virtual void rotate(float pitch, float yaw, float roll); // rotates the object at given axis rotations pitch, yaw, roll
 
 	vector<GameObject*> get_children() const; // returns the list of children this object has
 	void set_kinetic(bool kinetic);
+	bool get_kinetic() const;
+	void add_sphere_collider() const;
+	virtual Collider* get_collider();
+	bool check_collision(GameObject *target);
 
 	// TODO: make transform private or find out how to make it an interface or how to make a better abstraction 
 	Transform transform; // the transform of the object
@@ -106,6 +102,5 @@ protected:
 	ID3D11DeviceContext* immediate_context_; // pointer to the device context
 
 	Collider collider_;
-	SphereCollider sphere_collider_;
 
 };

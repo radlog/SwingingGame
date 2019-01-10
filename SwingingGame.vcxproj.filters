@@ -114,6 +114,12 @@
     <ClCompile Include="Cube.cpp">
       <Filter>Source Files\GameObjects</Filter>
     </ClCompile>
+    <ClCompile Include="MeshCollider.cpp">
+      <Filter>Source Files\Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="FloatingPlatform.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="simple_shader.hlsl" />
@@ -218,6 +224,12 @@
     </ClInclude>
     <ClInclude Include="SphereCollider.h">
       <Filter>Header Files\Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="MeshCollider.h">
+      <Filter>Header Files\Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="FloatingPlatform.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -42,4 +42,5 @@ private:
 	long mouse_x_ = mouse_x_center_; // current mouse x position
 	long mouse_y_ = mouse_y_center_; // current mouse y position
 
+	bool locked_ = true; // says whether to use the forward vector locked horizontally or not
 };

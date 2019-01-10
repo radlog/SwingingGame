@@ -13,7 +13,7 @@ public:
 	 * \param scale defines the doubled size of the value as distance between each vertex
 	 */
 	explicit Floor(LPCSTR texture, int tiles = 200, float scale = 1.0f);
-	Plane get_collider(); // returns the floors plane collider
+	//Plane get_collider(); // returns the floors plane collider
 	
 private:
 	Plane plane_collider_; // plane collider

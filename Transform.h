@@ -17,10 +17,6 @@ public:
 	void rotate_fixed(float pitch, float yaw, float roll);
 
 	void translate(XMVECTOR direction, float speed);
-	void forward(float speed);
-	void horizontal_forward(float speed);
-	void right(float speed);
-	void up(float speed);
 
 	void look_at(XMVECTOR target);
 	XMMATRIX get_world();
@@ -42,6 +38,11 @@ public:
 	XMVECTOR get_local_scale();
 	XMVECTOR get_world_scale() const;
 	void set_world_scale(XMVECTOR scale);
+
+	XMVECTOR get_local_forward() const;
+	XMVECTOR get_local_forward_horizontal() const;
+	XMVECTOR get_local_up() const;
+	XMVECTOR get_local_right() const;	
 
 
 private:

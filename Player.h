@@ -12,7 +12,7 @@ public:
 	 * \param name players name
 	 * \param fps first person mode
 	 */
-	explicit Player(LPCSTR name, bool fps);
+	explicit Player(LPCSTR name, bool fps = true);
 	/**
 	 * \brief initialises a player with name, model, transform and fps mode set 
 	 * \param name players name

@@ -40,3 +40,9 @@ inline bool is_point_on_plane(const Plane plane, const XMVECTOR point)
 	const auto n = plane.normal;
 	return (n.x * point.x) + (n.y * point.y) + (n.z * point.z) + plane.offset == 0;
 }
+
+// get the sign of a number
+inline int sign(const float number)
+{
+	return (number < 0 ? -1 : (number > 0 ? 1 : 0));
+}

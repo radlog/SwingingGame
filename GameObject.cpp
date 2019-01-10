@@ -32,7 +32,7 @@ void GameObject::update(VGTime timer)
 		{
 			air_time_ += timer.delta_time();
 			const auto falling_velocity = Physics3D::gravity * (air_time_*air_time_);
-			transform.up(falling_velocity * timer.delta_time());
+			transform.translate(Transform::world_up,falling_velocity * timer.delta_time());
 		}
 		else
 		{
@@ -55,58 +55,6 @@ void GameObject::draw(const XMMATRIX view_projection, const bool use_default_cb,
 void GameObject::translate(const XMVECTOR direction, const float speed)
 {
 	transform.translate(direction, speed);
-}
-
-void GameObject::move_horizontal_forward(float speed)
-{
-	transform.horizontal_forward(speed);
-}
-
-void GameObject::move_horizontal_backward(float speed)
-{
-	transform.horizontal_forward(-speed);
-}
-
-void GameObject::move_forward(float speed)
-{
-	transform.forward(speed);
-}
-
-void GameObject::move_backward(float speed)
-{
-	transform.forward(-speed);
-}
-
-void GameObject::move_right(float speed)
-{
-	transform.right(speed);
-}
-
-void GameObject::move_left(float speed)
-{
-	transform.right(-speed);
-	for (auto& i : children_)
-	{
-		i->move_left(speed);
-	}
-}
-
-void GameObject::move_up(float speed)
-{
-	transform.up(speed);
-	for (auto& i : children_)
-	{
-		i->move_up(speed);
-	}
-}
-
-void GameObject::move_down(float speed)
-{
-	transform.up(-speed);
-	for (auto& i : children_)
-	{
-		i->move_down(speed);
-	}
 }
 
 void GameObject::rotate_fixed(float pitch, float yaw, float roll)
@@ -135,7 +83,29 @@ vector<GameObject*> GameObject::get_children() const
 void GameObject::set_kinetic(const bool kinetic)
 {
 	is_kinetic_ = kinetic;
+	air_time_ = 0.0f;
 }
+
+bool GameObject::get_kinetic() const
+{
+	return is_kinetic_;
+}
+
+void GameObject::add_sphere_collider() const
+{
+
+}
+
+Collider* GameObject::get_collider()
+{
+	return &collider_;
+}
+
+bool GameObject::check_collision(GameObject* target)
+{
+	return collider_.check_collision(target->get_collider());
+}
+
 
 void GameObject::spawn(XMVECTOR position)
 {
@@ -253,13 +223,13 @@ void GameObject::update_collision_tree(XMMATRIX* world, float scale)
 	local_world *= *world;
 	transform.set_world_scale(transform.get_local_scale() * scale);
 	
-	XMVECTOR sphere_collision_origin;
+	/*XMVECTOR sphere_collision_origin;
 	if (model_)
-		sphere_collision_origin = sphere_collider_.get_origin();
+		sphere_collision_origin = collider_.get_origin();
 	else
 		sphere_collision_origin = XMVectorSet(0, 0, 0, 0);
 
-	sphere_collision_origin = XMVector3Transform(sphere_collision_origin, local_world);
+	sphere_collision_origin = XMVector3Transform(sphere_collision_origin, local_world);*/
 }
 
 

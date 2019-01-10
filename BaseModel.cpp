@@ -422,6 +422,7 @@ void* BaseModel::get_constant_buffer_state()
 {
 	switch (state_)
 	{
+		case CB_STATE_SIMPLE: return &cb_simple_;
 		case CB_STATE_FULL: return &cb_full_; 
 		case CB_STATE_LIGHTED: return &cb_lighted_;
 		case CB_STATE_TIME_SCALED: return &cb_time_scaled_lighted_;
