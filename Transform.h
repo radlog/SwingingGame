@@ -1,6 +1,8 @@
 #pragma once
 #include <xnamath.h>
 
+class GameObject;
+
 class Transform
 {
 public:
@@ -24,6 +26,7 @@ public:
 	XMVECTOR get_local_position() const;
 	void set_world(const XMMATRIX& local_world);
 	XMMATRIX get_local_world() const;
+	void set_world_position(XMVECTOR position);
 
 
 	static const XMVECTOR world_up;
@@ -35,7 +38,7 @@ public:
 
 	void apply_force(XMVECTOR force);
 
-	XMVECTOR get_local_scale();
+	XMVECTOR get_local_scale() const;
 	XMVECTOR get_world_scale() const;
 	void set_world_scale(XMVECTOR scale);
 

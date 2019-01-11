@@ -79,16 +79,21 @@ public:
 	Model* get_model() const; // return objects model
 
 	void set_model(Model *model); // manually set the objects model
+	void set_parent(GameObject *parent);
+	void remove_parent(GameObject *child);
 	void add_child(GameObject *child); // add a child object
 	bool remove_child(GameObject *child); // remove a child safely(only if it is in the children list)
 	void set_grounded(bool grounded); // sets object grounded
+
 
 	void set_collider(Collider *col);
 	void update_collision_tree(XMMATRIX *world, float scale);
 
 	virtual void cleanup(); // cleanup pointers to prevent memory leaks
 protected:
+	GameObject *parent_;
 	vector<GameObject*> children_; // pointer to children list of gameobject
+	
 	LPCSTR name_; // name
 	TAG tag_; // tag
 	Model *model_; // model

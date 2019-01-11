@@ -9,7 +9,7 @@ const XMVECTOR Transform::world_forward = XMVectorSet(0.0, 0.0, 1.0, 0.0);
 const XMVECTOR Transform::world_backward = -world_forward;
 
 
-Transform::Transform() : local_scale_(XMVectorSet(1.0, 1.0, 1.0, 0.0)), local_rotation_(XMQuaternionIdentity()), local_position_(XMVectorSet(0.0, 0.0, 0.0, 0.0))
+Transform::Transform() : world_scale_(XMVectorSplatOne()), local_scale_(XMVectorSet(1.0, 1.0, 1.0, 0.0)), local_rotation_(XMQuaternionIdentity()), local_position_(XMVectorSet(0.0, 0.0, 0.0, 0.0))
 {
 	world_ = XMMatrixScalingFromVector(local_scale_) * XMMatrixRotationQuaternion(local_rotation_) * XMMatrixTranslationFromVector(local_position_);
 }
@@ -19,8 +19,13 @@ Transform::Transform(const XMVECTOR scale, const XMVECTOR rotation, const XMVECT
 	local_scale_ = scale;
 	local_rotation_ = rotation;
 	local_position_ = position;
-	local_world_ = XMMatrixScalingFromVector(local_scale_) * XMMatrixRotationQuaternion(local_rotation_) * XMMatrixTranslationFromVector(local_position_);
-	world_ = XMMatrixScalingFromVector(local_scale_) * XMMatrixRotationQuaternion(local_rotation_) * XMMatrixTranslationFromVector(local_position_);
+	world_scale_ = scale;
+	world_rotation_ = rotation;
+	world_position_ = position;
+	local_world_ = XMMatrixScalingFromVector(local_scale_) * XMMatrixRotationQuaternion(local_rotation_) *
+		XMMatrixTranslationFromVector(local_position_);
+	world_ = XMMatrixScalingFromVector(local_scale_) * XMMatrixRotationQuaternion(local_rotation_) *
+		XMMatrixTranslationFromVector(local_position_);
 }
 
 
@@ -95,11 +100,18 @@ XMVECTOR Transform::get_local_position() const
 void Transform::set_world(const XMMATRIX& local_world)
 {
 	world_ = local_world;
+	calculate_world_transform();
 }
 
 XMMATRIX Transform::get_local_world() const
 {
 	return XMMatrixScalingFromVector(local_scale_) * XMMatrixRotationQuaternion(local_rotation_) * XMMatrixTranslationFromVector(local_position_);
+}
+
+void Transform::set_world_position(XMVECTOR position)
+{
+	world_position_ = position;
+	calculate_world_transform();
 }
 
 void Transform::apply_force(XMVECTOR force)
@@ -108,7 +120,7 @@ void Transform::apply_force(XMVECTOR force)
 	calculate_world_transform();
 }
 
-XMVECTOR Transform::get_local_scale()
+XMVECTOR Transform::get_local_scale() const
 {
 	return local_scale_;
 }

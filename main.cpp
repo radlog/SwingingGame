@@ -13,13 +13,15 @@
 //using namespace std;
 D3Dfw *dx_handle = D3Dfw::get_instance();
 
+GameObject scene_root;
+
 vector<GameObject> gameobjects;
 
-GameObject cube_one;
-GameObject cube_two;
-GameObject cube_three;
-GameObject cube_four;
-GameObject cube_five;
+GameObject* cube_one;
+GameObject* cube_two;
+GameObject* cube_three;
+GameObject* cube_four;
+GameObject* cube_five;
 Enemy enemy;
 
 double time_since_last_frame = 0;
@@ -111,20 +113,22 @@ int WINAPI WinMain(const HINSTANCE instance, const HINSTANCE prev_instance, cons
 		}
 		else {
 			//UpdateAI();
-			//dx_handle->input->update_input(&cube_one, timer);
-			player.update(*timer);
-			cube_one.update(*timer);
-			//cube_two.update(*timer);
-			if (!cube_one.check_collision(&cube_three))
-			{
-				cube_one.translate(Transform::world_right, timer->delta_time() * 10);
-			}
+			dx_handle->input->update_input(cube_one, timer);
+			//player.update(*timer);
 			//cube_one.update(*timer);
+			
+			//cube_two.update(*timer);
+	/*		if (!cube_one.check_collision(&cube_four))
+			{*/
+
+			//cube_one->translate(Transform::world_right, timer->delta_time() * 10);
+		//	}
+			
 			//cube_two.update(*timer);
 			//cube_three.update(*timer);
 			//cube_four.update(*timer);
 			//cube_five.update(*timer);
-
+			scene_root.update(*timer);
 			//cube_four.update(*timer);
 			update(*timer);
 			//upper_platforms[0].update(*timer);
@@ -155,11 +159,12 @@ void render_frame(Camera *camera)
 
 
 	//cube_one.get_model()->update_constant_buffer_full(lava_floor.transform.get_world() * view_projection, view_projection, directional_light_shines_from, directional_light_colour, ambient_light_colour, XMVectorSplatOne(), timer->delta_time());
-	cube_one.draw(view_projection);
+	//cube_one.draw(view_projection);
 	//cube_two.draw(view_projection);
-	cube_three.draw(view_projection);
-	cube_four.draw(view_projection);
-	cube_five.draw(view_projection);
+	//cube_three.draw(view_projection);
+	//cube_four.draw(view_projection);
+	scene_root.draw(view_projection);
+	//cube_five.draw(view_projection);
 	//cube_two.draw(view_projection);
 	//update_lava(view_projection, timer->total_time());
 	player.draw(view_projection);
@@ -258,6 +263,8 @@ void load_content()
 	const auto rotation = XMQuaternionIdentity();
 
 
+
+
 	camera = new Camera();
 	timer = new VGTime();
 	skybox = Skybox("assets/purple_nebular.dds");
@@ -277,32 +284,41 @@ void load_content()
 	model_test = new Model("assets/cube.obj");
 	model_test->load_texture("assets/lava_selfmade_DIFFUSE.png");
 
-	player = Player("player1");
-	player.transform = Transform(XMVectorSplatOne(), XMQuaternionIdentity(), XMVectorSet(0, 0, -10, 0));
+
 	//player = Player("player1", cube, Transform(XMVectorSplatOne(), XMQuaternionIdentity(), XMVectorSet(0, 0, 0, 0)));
 
 
-	cube_one = GameObject("cube_one", cube, Transform(scale, rotation, XMVectorSet(-10, 0, 0.0f, 0.0f)));
-	cube_two = GameObject("cube_two", cube, Transform(scale, rotation, XMVectorSet(-5, 0, 0.0f, 0.0f)));
-	cube_three = GameObject("cube_three", cube, Transform(scale, rotation, XMVectorSet(0, 0, 0.0f, 0.0f)));
-	cube_four = GameObject("cube_four", cube, Transform(scale, rotation, XMVectorSet(5, 0, 0.0f, 0.0f)));
-	cube_five = GameObject("cube_five", cube, Transform(scale, rotation, XMVectorSet(10, 0, 0.0f, 0.0f)));
+	cube_one = new GameObject("cube_one", cube, Transform(scale, rotation, XMVectorSet(-10, 0, 0.0f, 0.0f)));
+	cube_two = new GameObject("cube_two", cube, Transform(scale, rotation, XMVectorSet(-5, 0, 0.0f, 0.0f)));
+	cube_three = new GameObject("cube_three", cube, Transform(scale, rotation, XMVectorSet(0, 0, 0.0f, 0.0f)));
+	cube_four = new GameObject("cube_four", cube, Transform(scale, rotation, XMVectorSet(5, 0, 0.0f, 0.0f)));
+	cube_five = new GameObject("cube_five", cube, Transform(scale, rotation, XMVectorSet(10, 0, 0.0f, 0.0f)));
 
 
-	cube_one.set_kinetic(true);
-	cube_two.set_kinetic(true);
-	cube_three.set_kinetic(true);
-	cube_four.set_kinetic(true);
-	cube_five.set_kinetic(true);
+	cube_one->set_kinetic(true);
+	cube_two->set_kinetic(true);
+	cube_three->set_kinetic(true);
+	cube_four->set_kinetic(true);
+	cube_five->set_kinetic(true);
 
-	cube_one.add_child(&cube_two);
+	//cube_one->add_child(cube_two);
 	//cube_two.set_kinetic(true);
 
 	//cube_one.add_child(&cube_two);
 	//cube_one.add_child(&cube_three);
 	//cube_three.add_child(&cube_four);
 
+	player = Player("player1");
+	player.transform = Transform(XMVectorSplatOne(), XMQuaternionIdentity(), XMVectorSet(0, 0, -10, 0));
+	player.update(*timer);
 
+	cube_one->add_child(cube_two);
+
+	scene_root = GameObject("scene_root");
+	scene_root.add_child(cube_one);
+	scene_root.add_child(cube_two);
+	scene_root.add_child(cube_four);
+	//scene_root.add_child(&test_floor);
 	enemy = Enemy("enemy", model_test, Transform(scale, rotation, XMVectorSet(0, 10, 0.0f, 0.0f)));
 
 

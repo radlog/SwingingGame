@@ -10,7 +10,7 @@ GameObject::GameObject()
 {
 }
 
-GameObject::GameObject(const LPCSTR name, const TAG tag) : model_(nullptr), collider_(nullptr)
+GameObject::GameObject(const LPCSTR name, const TAG tag) : model_(nullptr), collider_(nullptr), parent_(nullptr)
 {
 	dx_handle_ = D3Dfw::get_instance();
 	device_ = dx_handle_->get_device();
@@ -76,12 +76,31 @@ void GameObject::draw(const XMMATRIX view_projection, const bool use_default_cb,
 
 void GameObject::translate(const XMVECTOR direction, const float speed)
 {
+	auto position = transform.get_local_position() * 1.2f;
 	transform.translate(direction, speed);
+
+	auto identity = XMMatrixIdentity();
+
+	if (parent_)
+	{
+		parent_->update_collision_tree(&identity, parent_->transform.get_world_scale().x);
+
+		if (check_collision(parent_))
+		{
+			transform.translate(-direction, speed * 2);
+			return;
+		}
+	}
+
+	for (auto& i : children_)
+	{
+		i->translate(direction, speed);
+	}
 	//if (collider_) collider_->set_world_position(collider_->get_origin() + transform.get_local_position());
 
 }
 
-void GameObject::rotate_fixed(float pitch, float yaw, float roll)
+void GameObject::rotate_fixed(const float pitch, const float yaw, const float roll)
 {
 	transform.rotate_fixed(pitch, yaw, roll);
 	for (auto& i : children_)
@@ -123,7 +142,28 @@ Collider* GameObject::get_collider()
 
 bool GameObject::check_collision(GameObject* target)
 {
-	return collider_->check_collision(target->get_collider());
+
+	if (target == this) return false;
+
+	if (model_ && target->get_model())
+	{
+		if (collider_->check_collision(target->get_collider()))
+			return true;
+	}
+
+	for (auto& i : target->get_children())
+	{
+		if (check_collision(i))
+			return true;
+	}
+
+	for (auto& i : children_)
+	{
+		if (i->check_collision(target))
+			return true;
+	}
+
+	return false;
 }
 
 
@@ -149,7 +189,6 @@ void GameObject::update_transform(XMMATRIX *world)
 	{
 		i->update_transform(&local_world);
 	}
-
 }
 
 void GameObject::update_collision_tree(XMMATRIX* world, const float scale)
@@ -158,8 +197,8 @@ void GameObject::update_collision_tree(XMMATRIX* world, const float scale)
 	auto local_world = transform.get_world();
 	local_world *= *world;
 
-	if(collider_) collider_->set_world_position(collider_->get_origin() + transform.get_local_position());
-	
+	if (collider_) collider_->set_world_position(collider_->get_origin() + transform.get_local_position());
+
 
 	for (auto& i : children_)
 	{
@@ -182,12 +221,23 @@ void GameObject::set_model(Model* model)
 	model_ = model;
 }
 
+void GameObject::set_parent(GameObject* parent)
+{
+	parent_ = parent;
+}
+
+void GameObject::remove_parent(GameObject* child)
+{
+	child->parent_ = nullptr;
+}
+
 void GameObject::add_child(GameObject* child)
 {
+	child->set_parent(this);
 	children_.push_back(child);
 }
 
-bool GameObject::remove_child(GameObject* child)
+bool GameObject::remove_child(GameObject *child)
 {
 	for (auto i = 0; i < children_.size(); i++)
 	{
@@ -196,7 +246,11 @@ bool GameObject::remove_child(GameObject* child)
 			children_.erase(children_.begin() + i);
 			return true;
 		}
-		if (children_[i]->remove_child(child)) return true;
+		if (children_[i]->remove_child(child))
+		{
+			child->remove_parent(this);
+			return true;
+		}
 	}
 	return false;
 }
