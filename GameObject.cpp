@@ -61,7 +61,8 @@ void GameObject::update(VGTime timer)
 		}
 	}
 
-	update_transform(&transform.get_local_world());
+	update_transform(&XMMatrixIdentity());
+	update_collision_tree(&XMMatrixIdentity(), transform.get_world_scale().x);
 }
 
 void GameObject::draw(const XMMATRIX view_projection, const bool use_default_cb, const D3D11_PRIMITIVE_TOPOLOGY mode)
@@ -76,7 +77,7 @@ void GameObject::draw(const XMMATRIX view_projection, const bool use_default_cb,
 void GameObject::translate(const XMVECTOR direction, const float speed)
 {
 	transform.translate(direction, speed);
-	if (collider_) collider_->set_world_position(collider_->get_origin() + transform.get_local_position());
+	//if (collider_) collider_->set_world_position(collider_->get_origin() + transform.get_local_position());
 
 }
 
@@ -140,7 +141,7 @@ void GameObject::start()
 
 void GameObject::update_transform(XMMATRIX *world)
 {
-	XMMATRIX local_world = transform.get_local_world() * * world;
+	auto local_world = transform.get_local_world() * * world;
 	transform.set_world(local_world);
 
 	// update transform of children
@@ -151,43 +152,20 @@ void GameObject::update_transform(XMMATRIX *world)
 
 }
 
-//bool GameObject::collided(GameObject target) const
-//{
-//	const auto s_tar_collider = target.get_model()->get_collision_sphere();
-//	const auto s_orig_collider = model_->get_collision_sphere();
-//
-//	if (dist(s_tar_collider.local_position + target.transform.get_local_position(),
-//		s_orig_collider.local_position + transform.get_local_position()) >= s_tar_collider.collision_radius +
-//		s_orig_collider.collision_radius)
-//		return false;
-//
-//	return true;
-//
-//	switch (tag_)
-//	{
-//	case DEFAULT:
-//
-//	case GROUND:
-//
-//		break;
-//	case MODEL:
-//
-//		break;
-//	case POLY:
-//
-//		break;
-//	case CHARACTER:
-//
-//		break;
-//	case PLAYER:
-//
-//		break;
-//	default:
-//		return false;
-//	}
-//
-//	return false;
-//}
+void GameObject::update_collision_tree(XMMATRIX* world, const float scale)
+{
+	transform.set_world_scale(transform.get_local_scale() * scale);
+	auto local_world = transform.get_world();
+	local_world *= *world;
+
+	if(collider_) collider_->set_world_position(collider_->get_origin() + transform.get_local_position());
+	
+
+	for (auto& i : children_)
+	{
+		i->update_collision_tree(&local_world, scale);
+	}
+}
 
 LPCSTR GameObject::get_name() const
 {
@@ -236,20 +214,7 @@ void GameObject::set_collider(Collider *col)
 	collider_ = col;
 }
 
-void GameObject::update_collision_tree(XMMATRIX* world, float scale)
-{
-	XMMATRIX local_world = XMMatrixIdentity() * transform.get_world();
-	local_world *= *world;
-	transform.set_world_scale(transform.get_local_scale() * scale);
 
-	/*XMVECTOR sphere_collision_origin;
-	if (model_)
-		sphere_collision_origin = collider_.get_origin();
-	else
-		sphere_collision_origin = XMVectorSet(0, 0, 0, 0);
-
-	sphere_collision_origin = XMVector3Transform(sphere_collision_origin, local_world);*/
-}
 
 
 void GameObject::cleanup()

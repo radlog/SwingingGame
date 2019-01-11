@@ -113,8 +113,9 @@ int WINAPI WinMain(const HINSTANCE instance, const HINSTANCE prev_instance, cons
 			//UpdateAI();
 			//dx_handle->input->update_input(&cube_one, timer);
 			player.update(*timer);
-
-			if (!cube_one.check_collision(&cube_two))
+			cube_one.update(*timer);
+			//cube_two.update(*timer);
+			if (!cube_one.check_collision(&cube_three))
 			{
 				cube_one.translate(Transform::world_right, timer->delta_time() * 10);
 			}
@@ -144,31 +145,18 @@ int WINAPI WinMain(const HINSTANCE instance, const HINSTANCE prev_instance, cons
 
 void render_frame(Camera *camera)
 {
-	const XMMATRIX view_projection = camera->calculate_view_projection();
-	const XMMATRIX sky_lock = XMMatrixTranslationFromVector(camera->transform.get_local_position()) * view_projection;
+	const auto view_projection = camera->calculate_view_projection();
+	const auto sky_lock = XMMatrixTranslationFromVector(camera->transform.get_local_position()) * view_projection;
 	// clear the render target view
 	dx_handle->clear_rtv();
 
 	// draw here
 	//skybox.draw(sky_lock);
-	//upperPlatforms[0].update(*timer);
-	//upperPlatforms[0].Draw(view_projection);
-	//upperPlatforms[1].update(*timer);
-	//upperPlatforms[1].Draw(view_projection);
 
 
-	//draw_map(view_projection);
-	//for(auto& i: gameobjects)
-	//{
-	//	i.draw(view_projection);
-	//}
-	//if (!cube_one.collided(cube_two))
-	//{
-
-	//}
 	//cube_one.get_model()->update_constant_buffer_full(lava_floor.transform.get_world() * view_projection, view_projection, directional_light_shines_from, directional_light_colour, ambient_light_colour, XMVectorSplatOne(), timer->delta_time());
 	cube_one.draw(view_projection);
-	cube_two.draw(view_projection);
+	//cube_two.draw(view_projection);
 	cube_three.draw(view_projection);
 	cube_four.draw(view_projection);
 	cube_five.draw(view_projection);
@@ -306,7 +294,8 @@ void load_content()
 	cube_three.set_kinetic(true);
 	cube_four.set_kinetic(true);
 	cube_five.set_kinetic(true);
-	
+
+	cube_one.add_child(&cube_two);
 	//cube_two.set_kinetic(true);
 
 	//cube_one.add_child(&cube_two);

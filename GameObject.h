@@ -61,7 +61,6 @@ public:
 	vector<GameObject*> get_children() const; // returns the list of children this object has
 	void set_kinetic(bool kinetic);
 	bool get_kinetic() const;
-	void add_sphere_collider() const;
 	virtual Collider* get_collider();
 	bool check_collision(GameObject *target);
 
