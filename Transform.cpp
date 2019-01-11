@@ -84,7 +84,7 @@ void Transform::translate(const XMVECTOR direction, const float speed)
 
 void Transform::look_at(XMVECTOR target)
 {
-	
+
 }
 
 XMMATRIX Transform::get_world()

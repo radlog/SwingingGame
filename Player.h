@@ -25,12 +25,12 @@ public:
 	 * \brief process input using the direct input class of the current directX instance
 	 * \param timer using VGTime to update with deltaTime
 	 */
-	void update_input(const VGTime timer);
+	void update_input(VGTime *timer);
 	/**
 	 * \brief update method combining all necessary update methods in correct order
 	 * \param timer using VGTime to update with deltaTime
 	 */
-	void update(VGTime timer);
+	void update(VGTime *timer);
 	/**
 	 * \brief move camera along with the players position
 	 */

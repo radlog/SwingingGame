@@ -45,19 +45,15 @@ GameObject::GameObject(const LPCSTR name, Model *model, const Transform transfor
 	if (collider_) collider_->set_world_position(collider_->get_origin() + transform.get_local_position());
 }
 
-void GameObject::update(VGTime timer)
+void GameObject::update(VGTime *timer)
 {
 	if (!is_kinetic_)
 	{
 		if (!is_grounded_)
 		{
-			air_time_ += timer.delta_time();
+			air_time_ += timer->delta_time();
 			const auto falling_velocity = Physics3D::gravity * (air_time_*air_time_);
-			transform.translate(Transform::world_up, falling_velocity * timer.delta_time());
-		}
-		else
-		{
-			air_time_ = 0.0f;
+			translate(Transform::world_up, falling_velocity * timer->delta_time());
 		}
 	}
 
@@ -76,7 +72,6 @@ void GameObject::draw(const XMMATRIX view_projection, const bool use_default_cb,
 
 void GameObject::translate(const XMVECTOR direction, const float speed)
 {
-	auto position = transform.get_local_position() * 1.2f;
 	transform.translate(direction, speed);
 
 	auto identity = XMMatrixIdentity();
@@ -87,7 +82,7 @@ void GameObject::translate(const XMVECTOR direction, const float speed)
 
 		if (check_collision(parent_))
 		{
-			transform.translate(-direction, speed * 2);
+			transform.translate(-direction, speed * push_back_speed);
 			return;
 		}
 	}
@@ -144,11 +139,16 @@ bool GameObject::check_collision(GameObject* target)
 {
 
 	if (target == this) return false;
-
+	is_grounded_ = false;
 	if (model_ && target->get_model())
 	{
 		if (collider_->check_collision(target->get_collider()))
+		{						
+			set_grounded(target->transform.get_local_position().y < transform.get_local_position().y);
 			return true;
+		}
+		
+		
 	}
 
 	for (auto& i : target->get_children())
@@ -163,6 +163,7 @@ bool GameObject::check_collision(GameObject* target)
 			return true;
 	}
 
+	
 	return false;
 }
 
@@ -260,6 +261,15 @@ bool GameObject::remove_child(GameObject *child)
 void GameObject::set_grounded(bool grounded)
 {
 	is_grounded_ = grounded;
+	if(grounded)
+	{
+		air_time_ = 0;
+	}
+}
+
+bool GameObject::get_grounded() const
+{
+	return is_grounded_;
 }
 
 

@@ -33,8 +33,9 @@ private:
 	IDirectInputDevice8 *mouse_input_; // mouse input device
 	DIMOUSESTATE mouse_state_; // mouse state tracking all necessary mouse events
 
+	const double jump_speed_ = 8.0f;
 	const double rot_speed_ = 10.0; // rotation look speed for mouse movement
-	const double move_speed_ = 30.0; // movement speed
+	const double move_speed_ = 8.0; // movement speed
 
 	const long mouse_x_center_ = 480; // mouse x position of the screen center
 	const long mouse_y_center_ = 640; // mouse y position of the screen center
@@ -43,4 +44,6 @@ private:
 	long mouse_y_ = mouse_y_center_; // current mouse y position
 
 	bool locked_ = true; // says whether to use the forward vector locked horizontally or not
+	bool fly_mode_ = false; // says whether player can use jump - even when he is in air - or not
+	bool jumping_;
 };

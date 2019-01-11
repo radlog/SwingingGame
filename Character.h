@@ -61,6 +61,9 @@ public:
 	 */
 	virtual STATE get_state() const;
 
+
+	virtual void set_state(STATE state);
+
 	/**
 	 * \brief increases characters movement speed for a specific time
 	 * \param speed increase value of the speed
@@ -97,11 +100,15 @@ public:
 	 * \return character dead
 	 */
 	virtual bool inflict(float dmg);
+
+	void crouch(VGTime *timer);
+	void jump(VGTime *timer);
 protected:
 	Stats stats_; // 
 	int life_ = 100; // 
 	Collectable collected_; // 
 	STATE state_ = STANDING; // 
 	float speed_ = 100; // 
+	double jumpspeed_ = 8.0f;
 };
 

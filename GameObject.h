@@ -13,6 +13,8 @@ class Model;
 class VGTime;
 class D3Dfw;
 
+extern const float push_back_speed = 2.0f;
+
 // most important class to create and handle all entities within the game
 class GameObject
 {
@@ -61,8 +63,12 @@ public:
 	vector<GameObject*> get_children() const; // returns the list of children this object has
 	void set_kinetic(bool kinetic);
 	bool get_kinetic() const;
+	void set_grounded(bool grounded); // sets object grounded
+	bool get_grounded() const;
 	virtual Collider* get_collider();
 	bool check_collision(GameObject *target);
+
+
 
 	// TODO: make transform private or find out how to make it an interface or how to make a better abstraction 
 	Transform transform; // the transform of the object
@@ -73,7 +79,7 @@ public:
 	virtual void render(); // render frame
 	virtual void start();
 	virtual void update_transform(XMMATRIX *world);
-	virtual void update(VGTime timer); // update gameobject's physics and interactions with the game world
+	virtual void update(VGTime *timer); // update gameobject's physics and interactions with the game world
 	//bool collided(GameObject target) const; // says whether the object collided with another gameobject
 	LPCSTR get_name() const; // return objects name
 	Model* get_model() const; // return objects model
@@ -83,8 +89,7 @@ public:
 	void remove_parent(GameObject *child);
 	void add_child(GameObject *child); // add a child object
 	bool remove_child(GameObject *child); // remove a child safely(only if it is in the children list)
-	void set_grounded(bool grounded); // sets object grounded
-
+	
 
 	void set_collider(Collider *col);
 	void update_collision_tree(XMMATRIX *world, float scale);
@@ -109,5 +114,7 @@ protected:
 	ID3D11DeviceContext* immediate_context_; // pointer to the device context
 
 	Collider *collider_;
+
+	
 
 };

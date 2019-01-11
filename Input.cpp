@@ -1,5 +1,5 @@
 #include "Input.h"
-
+#include "Player.h"
 
 
 Input::Input()
@@ -106,11 +106,27 @@ HRESULT Input::update_input(GameObject* actor, VGTime* game_time)
 	//if (IsKeyPressed(DIK_P)) GameObject();
 	if (fps_) mouse_moved(actor, game_time);
 
+	if (is_key_pressed(DIK_H)) fly_mode_ = !fly_mode_;
+
+	if (is_key_pressed(DIK_LSHIFT))
+	{
+		if (fly_mode_) direction = -Transform::world_up;
+		else if (typeid(actor).name() == typeid(Player).name()) static_cast<Player*>(actor)->crouch(game_time);
+	}
+	auto name = typeid(*actor).name();
 	if (is_key_pressed(DIK_SPACE))
-		if (is_key_pressed(DIK_LSHIFT))
-			direction = -actor->transform.get_local_up();
-		else
-			direction = actor->transform.get_local_up();
+	{
+		if (fly_mode_) direction = Transform::world_up;
+		else if (typeid(*actor).name() == typeid(Player).name())
+		{
+			static_cast<Player*>(actor)->set_state(AIRBORNE);
+		}
+	}
+
+	if (typeid(*actor).name() == typeid(Player).name())
+	{
+		static_cast<Player*>(actor)->jump(game_time);
+	}
 
 	if (is_key_released(DIK_G)) actor->set_kinetic(!actor->get_kinetic());
 

@@ -39,6 +39,11 @@ STATE Character::get_state() const
 	return this->state_;
 }
 
+void Character::set_state(STATE state)
+{
+	state_ = state;
+}
+
 void Character::set_speed_buff(float speed, float time)
 {
 	speed_ = speed;
@@ -80,6 +85,17 @@ bool Character::inflict(float dmg)
 		return true;
 	}
 	return false;
+}
+
+void Character::crouch(VGTime *timer)
+{
+}
+
+void Character::jump(VGTime* timer)
+{
+	if(state_ == AIRBORNE)
+	if (!is_grounded_) translate(Transform::world_up, timer->delta_time() * jumpspeed_);
+	else state_ = STANDING;
 }
 
 

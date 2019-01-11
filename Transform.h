@@ -5,6 +5,8 @@ class GameObject;
 
 class Transform
 {
+
+
 public:
 	Transform();
 	Transform(XMVECTOR scale, XMVECTOR rotation, XMVECTOR position);
@@ -35,6 +37,7 @@ public:
 	static const XMVECTOR world_right;
 	static const XMVECTOR world_forward;
 	static const XMVECTOR world_backward;
+	
 
 	void apply_force(XMVECTOR force);
 
