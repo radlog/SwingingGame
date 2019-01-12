@@ -163,7 +163,7 @@
     <ClCompile Include="Collectable.cpp" />
     <ClCompile Include="Collider.cpp" />
     <ClCompile Include="Command.cpp" />
-    <ClCompile Include="Cube.cpp" />
+    <ClCompile Include="GeoCube.cpp" />
     <ClCompile Include="d3dfw.cpp" />
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="FloatingPlatform.cpp" />
@@ -177,6 +177,7 @@
     <ClCompile Include="BaseModel.cpp" />
     <ClCompile Include="MeshCollider.cpp" />
     <ClCompile Include="Model.cpp" />
+    <ClCompile Include="ObjCube.cpp" />
     <ClCompile Include="objfilemodel.cpp" />
     <ClCompile Include="Obstacle.cpp" />
     <ClCompile Include="pch.cpp">
@@ -237,7 +238,7 @@
     <ClInclude Include="Collectable.h" />
     <ClInclude Include="Collider.h" />
     <ClInclude Include="Command.h" />
-    <ClInclude Include="Cube.h" />
+    <ClInclude Include="GeoCube.h" />
     <ClInclude Include="d3dfw.h" />
     <ClInclude Include="d3dInputLayouts.h" />
     <ClInclude Include="Enemy.h" />
@@ -253,6 +254,7 @@
     <ClInclude Include="BaseModel.h" />
     <ClInclude Include="MeshCollider.h" />
     <ClInclude Include="Model.h" />
+    <ClInclude Include="ObjCube.h" />
     <ClInclude Include="objfilemodel.h" />
     <ClInclude Include="Obstacle.h" />
     <ClInclude Include="pch.h" />

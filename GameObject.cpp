@@ -138,17 +138,19 @@ Collider* GameObject::get_collider()
 bool GameObject::check_collision(GameObject* target)
 {
 
-	if (target == this) return false;
+	if (target == this || collider_ == nullptr) return false;
+
 	is_grounded_ = false;
 	if (model_ && target->get_model())
 	{
+
 		if (collider_->check_collision(target->get_collider()))
-		{						
+		{
 			set_grounded(target->transform.get_local_position().y < transform.get_local_position().y);
 			return true;
 		}
-		
-		
+
+
 	}
 
 	for (auto& i : target->get_children())
@@ -163,7 +165,7 @@ bool GameObject::check_collision(GameObject* target)
 			return true;
 	}
 
-	
+
 	return false;
 }
 
@@ -261,7 +263,7 @@ bool GameObject::remove_child(GameObject *child)
 void GameObject::set_grounded(bool grounded)
 {
 	is_grounded_ = grounded;
-	if(grounded)
+	if (grounded)
 	{
 		air_time_ = 0;
 	}

@@ -6,9 +6,10 @@
 #include <d2d1.h>
 #include "Floor.h"
 #include "Player.h"
-#include "Cube.h"
+#include "GeoCube.h"
 #include "Model.h"
 #include "Enemy.h"
+#include "ObjCube.h"
 
 //using namespace std;
 D3Dfw *dx_handle = D3Dfw::get_instance();
@@ -239,8 +240,8 @@ void load_content()
 	platform = new Model(CB_STATE_SIMPLE);
 	platform->load_geo_model(platform_placeholder, numverts, sizeof(POS_TEX_NORM_COL_VERTEX));
 	platform->load_texture("assets/FloatingIsland_DIFFUSE.png");
-	//auto *cube = new Cube("",TEXTURED_COLORED_LIGHTED,CB_STATE_FULL);
-	auto *cube = new Cube();
+	//auto *cube = new GeoCube("",TEXTURED_COLORED_LIGHTED,CB_STATE_FULL);
+	auto *cube = new ObjCube();
 	
 	//cube->set_shader_file("lighted_shader.hlsl");
 

@@ -8,8 +8,9 @@ public:
 	SphereCollider(XMVECTOR origin, float radius);
 	~SphereCollider();
 
-	bool sphere_to_sphere_collision(const SphereCollider col) const;	
+	bool sphere_to_sphere_collision(SphereCollider col) const;
 
+	bool sphere_to_mesh_collision(MeshCollider col) const;
 	bool check_collision(Collider *col) override;
 
 private:

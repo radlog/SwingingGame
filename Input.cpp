@@ -95,7 +95,11 @@ HRESULT Input::update_input(GameObject* actor, VGTime* game_time)
 
 	if (paused_) return S_OK;
 
-	if (is_key_pressed(DIK_ESCAPE)) DestroyWindow(hwnd_);
+	if (is_key_pressed(DIK_ESCAPE))
+	{
+		cleanup();
+		DestroyWindow(hwnd_);
+	}
 
 
 	auto direction = XMVectorZero();
@@ -125,7 +129,9 @@ HRESULT Input::update_input(GameObject* actor, VGTime* game_time)
 
 	if (typeid(*actor).name() == typeid(Player).name())
 	{
-		static_cast<Player*>(actor)->jump(game_time);
+		if (fly_mode_) static_cast<Player*>(actor)->set_state(STANDING);
+		if (static_cast<Player*>(actor)->get_state() == AIRBORNE)
+			static_cast<Player*>(actor)->jump(game_time);
 	}
 
 	if (is_key_released(DIK_G)) actor->set_kinetic(!actor->get_kinetic());

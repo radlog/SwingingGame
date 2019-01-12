@@ -55,6 +55,13 @@ struct Plane
 	float offset; // offset of the normal
 };
 
+struct Triangle
+{
+	XMVECTOR v1;
+	XMVECTOR v2;
+	XMVECTOR v3;
+};
+
 class Geometry
 {
 public:

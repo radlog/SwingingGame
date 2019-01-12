@@ -1,4 +1,10 @@
 #pragma once
+// get the sign of a number
+inline int sign(const float number)
+{
+	return number < 0 ? -1 : (number > 0 ? 1 : 0);
+}
+
 // calculates the distance between two vectors
 inline float dist(const XMVECTOR v1, const XMVECTOR v2)
 {
@@ -35,14 +41,42 @@ inline Plane get_plane(const XMVECTOR v1, const XMVECTOR v2, const XMVECTOR v3)
 	return Plane{ norm, d_offset };
 }
 // determines whether the given point is on the given plane
-inline bool is_point_on_plane(const Plane plane, const XMVECTOR point)
+inline float is_point_on_plane(const Plane *plane, const XMVECTOR *point)
 {
-	const auto n = plane.normal;
-	return (n.x * point.x) + (n.y * point.y) + (n.z * point.z) + plane.offset == 0;
+	const auto n = plane->normal;
+	return (n.x * point->x) + (n.y * point->y) + (n.z * point->z) + plane->offset;
 }
 
-// get the sign of a number
-inline int sign(const float number)
+// gives the point of intersection between the ray and the plane
+inline XMVECTOR ray_to_plane_intersection_point(Plane *plane, XMVECTOR *ray, XMVECTOR *start_point)
 {
-	return (number < 0 ? -1 : (number > 0 ? 1 : 0));
+	// fraction between 0 and 1 that describes the intersection with the plane
+	const auto fraction = (-plane->offset - dot(plane->normal, *start_point)) / dot(plane->normal, *ray);
+	return *start_point + (*ray * fraction);
 }
+
+// uses the plane and two vectors to see if their ray intersects the plane
+inline bool plane_intersection(const Plane *plane, const XMVECTOR *start_point, const XMVECTOR *end_point)
+{
+	const auto s1 = is_point_on_plane(plane, start_point);
+	const auto s2 = is_point_on_plane(plane, end_point);
+
+	return sign(s1) != sign(s2);	
+}
+
+inline bool in_triangle(XMVECTOR *triangle_vector_a, XMVECTOR *triangle_vector_b, XMVECTOR *triangle_vector_c, XMVECTOR *point)
+{
+	const auto v1 = *triangle_vector_b - *triangle_vector_a;
+	const auto v1_p = *point - *triangle_vector_a;
+	const auto v2 = *triangle_vector_c - *triangle_vector_b;
+	const auto v2_p = *point - *triangle_vector_b;
+	const auto v3 = *triangle_vector_a - *triangle_vector_c;
+	const auto v3_p = *point - *triangle_vector_c;
+
+	const auto n1 = dot(v1, v1_p);
+	const auto n2 = dot(v2, v2_p);
+	const auto n3 = dot(v3, v3_p);
+
+	return sign(n1) == sign(n2) == sign(n3) && sign(n1) != 0 || sign(n2) != 0 || sign(n3) != 0;
+}
+

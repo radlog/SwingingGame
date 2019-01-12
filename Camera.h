@@ -20,7 +20,7 @@ public:
 	 * \param near_plane near plane clipping
 	 * \param far_plane far plane clipping
 	 */
-	explicit Camera(LPCSTR name, float fov = 80.0f, float aspect_ratio = 640.0f / 480.0f, float near_plane = 0.1f,
+	explicit Camera(LPCSTR name, float fov = 80.0f, float aspect_ratio = 640.0f / 480.0f, float near_plane = 0.01f,
 		float far_plane = 300.0f);
 
 	/**

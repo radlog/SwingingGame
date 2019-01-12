@@ -1,7 +1,7 @@
-#include "Cube.h"
+#include "GeoCube.h"
 
 
-Cube::Cube(LPCSTR texture, const VERTEX_FORMAT vertex_format, const CB_STATE state) : Model(state)
+GeoCube::GeoCube(LPCSTR texture, const VERTEX_FORMAT vertex_format, const CB_STATE state) : Model(state)
 {
 	UINT numverts;
 	switch(vertex_format) 
@@ -33,6 +33,6 @@ Cube::Cube(LPCSTR texture, const VERTEX_FORMAT vertex_format, const CB_STATE sta
 }
 
 
-Cube::~Cube()
+GeoCube::~GeoCube()
 {
 }

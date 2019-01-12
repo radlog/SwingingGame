@@ -25,13 +25,22 @@ bool SphereCollider::sphere_to_sphere_collision(const SphereCollider col) const
 	return bla;
 }
 
+bool SphereCollider::sphere_to_mesh_collision(MeshCollider col) const
+{
+	return false;
+}
+
 bool SphereCollider::check_collision(Collider* col)
 {
 	if(typeid(*col).name() == typeid(SphereCollider).name())
 	{
 		const auto s = dynamic_cast<SphereCollider*>(col);
 		return sphere_to_sphere_collision(*s);
+	}else
+	{
+		const auto m = dynamic_cast<MeshCollider*>(col);
+		return sphere_to_mesh_collision(*m);
 	}
 
-	
+	return false;
 }
