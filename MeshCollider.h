@@ -7,13 +7,14 @@ class MeshCollider :
 {
 public:
 	MeshCollider();
-	explicit MeshCollider(vector<XMVECTOR> *vertex_positions);
+	explicit MeshCollider(vector<XMVECTOR> vertex_positions);
 	~MeshCollider();
 	bool check_collision(Collider* col) override;
 
 	bool mesh_to_mesh_collision(MeshCollider *col);
+	bool sphere_to_mesh_collision(SphereCollider *col);
 
 private:
-	vector<Triangle*> triangles_;
+	vector<Triangle> *triangles_;
 };
 

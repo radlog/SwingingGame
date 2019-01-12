@@ -63,7 +63,7 @@ void Model::initialize_mesh_collider()
 	if (obj_file_model_ == nullptr) return;
 
 	//TODO:: fix the error that appears when MeshCollider is created (the program breaks on different points randomly and error message is mostly Critical error detected c0000374), sometimes even the mouse or keyboard doesn't respond anymore
-	//vector<XMVECTOR> *vertex_positions = &obj_file_model_->get_vertex_positions();
-	//collider_ = new MeshCollider(nullptr);
+	
+	collider_ = new MeshCollider(obj_file_model_->get_vertex_positions());
 }
 
