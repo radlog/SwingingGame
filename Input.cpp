@@ -154,8 +154,8 @@ HRESULT Input::update_input(GameObject* actor, VGTime* game_time)
 	if (is_key_pressed(DIK_UP)) actor->rotate_fixed(static_cast<float>(-game_time->delta_time() * rot_speed_ / 10), 0, 0);
 	if (is_key_pressed(DIK_DOWN)) actor->rotate_fixed(static_cast<float>(game_time->delta_time() * rot_speed_ / 10), 0, 0);
 
-
-	actor->translate(direction, game_time->delta_time() * move_speed_);
+	if (direction.x != 0 || direction.y != 0 || direction.z != 0)
+		actor->translate(direction, game_time->delta_time() * move_speed_);
 	//if (is_key_pressed(DIK_A)) actor->move_left(game_time->delta_time() * move_speed_);
 	//if (is_key_pressed(DIK_D)) actor->move_right(game_time->delta_time() * move_speed_);
 	//if (is_key_pressed(DIK_W)) actor->move_horizontal_forward(game_time->delta_time() * move_speed_);

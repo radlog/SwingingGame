@@ -20,6 +20,7 @@ bool SphereCollider::sphere_to_sphere_collision(const SphereCollider col) const
 {
 	const auto distance = dist(col.world_, world_);
 	const auto limit = col.radius_ + radius_;
+	auto test = distance <= limit;
 	return distance <= limit;
 }
 
@@ -31,9 +32,9 @@ bool SphereCollider::sphere_to_mesh_collision(MeshCollider col) const
 		XMVECTOR v2 = i.v2 + col.get_world_position();
 		XMVECTOR v3 = i.v3 + col.get_world_position();
 		auto plane = get_plane(v1, v2, v3);
-		auto ray = XMVector4Normalize(world_ - plane.normal) * radius_;
+		auto ray = XMVector4Normalize(plane.normal - world_);
 		auto start_point = world_;
-		auto end_point = world_ + ray;
+		auto end_point = world_ + plane.normal * radius_;
 		if (plane_intersection(&plane, &start_point, &end_point))
 		{
 			auto point = ray_to_plane_intersection_point(&plane, &ray, &start_point);

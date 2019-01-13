@@ -107,7 +107,7 @@ void BaseModel::draw(const XMMATRIX view_projection, const bool use_simple_cb, c
 	}
 	else
 	{
-		//cb_time_scaled_lighted.WorldViewProjection = view_projection;
+		cb_time_scaled_lighted_.world_view_projection = view_projection;
 		immediate_context_->UpdateSubresource(constant_buffer_, 0, nullptr, get_constant_buffer_state(), 0, 0);
 	}
 
@@ -198,7 +198,7 @@ void BaseModel::set_shader_file(LPCSTR shader_file)
 {
 	this->shader_file_ = shader_file;
 	compile_shaders();
-	set_default_input_layout();
+	//set_default_input_layout();
 }
 
 HRESULT BaseModel::create_default_sampler_for_texture()

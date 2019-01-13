@@ -18,6 +18,12 @@ GameObject scene_root;
 
 vector<GameObject> gameobjects;
 
+GameObject* m1;
+GameObject* m2;
+GameObject* m3;
+GameObject* m4;
+GameObject* m5;
+GameObject* m6;
 GameObject* floor_object;
 GameObject* cube_one;
 GameObject* cube_two;
@@ -48,8 +54,9 @@ vector<GameObject> lower_platforms;
 IDWriteFactory *dwrite_factory;
 IDWriteTextFormat *text_format;
 
-Model *model_test;
-Model *platform;
+
+Model* cube;
+Model *island_model;
 Input input;
 
 bool enable_glowing = false;
@@ -134,14 +141,15 @@ void render_frame(Camera *camera)
 	dx_handle->clear_rtv();
 
 	// draw here
-	//skybox.draw(sky_lock);
+	skybox.draw(sky_lock);
 
-
-	//cube_one.get_model()->update_constant_buffer_full(lava_floor.transform.get_world() * view_projection, view_projection, directional_light_shines_from, directional_light_colour, ambient_light_colour, XMVectorSplatOne(), timer->delta_time());
-	//cube_one.draw(view_projection);
-
+	// update constant buffer values for every gameobject in the scene
+	scene_root.update_constant_buffer_time_scaled(view_projection, view_projection, directional_light_shines_from, directional_light_colour, ambient_light_colour, timer->delta_time());
 	scene_root.draw(view_projection);
 	player.draw(view_projection);
+	cube_one->draw(view_projection);
+	//cube_two->draw(view_projection);
+	//lower_platforms[0].draw(view_projection);
 	//test_floor.draw(view_projection);
 	//enemy.draw(view_projection);
 
@@ -149,7 +157,6 @@ void render_frame(Camera *camera)
 	//debug_util(timer->get_fps());
 	// swap back buffer with front buffer
 	dx_handle->get_swap_chain()->Present(0, 0);
-
 }
 
 
@@ -170,6 +177,8 @@ void update(VGTime* timer)
 {
 	//dx_handle->input->update_input(cube_one, timer);
 	//update_lava(view_projection, timer->total_time());
+	//lower_platforms[0].translate(Transform::world_left, 10 * timer->delta_time());
+	cube_one->translate(Transform::world_left, 10 * timer->delta_time());
 	player.update(timer);
 	scene_root.update(timer);
 
@@ -221,37 +230,29 @@ void load_lava()
 
 
 
-
 void load_content()
 {
 	const auto scale = XMVectorSplatOne();
 	const auto rotation = XMQuaternionIdentity();
 
-
-
-
 	camera = new Camera();
 	timer = new VGTime();
 	skybox = Skybox("assets/purple_nebular.dds");
-	floor_model = new Floor();
+
 
 	UINT numverts;
-	POS_TEX_NORM_COL_VERTEX* platform_placeholder = Geometry::cube_ptnc(&numverts);
-	platform = new Model(CB_STATE_SIMPLE);
-	platform->load_geo_model(platform_placeholder, numverts, sizeof(POS_TEX_NORM_COL_VERTEX));
-	platform->load_texture("assets/FloatingIsland_DIFFUSE.png");
-	//auto *cube = new GeoCube("",TEXTURED_COLORED_LIGHTED,CB_STATE_FULL);
-	auto *cube = new ObjCube();
-	auto *pl_cube = new GeoCube();
+
+	//auto *cube = new ObjCube();
+	//auto *pl_cube = new GeoCube();
 	//cube->set_shader_file("lighted_shader.hlsl");
 
+	cube = new Model("assets/cube.obj", CB_STATE_TIME_SCALED, MESH);
 
-	model_test = new Model("assets/cube.obj");
-	model_test->load_texture("assets/lava_selfmade_DIFFUSE.png");
+	island_model = new Model("assets/FloatingIsland_001.obj", CB_STATE_TIME_SCALED, NOTHING);
+	//island_model->set_shader_file("lighted_shader.hlsl");
+	island_model->load_texture("assets/lava_selfmade_DIFFUSE.png");
 
-
-	//player = Player("player1", cube, Transform(XMVectorSplatOne(), XMQuaternionIdentity(), XMVectorSet(0, 0, 0, 0)));
-
+	floor_model = new Floor();
 	floor_object = new GameObject("floor", floor_model, Transform());
 
 
@@ -268,62 +269,64 @@ void load_content()
 	cube_four->set_kinetic(true);
 	cube_five->set_kinetic(true);
 
-	//cube_one->add_child(cube_two);
+	cube_one->add_child(cube_two);
 	//cube_two.set_kinetic(true);
 
 	//cube_one.add_child(&cube_two);
 	//cube_one.add_child(&cube_three);
 	//cube_three.add_child(&cube_four);
 
-	player = Player("player1", pl_cube);
-	player.transform = Transform(XMVectorSplatOne(), XMQuaternionIdentity(), XMVectorSet(0, 1, 0, 0));
+	player = Player("player1");
+	player.transform = Transform(XMVectorSplatOne(), XMQuaternionIdentity(), XMVectorSet(0, 5, -10, 0));
 	player.update(timer);
 
+
 	//cube_one->add_child(cube_two);
+	enemy = Enemy("enemy", cube, Transform(scale, rotation, XMVectorSet(0, 10, 0.0f, 0.0f)));
+
 
 	scene_root = GameObject("scene_root");
 	scene_root.set_kinetic(true);
 	scene_root.add_child(&player);
 	scene_root.add_child(floor_object);
+	scene_root.add_child(&enemy);
+
+
+	//scene_root.add_child(cube_one);
+	//scene_root.add_child(cube_two);
+	//scene_root.add_child(cube_three);
+	//scene_root.add_child(cube_four);
+
+
 	//scene_root.add_child(cube_one);
 	//scene_root.add_child(cube_two);
 	//scene_root.add_child(cube_four);
-
 	//scene_root.add_child(&test_floor);
-	enemy = Enemy("enemy", model_test, Transform(scale, rotation, XMVectorSet(0, 10, 0.0f, 0.0f)));
-
-
-
-
-
-
-
 
 	//auto plat_collision_radius = platform->get_collision_sphere().collision_radius;
 	//plat_collision_radius = 2.0f;
 
 
-	//// initialise upper platforms
+	// initialise upper platforms
 	//for (size_t i = 0; i < upper_platform_count; i++)
 	//{
-	//	upper_platforms.push_back(GameObject("upperPlatform", platform, Transform(platform_scale, rotation, XMVectorSet(i * plat_collision_radius * 3, 0, 1.0f, 0.0f))));
+	//	upper_platforms.push_back(GameObject("upperPlatform", platform, Transform(XMVectorSplatOne(), rotation, XMVectorSet(i * 3, 0, 1.0f, 0.0f))));
 	//}
 	//// initialise middle platforms
 	//for (size_t i = 0; i < middle_platform_count; i++)
 	//{
-	//	middle_platforms.push_back(GameObject("middlePlatform", platform, Transform(platform_scale, rotation, XMVectorSet(i * plat_collision_radius * 3, 0, 1.0f, 0.0f))));
+	//	middle_platforms.push_back(GameObject("middlePlatform", platform, Transform(XMVectorSplatOne(), rotation, XMVectorSet(i * 3, 0, 1.0f, 0.0f))));
 	//}
-	//// initialise lower platforms
-	//for (size_t i = 0; i < lower_platform_count; i++)
-	//{
-	//	lower_platforms.push_back(GameObject("lowerPlatform", platform, Transform(platform_scale, rotation, XMVectorSet(i * plat_collision_radius * 3, 0, 1.0f, 0.0f))));
-	//}
-
-	//gameobjects.insert(gameobjects.end(), upper_platforms.begin(), upper_platforms.end());
-	//gameobjects.insert(gameobjects.end(), middle_platforms.begin(), middle_platforms.end());
-	//gameobjects.insert(gameobjects.end(), lower_platforms.begin(), lower_platforms.end());
-	//player.add_child(&upper_platforms[0]);
-	//LoadLava();
+	// initialise lower platforms
+	for (size_t i = 0; i < sqrt(lower_platform_count); i++)
+	{
+		for (size_t j = 0; j < sqrt(lower_platform_count); j++)
+		{
+			const auto pl = new GameObject("lowerPlatform", island_model, Transform(XMVectorSplatOne(), rotation, XMVectorSet(i * 10, 0, j * 10,0)));
+			lower_platforms.push_back(*pl);
+			scene_root.add_child(pl);
+		}
+	}
 
 	timer->start();
 }

@@ -40,10 +40,7 @@ Transform* Floor::get_transform() const
 
 void Floor::initialize_mesh_collider()
 {
-	
 	const auto local_position = transform_->get_local_position();
-
-	
 
 	const auto v1 = XMLoadFloat3(&plane_vertices_[0].pos);// +local_position;
 	const auto v2 = XMLoadFloat3(&plane_vertices_[tiles_ ].pos);// +local_position;

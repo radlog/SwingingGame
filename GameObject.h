@@ -54,7 +54,7 @@ public:
 	 * \param use_default_cb whether to use constant buffer or not
 	 * \param mode topology to draw
 	 */
-	virtual void draw(XMMATRIX view_projection, bool use_default_cb = true, D3D11_PRIMITIVE_TOPOLOGY mode = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	virtual void draw(XMMATRIX view_projection, bool use_default_cb = false, D3D11_PRIMITIVE_TOPOLOGY mode = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	virtual void translate(XMVECTOR direction, float speed); // moves the object in a direction at a given speed
 	virtual void rotate_fixed(float pitch, float yaw, float roll); // rotates the object at given axis rotations pitch, yaw, roll with rotation lock at 89 degrees to prevent inverted axis
@@ -89,16 +89,18 @@ public:
 	void remove_parent(GameObject *child);
 	void add_child(GameObject *child); // add a child object
 	bool remove_child(GameObject *child); // remove a child safely(only if it is in the children list)
-	
+
 
 	void set_collider(Collider *col);
 	void update_collision_tree(XMMATRIX *world, float scale);
+	void update_constant_buffer_time_scaled(XMMATRIX world_view_projection, const XMMATRIX view_projection, const XMVECTOR directional_light_vector,
+		const XMVECTOR directional_light_color, const XMVECTOR ambient_light_color, const float game_time);
 
 	virtual void cleanup(); // cleanup pointers to prevent memory leaks
 protected:
 	GameObject *parent_;
 	vector<GameObject*> children_; // pointer to children list of gameobject
-	
+
 	LPCSTR name_; // name
 	TAG tag_; // tag
 	Model *model_; // model
@@ -115,6 +117,6 @@ protected:
 
 	Collider *collider_;
 
-	
+
 
 };

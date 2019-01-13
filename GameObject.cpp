@@ -57,7 +57,7 @@ void GameObject::update(VGTime *timer)
 		}
 	}
 
-	update_transform(&XMMatrixIdentity());
+	//update_transform(&XMMatrixIdentity());
 	update_collision_tree(&XMMatrixIdentity(), transform.get_world_scale().x);
 }
 
@@ -82,17 +82,10 @@ void GameObject::translate(const XMVECTOR direction, const float speed)
 
 		if (check_collision(parent_))
 		{
-			transform.translate(-direction, speed * push_back_speed);
-			return;
+			transform.translate(-direction, speed * push_back_speed);			
 		}
 	}
-
-	for (auto& i : children_)
-	{
-		i->translate(direction, speed);
-	}
-	//if (collider_) collider_->set_world_position(collider_->get_origin() + transform.get_local_position());
-
+	update_transform(&XMMatrixIdentity());
 }
 
 void GameObject::rotate_fixed(const float pitch, const float yaw, const float roll)
@@ -141,10 +134,12 @@ bool GameObject::check_collision(GameObject* target)
 	if (target == this || collider_ == nullptr) return false;
 
 	is_grounded_ = false;
-	if (model_ && target->get_model())
+	if (collider_ && target->get_collider())
 	{
 		if (collider_->check_collision(target->get_collider()))
 		{
+			auto n = typeid(*collider_).name();
+			auto m = typeid(*target->get_collider()).name();
 			set_grounded(target->transform.get_local_position().y - push_back_speed < transform.get_local_position().y);
 			OutputDebugString(name_);
 			OutputDebugString("\n");
@@ -209,6 +204,28 @@ void GameObject::update_collision_tree(XMMATRIX* world, const float scale)
 	for (auto& i : children_)
 	{
 		i->update_collision_tree(&local_world, scale);
+	}
+}
+
+void GameObject::update_constant_buffer_time_scaled(const XMMATRIX world_view_projection,
+	const XMMATRIX view_projection, const XMVECTOR directional_light_vector, const XMVECTOR directional_light_color,
+	const XMVECTOR ambient_light_color, const float game_time) 
+{
+	const auto local_world = XMMatrixTranspose(transform.get_local_world()) * world_view_projection;
+	transform.set_world(local_world);
+
+	if (model_)
+	{
+		model_->update_constant_buffer_time_scaled(local_world,
+			view_projection, directional_light_vector, directional_light_color,
+			ambient_light_color, game_time);
+	}
+
+	for (auto& i : children_)
+	{
+		i->update_constant_buffer_time_scaled(local_world,
+			view_projection, directional_light_vector, directional_light_color,
+			ambient_light_color, game_time);
 	}
 }
 

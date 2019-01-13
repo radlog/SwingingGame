@@ -26,6 +26,8 @@ Player::Player(const LPCSTR name, const bool fps) : Character(name)
 	top_down_camera_->transform = Transform(XMVectorSplatOne(), XMQuaternionIdentity(), XMVectorSet(0, 100, 0, 0));
 	top_down_camera_->rotate(XMConvertToRadians(90), 0, 0);
 	is_kinetic_ = true;
+	collider_ = new SphereCollider(transform.get_local_position(), 0.1f);
+
 }
 
 Player::Player(LPCSTR name, Model* model, const Transform transform, const bool fps) : Character(name, model, transform)

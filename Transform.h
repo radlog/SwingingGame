@@ -26,7 +26,7 @@ public:
 	XMMATRIX get_world();
 	//void set_world();
 	XMVECTOR get_local_position() const;
-	void set_world(const XMMATRIX& local_world);
+	void set_world(XMMATRIX local_world);
 	XMMATRIX get_local_world() const;
 	void set_world_position(XMVECTOR position);
 

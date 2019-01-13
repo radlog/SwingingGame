@@ -39,13 +39,11 @@ bool MeshCollider::check_collision(Collider* col)
 
 bool MeshCollider::mesh_to_mesh_collision(MeshCollider* col)
 {
-
 	return false;
 }
 
 bool MeshCollider::sphere_to_mesh_collision(SphereCollider* col)
 {
-
 	return false;
 }
 

@@ -4,7 +4,10 @@
 
 Model::Model(const LPCSTR filename, const CB_STATE state, const COLLIDER_TYPE col_type) : BaseModel(filename, state)
 {
-	calculate_origin();
+	//calculate_origin();
+	origin_ = XMVectorZero();
+	//min_outer_vector_ = XMVectorSplatOne();
+	//max_outer_vector_ = XMVectorSet(2,2,2,0);
 	switch (col_type)
 	{
 		case SPHERE: initialize_sphere_collider();  break;
@@ -15,7 +18,10 @@ Model::Model(const LPCSTR filename, const CB_STATE state, const COLLIDER_TYPE co
 
 Model::Model(const CB_STATE state, const COLLIDER_TYPE col_type) : BaseModel(state)
 {
-	calculate_origin();
+	//calculate_origin();
+	origin_ = XMVectorZero();
+	//min_outer_vector_ = XMVectorSplatOne();
+	//max_outer_vector_ = XMVectorSet(2, 2, 2, 0);
 	switch(col_type)
 	{
 		case SPHERE: initialize_sphere_collider();  break;
@@ -50,16 +56,15 @@ Collider* Model::get_collider() const
 
 void Model::initialize_sphere_collider()
 {
-	//calculate_origin();
 	float radius = 0;
 	if(obj_file_model_ != nullptr) radius = dist(min_outer_vector_, max_outer_vector_);
 	else radius = 1.0f;
+	radius = 1.0f;
 	collider_ = new SphereCollider(origin_, radius);
 }
 
 void Model::initialize_mesh_collider()
 {
-	//calculate_origin();
 	if (obj_file_model_ == nullptr) return;
 
 	collider_ = new MeshCollider(origin_, obj_file_model_->get_vertex_positions());

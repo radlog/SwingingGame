@@ -97,7 +97,7 @@ XMVECTOR Transform::get_local_position() const
 	return local_position_;
 }
 
-void Transform::set_world(const XMMATRIX& local_world)
+void Transform::set_world(const XMMATRIX local_world)
 {
 	world_ = local_world;
 	calculate_world_transform();

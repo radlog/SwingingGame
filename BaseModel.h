@@ -17,8 +17,8 @@ enum CB_STATE
 class BaseModel
 {
 public:
-	explicit BaseModel(LPCSTR filename, CB_STATE state = CB_STATE_SIMPLE);
-	explicit BaseModel(CB_STATE state = CB_STATE_SIMPLE);
+	explicit BaseModel(LPCSTR filename, CB_STATE state = CB_STATE_TIME_SCALED);
+	explicit BaseModel(CB_STATE state = CB_STATE_TIME_SCALED);
 	virtual ~BaseModel();
 
 	HRESULT load_obj_model(LPCSTR filename);
@@ -50,7 +50,7 @@ protected:
 	CONSTANT_BUFFER_LIGHTED cb_lighted_;
 	CONSTANT_BUFFER_TIME_SCALED cb_time_scaled_lighted_;
 	CONSTANT_BUFFER_FULL cb_full_;
-	string shader_file_ = "default_shader.hlsl";
+	string shader_file_ = "lighted_shader.hlsl";
 	string objfile_;
 
 	D3Dfw* dx_handle_; // directX instance handle
