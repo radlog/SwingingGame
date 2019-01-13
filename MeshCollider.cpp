@@ -6,13 +6,22 @@ MeshCollider::MeshCollider()
 {
 }
 
-MeshCollider::MeshCollider(vector<XMVECTOR> vertex_positions)
+MeshCollider::MeshCollider(XMVECTOR origin, vector<XMVECTOR> vertex_positions) : triangles_(nullptr)
 {
+	origin_ = origin;
+	world_ = origin;
 	triangles_ = new vector<Triangle>();
-	for (auto i = 0; i < vertex_positions.size() - 3; i+= 3)
+	for (auto i = 0; i < vertex_positions.size() - 2; i+= 3)
 	{
 		triangles_->push_back(Triangle{ vertex_positions[i], vertex_positions[i + 1] , vertex_positions[i + 2] });
 	}
+}
+
+MeshCollider::MeshCollider(Plane* plane)
+{
+	origin_ = XMVectorZero();
+	world_ = origin_;
+	//plane_ = plane;
 }
 
 
@@ -30,10 +39,17 @@ bool MeshCollider::check_collision(Collider* col)
 
 bool MeshCollider::mesh_to_mesh_collision(MeshCollider* col)
 {
+
 	return false;
 }
 
 bool MeshCollider::sphere_to_mesh_collision(SphereCollider* col)
 {
+
 	return false;
+}
+
+vector<Triangle>* MeshCollider::get_triangles()
+{
+	return triangles_;
 }

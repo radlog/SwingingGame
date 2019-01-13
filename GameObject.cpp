@@ -143,10 +143,13 @@ bool GameObject::check_collision(GameObject* target)
 	is_grounded_ = false;
 	if (model_ && target->get_model())
 	{
-
 		if (collider_->check_collision(target->get_collider()))
 		{
-			set_grounded(target->transform.get_local_position().y < transform.get_local_position().y);
+			set_grounded(target->transform.get_local_position().y - push_back_speed < transform.get_local_position().y);
+			OutputDebugString(name_);
+			OutputDebugString("\n");
+			OutputDebugString(target->get_name());
+			OutputDebugString("\n");
 			return true;
 		}
 

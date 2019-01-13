@@ -23,6 +23,11 @@ void Collider::set_world_position(const XMVECTOR world)
 	world_ = world;
 }
 
+XMVECTOR Collider::get_world_position() 
+{
+	return world_;
+}
+
 XMVECTOR Collider::get_origin() const
 {
 	return origin_;

@@ -18,6 +18,7 @@ GameObject scene_root;
 
 vector<GameObject> gameobjects;
 
+GameObject* floor_object;
 GameObject* cube_one;
 GameObject* cube_two;
 GameObject* cube_three;
@@ -34,7 +35,7 @@ Player player;
 GameObject test;
 GameObject lava;
 LavaFloor lava_floor;
-Floor test_floor;
+Floor *floor_model;
 Camera *camera;
 const int upper_platform_count = 100; // 3000 * 3312 vertices seems to slow down the process when rotating -> consider optimizations for rotations
 const int middle_platform_count = 100;
@@ -141,9 +142,8 @@ void render_frame(Camera *camera)
 
 	scene_root.draw(view_projection);
 	player.draw(view_projection);
-
-	test_floor.draw(view_projection);
-	enemy.draw(view_projection);
+	//test_floor.draw(view_projection);
+	//enemy.draw(view_projection);
 
 	//DebugUTIL(timer->deltaTime());
 	//debug_util(timer->get_fps());
@@ -233,7 +233,7 @@ void load_content()
 	camera = new Camera();
 	timer = new VGTime();
 	skybox = Skybox("assets/purple_nebular.dds");
-	test_floor = Floor("assets/crate.jpg");
+	floor_model = new Floor();
 
 	UINT numverts;
 	POS_TEX_NORM_COL_VERTEX* platform_placeholder = Geometry::cube_ptnc(&numverts);
@@ -242,7 +242,7 @@ void load_content()
 	platform->load_texture("assets/FloatingIsland_DIFFUSE.png");
 	//auto *cube = new GeoCube("",TEXTURED_COLORED_LIGHTED,CB_STATE_FULL);
 	auto *cube = new ObjCube();
-	
+	auto *pl_cube = new GeoCube();
 	//cube->set_shader_file("lighted_shader.hlsl");
 
 
@@ -251,6 +251,8 @@ void load_content()
 
 
 	//player = Player("player1", cube, Transform(XMVectorSplatOne(), XMQuaternionIdentity(), XMVectorSet(0, 0, 0, 0)));
+
+	floor_object = new GameObject("floor", floor_model, Transform());
 
 
 	cube_one = new GameObject("cube_one", cube, Transform(scale, rotation, XMVectorSet(-10, 0, 0.0f, 0.0f)));
@@ -273,18 +275,19 @@ void load_content()
 	//cube_one.add_child(&cube_three);
 	//cube_three.add_child(&cube_four);
 
-	player = Player("player1", cube);
-	player.transform = Transform(XMVectorSplatOne(), XMQuaternionIdentity(), XMVectorSet(0, 10, 0, 0));
+	player = Player("player1", pl_cube);
+	player.transform = Transform(XMVectorSplatOne(), XMQuaternionIdentity(), XMVectorSet(0, 1, 0, 0));
 	player.update(timer);
 
-	cube_one->add_child(cube_two);
+	//cube_one->add_child(cube_two);
 
 	scene_root = GameObject("scene_root");
 	scene_root.set_kinetic(true);
 	scene_root.add_child(&player);
-	scene_root.add_child(cube_one);
-	scene_root.add_child(cube_two);
-	scene_root.add_child(cube_four);
+	scene_root.add_child(floor_object);
+	//scene_root.add_child(cube_one);
+	//scene_root.add_child(cube_two);
+	//scene_root.add_child(cube_four);
 
 	//scene_root.add_child(&test_floor);
 	enemy = Enemy("enemy", model_test, Transform(scale, rotation, XMVectorSet(0, 10, 0.0f, 0.0f)));

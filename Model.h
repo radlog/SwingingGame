@@ -33,6 +33,6 @@ protected:
 	Collider *collider_;
 
 	void initialize_sphere_collider();
-	void initialize_mesh_collider();
+	virtual void initialize_mesh_collider();
 };
 

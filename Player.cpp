@@ -1,6 +1,6 @@
 #include "Player.h"
 
-
+const XMVECTOR camera_offset = XMVectorSet(0,30,0,0);
 
 
 Player::Player()
@@ -18,7 +18,8 @@ Player::Player(const LPCSTR name, const bool fps) : Character(name)
 	if (fps)
 	{
 		fps_camera_ = new Camera();
-		fps_camera_->transform = transform;
+		fps_camera_->transform = Transform(transform.get_local_scale(),XMQuaternionIdentity(), transform.get_local_position() + camera_offset);
+		fps_camera_->translate(Transform::world_up, 3);
 		children_.push_back(fps_camera_);
 	}
 	top_down_camera_ = new Camera();
@@ -61,6 +62,7 @@ void Player::update_camera() const
 {
 	// TODO:: update map transform optionally
 	fps_camera_->transform = transform;
+	//fps_camera_->transform.set_world_position(transform.get_local_position() + camera_offset);
 }
 
 

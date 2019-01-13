@@ -3,9 +3,9 @@
 
 
 
-Floor::Floor()
-{
-}
+//Floor::Floor()
+//{
+//}
 
 
 Floor::~Floor()
@@ -18,29 +18,39 @@ Floor::~Floor()
  * \param tiles 
  * \param scale 
  */
-Floor::Floor(LPCSTR texture, int tiles, float scale) : GameObject(texture)
+Floor::Floor(const int tiles, const float scale)
 {
 	this->tiles_ = tiles;
 	this->scale_ = scale;
-
-	model_ = new Model(CB_STATE_SIMPLE, MESH);
+	transform_ = new Transform(XMVectorSet(scale_, 1.0f, scale_, 0.0f), XMQuaternionIdentity(), XMVectorSet((-tiles_ * scale_) / 2, -10.0f, (-tiles_ * scale_) / 2, 0.0f));
 	Geometry::plane_ittn(&plane_vertices_, &plane_indices_, tiles);
-	model_->load_geo_model(plane_vertices_, (tiles + 1)*(tiles + 1), sizeof(POS_TEX_NORM_COL_VERTEX), plane_indices_, tiles * tiles * 6);
-	model_->load_texture();
+	load_geo_model(plane_vertices_, (tiles + 1)*(tiles + 1), sizeof(POS_TEX_NORM_COL_VERTEX), plane_indices_, tiles * tiles * 6);
+	load_texture();
 
-	transform = Transform(XMVectorSet(scale, 1.0f, scale, 0.0f), XMQuaternionIdentity(), XMVectorSet((-tiles * scale) / 2, -10.0f, (-tiles * scale) / 2, 0.0f));
-
+	Floor::initialize_mesh_collider();
 	
 }
 
-//Plane Floor::get_collider()
-//{
-//	const auto local_position = transform.get_local_position();
-//	const auto v1 = XMLoadFloat3(&plane_vertices_[0].pos) + local_position;
-//	const auto v2 = XMLoadFloat3(&plane_vertices_[tiles_ + 1].pos) + local_position;
-//	const auto v3 = XMLoadFloat3(&plane_vertices_[(tiles_ + 1) * (tiles_ + 1)].pos) + local_position;
-//	return plane_collider_ = get_plane(v1, v2, v3);
-//}
+Transform* Floor::get_transform() const
+{
+	return transform_;
+}
+
+
+
+void Floor::initialize_mesh_collider()
+{
+	
+	const auto local_position = transform_->get_local_position();
+
+	
+
+	const auto v1 = XMLoadFloat3(&plane_vertices_[0].pos);// +local_position;
+	const auto v2 = XMLoadFloat3(&plane_vertices_[tiles_ ].pos);// +local_position;
+	const auto v3 = XMLoadFloat3(&plane_vertices_[(tiles_ + 1) * (tiles_ + 1) -1].pos);// +local_position;
+	collider_ = new MeshCollider(origin_,vector<XMVECTOR> {v1,v2,v3});
+}
+
 
 
 

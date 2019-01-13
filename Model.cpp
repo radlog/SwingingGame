@@ -8,7 +8,7 @@ Model::Model(const LPCSTR filename, const CB_STATE state, const COLLIDER_TYPE co
 	switch (col_type)
 	{
 		case SPHERE: initialize_sphere_collider();  break;
-		case MESH: initialize_mesh_collider(); break;
+		case MESH: Model::initialize_mesh_collider(); break;
 		default: break;
 	}
 }
@@ -19,7 +19,7 @@ Model::Model(const CB_STATE state, const COLLIDER_TYPE col_type) : BaseModel(sta
 	switch(col_type)
 	{
 		case SPHERE: initialize_sphere_collider();  break;
-		case MESH: initialize_mesh_collider(); break;		
+		case MESH: Model::initialize_mesh_collider(); break;		
 		default: break;
 	}
 }
@@ -62,8 +62,6 @@ void Model::initialize_mesh_collider()
 	//calculate_origin();
 	if (obj_file_model_ == nullptr) return;
 
-	//TODO:: fix the error that appears when MeshCollider is created (the program breaks on different points randomly and error message is mostly Critical error detected c0000374), sometimes even the mouse or keyboard doesn't respond anymore
-	
-	collider_ = new MeshCollider(obj_file_model_->get_vertex_positions());
+	collider_ = new MeshCollider(origin_, obj_file_model_->get_vertex_positions());
 }
 
