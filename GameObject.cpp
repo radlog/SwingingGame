@@ -10,7 +10,7 @@ GameObject::GameObject()
 {
 }
 
-GameObject::GameObject(const LPCSTR name, const TAG tag) : model_(nullptr), collider_(nullptr), parent_(nullptr)
+GameObject::GameObject(const LPCSTR name, const TAG tag) : model_(nullptr), sphere_collider_(nullptr), parent_(nullptr), mesh_collider_(nullptr)
 {
 	dx_handle_ = D3Dfw::get_instance();
 	device_ = dx_handle_->get_device();
@@ -24,25 +24,24 @@ GameObject::GameObject(const LPCSTR name, Model *model, const Transform transfor
 	this->transform = transform;
 	model_ = model;
 
-	const auto col = model_->get_collider();
-	if (col != nullptr) {
-		auto col_id = typeid(*col).name();
-		if (col_id == typeid(SphereCollider).name())
-		{
-			const auto s = sizeof(SphereCollider);
-			malloc(s);
-			collider_ = new Collider();
-			memcpy(collider_, model_->get_collider(), s);
-		}
-		else
-		{
-			const auto s = sizeof(MeshCollider);
-			malloc(s);
-			collider_ = new Collider();
-			memcpy(collider_, model_->get_collider(), s);
-		}
+	const auto sc = model->get_bounding_sphere();
+	const auto mc = model->get_mesh_collider();
+	if (sc != nullptr)
+	{
+		const auto s = sizeof(SphereCollider);
+		malloc(s);
+		sphere_collider_ = new SphereCollider();
+		memcpy(sphere_collider_, model_->get_bounding_sphere(), s);
+		sphere_collider_->set_world_position(sphere_collider_->get_origin() + transform.get_local_position());
 	}
-	if (collider_) collider_->set_world_position(collider_->get_origin() + transform.get_local_position());
+	if (mc != nullptr)
+	{
+		const auto s = sizeof(MeshCollider);
+		malloc(s);
+		mesh_collider_ = new MeshCollider();
+		memcpy(mesh_collider_, model_->get_mesh_collider(), s);
+		mesh_collider_->set_world_position(mesh_collider_->get_origin() + transform.get_local_position());
+	}
 }
 
 void GameObject::update(VGTime *timer)
@@ -58,7 +57,7 @@ void GameObject::update(VGTime *timer)
 	}
 
 	//update_transform(&XMMatrixIdentity());
-	update_collision_tree(&XMMatrixIdentity(), transform.get_world_scale().x);
+	//update_collision_tree(&XMMatrixIdentity(), transform.get_world_scale().x);
 }
 
 void GameObject::draw(const XMMATRIX view_projection, const bool use_default_cb, const D3D11_PRIMITIVE_TOPOLOGY mode)
@@ -78,11 +77,11 @@ void GameObject::translate(const XMVECTOR direction, const float speed)
 
 	if (parent_)
 	{
-		parent_->update_collision_tree(&identity, parent_->transform.get_world_scale().x);
+		parent_->update_collision_tree(&identity, 1.0f);
 
 		if (check_collision(parent_))
 		{
-			transform.translate(-direction, speed * push_back_speed);			
+			transform.translate(-direction, speed * push_back_speed);
 		}
 	}
 	update_transform(&XMMatrixIdentity());
@@ -97,7 +96,7 @@ void GameObject::rotate_fixed(const float pitch, const float yaw, const float ro
 	}
 }
 
-void GameObject::rotate(float pitch, float yaw, float roll)
+void GameObject::rotate(const float pitch, const float yaw, const float roll)
 {
 	transform.rotate(pitch, yaw, roll);
 	for (auto& i : children_)
@@ -123,32 +122,41 @@ bool GameObject::get_kinetic() const
 }
 
 
-Collider* GameObject::get_collider()
+SphereCollider* GameObject::get_sphere_collider()
 {
-	return collider_;
+	return sphere_collider_;
+}
+
+MeshCollider* GameObject::get_mesh_collider()
+{
+	return mesh_collider_;
 }
 
 bool GameObject::check_collision(GameObject* target)
 {
+	//if (tag_ == GROUND)
+	//{
 
-	if (target == this || collider_ == nullptr) return false;
+	//}
+	if (target == this || sphere_collider_ == nullptr) return false;
 
-	is_grounded_ = false;
-	if (collider_ && target->get_collider())
+	//is_grounded_ = false;
+	if (sphere_collider_ && target->get_sphere_collider())
 	{
-		if (collider_->check_collision(target->get_collider()))
+		if (sphere_collider_->check_collision(target->get_sphere_collider()))
 		{
-			auto n = typeid(*collider_).name();
-			auto m = typeid(*target->get_collider()).name();
-			set_grounded(target->transform.get_local_position().y - push_back_speed < transform.get_local_position().y);
-			OutputDebugString(name_);
-			OutputDebugString("\n");
-			OutputDebugString(target->get_name());
-			OutputDebugString("\n");
-			return true;
+			if (target->get_mesh_collider() == nullptr)
+				return false;
+			if (sphere_collider_->check_collision(target->get_mesh_collider()))
+			{
+				set_grounded(target->transform.get_local_position().y - push_back_speed < transform.get_local_position().y);
+				OutputDebugString(name_);
+				OutputDebugString("\n");
+				OutputDebugString(target->get_name());
+				OutputDebugString("\n");
+				return true;
+			}
 		}
-
-
 	}
 
 	for (auto& i : target->get_children())
@@ -194,12 +202,12 @@ void GameObject::update_transform(XMMATRIX *world)
 
 void GameObject::update_collision_tree(XMMATRIX* world, const float scale)
 {
-	transform.set_world_scale(transform.get_local_scale() * scale);
+	//transform.set_world_scale(transform.get_local_scale() * scale);
 	auto local_world = transform.get_world();
 	local_world *= *world;
 
-	if (collider_) collider_->set_world_position(collider_->get_origin() + transform.get_local_position());
-
+	if (sphere_collider_) sphere_collider_->set_world_position(sphere_collider_->get_origin() + transform.get_local_position());
+	if (mesh_collider_) mesh_collider_->set_world_position(mesh_collider_->get_origin() + transform.get_local_position());
 
 	for (auto& i : children_)
 	{
@@ -209,7 +217,7 @@ void GameObject::update_collision_tree(XMMATRIX* world, const float scale)
 
 void GameObject::update_constant_buffer_time_scaled(const XMMATRIX world_view_projection,
 	const XMMATRIX view_projection, const XMVECTOR directional_light_vector, const XMVECTOR directional_light_color,
-	const XMVECTOR ambient_light_color, const float game_time) 
+	const XMVECTOR ambient_light_color, const float game_time)
 {
 	const auto local_world = XMMatrixTranspose(transform.get_local_world()) * world_view_projection;
 	transform.set_world(local_world);
@@ -293,15 +301,6 @@ bool GameObject::get_grounded() const
 {
 	return is_grounded_;
 }
-
-
-void GameObject::set_collider(Collider *col)
-{
-	collider_ = col;
-}
-
-
-
 
 void GameObject::cleanup()
 {

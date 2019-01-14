@@ -1,5 +1,6 @@
 #include "Input.h"
 #include "Player.h"
+#include "Physics3D.h"
 
 
 Input::Input()
@@ -102,15 +103,15 @@ HRESULT Input::update_input(GameObject* actor, VGTime* game_time)
 	}
 
 
+	const auto actor_type = typeid(*actor).name();
+	const auto player_type = typeid(Player).name();
 	auto direction = XMVectorZero();
 
 	if (is_key_released(DIK_F)) locked_ = !locked_;
 
-	// TODO: spawn gameobject
-	//if (IsKeyPressed(DIK_P)) GameObject();
-	if (fps_) mouse_moved(actor, game_time);
+	if (fps_) mouse_moved(actor, game_time); // check mouse movement and rotate in adequate direction
 
-	if (is_key_pressed(DIK_H)) fly_mode_ = !fly_mode_;
+	if (is_key_pressed(DIK_H)) fly_mode_ = !fly_mode_; // toggle fly mode
 
 	if (is_key_pressed(DIK_LSHIFT))
 	{
@@ -118,19 +119,18 @@ HRESULT Input::update_input(GameObject* actor, VGTime* game_time)
 		else if (typeid(actor).name() == typeid(Player).name()) static_cast<Player*>(actor)->crouch(game_time);
 	}
 	auto name = typeid(*actor).name();
-	if (is_key_pressed(DIK_SPACE))
+	if (is_key_pressed(DIK_SPACE) )
 	{
 		if (fly_mode_) direction = Transform::world_up;
-		else if (typeid(*actor).name() == typeid(Player).name())
-		{
-			static_cast<Player*>(actor)->set_state(AIRBORNE);
-		}
+	}
+	if (is_key_pressed(DIK_SPACE) || mouse_state_.lZ > 0)
+	{
+		actor->set_grounded(false);
 	}
 
-	if (typeid(*actor).name() == typeid(Player).name())
+	if (actor_type == player_type)
 	{
-		if (fly_mode_) static_cast<Player*>(actor)->set_state(STANDING);
-		if (static_cast<Player*>(actor)->get_state() == AIRBORNE)
+		if (!actor->get_grounded())
 			static_cast<Player*>(actor)->jump(game_time);
 	}
 
@@ -149,37 +149,42 @@ HRESULT Input::update_input(GameObject* actor, VGTime* game_time)
 		else direction += -actor->transform.get_local_forward();
 	}
 
-	if (is_key_pressed(DIK_LEFT)) actor->rotate_fixed(0, static_cast<float>(-game_time->delta_time() * rot_speed_ / 10), 0);
-	if (is_key_pressed(DIK_RIGHT)) actor->rotate_fixed(0, static_cast<float>(game_time->delta_time() * rot_speed_ / 10), 0);
-	if (is_key_pressed(DIK_UP)) actor->rotate_fixed(static_cast<float>(-game_time->delta_time() * rot_speed_ / 10), 0, 0);
-	if (is_key_pressed(DIK_DOWN)) actor->rotate_fixed(static_cast<float>(game_time->delta_time() * rot_speed_ / 10), 0, 0);
+	if (is_key_pressed(DIK_LEFT)) { actor->rotate_fixed(0, static_cast<float>(-game_time->delta_time() * rot_speed_), 0); 	OutputDebugStringA("left arrow : ");  OutputDebugStringA(std::to_string((-game_time->delta_time() * rot_speed_)).c_str()); OutputDebugStringA("\n"); }
+	if (is_key_pressed(DIK_RIGHT)) { actor->rotate_fixed(0, static_cast<float>(game_time->delta_time() * rot_speed_), 0); OutputDebugStringA("left arrow : "); OutputDebugStringA(std::to_string((game_time->delta_time() * rot_speed_)).c_str()); 	OutputDebugStringA("\n"); }
+	if (is_key_pressed(DIK_UP)) actor->rotate_fixed(static_cast<float>(-game_time->delta_time() * rot_speed_), 0, 0);
+	if (is_key_pressed(DIK_DOWN)) actor->rotate_fixed(static_cast<float>(game_time->delta_time() * rot_speed_), 0, 0);
+
+
 
 	if (direction.x != 0 || direction.y != 0 || direction.z != 0)
 		actor->translate(direction, game_time->delta_time() * move_speed_);
-	//if (is_key_pressed(DIK_A)) actor->move_left(game_time->delta_time() * move_speed_);
-	//if (is_key_pressed(DIK_D)) actor->move_right(game_time->delta_time() * move_speed_);
-	//if (is_key_pressed(DIK_W)) actor->move_horizontal_forward(game_time->delta_time() * move_speed_);
-	//if (is_key_pressed(DIK_S)) actor->move_horizontal_backward(game_time->delta_time() * move_speed_);
-
-
-	//if (is_key_pressed(DIK_LEFT)) actor->rotate_fixed(0, static_cast<float>(-game_time->delta_time() * rot_speed_ /10), 0);
-	//if (is_key_pressed(DIK_RIGHT)) actor->rotate_fixed(0, static_cast<float>(game_time->delta_time() * rot_speed_/10), 0);
-	//if (is_key_pressed(DIK_UP)) actor->rotate_fixed(static_cast<float>(-game_time->delta_time() * rot_speed_/10), 0, 0);
-	//if (is_key_pressed(DIK_DOWN)) actor->rotate_fixed(static_cast<float>(game_time->delta_time() * rot_speed_/10), 0, 0);
 
 
 
+	//SetCursorPos(mouse_x_, mouse_x_);
 	return S_OK;
 }
 
 void Input::mouse_moved(GameObject* actor, VGTime* game_time)
 {
-	actor->rotate_fixed(game_time->delta_time() * rot_speed_ * double(mouse_state_.lY), game_time->delta_time() * rot_speed_ * double(mouse_state_.lX), 0);
+	const auto speed_x = static_cast<float> (game_time->delta_time() * rot_speed_ * static_cast<float> (mouse_state_.lY));
+	const auto speed_y = static_cast<float>(game_time->delta_time() * rot_speed_ * static_cast<float> (mouse_state_.lX));
+
+
+	//OutputDebugStringA("mouse y : ");
+	//OutputDebugStringA(std::to_string(speed_x).c_str());
+	//OutputDebugStringA("\n");
+	//OutputDebugStringA("mouse x : ");
+	//OutputDebugStringA(std::to_string(speed_y).c_str());
+	//OutputDebugStringA("\n");
+	actor->rotate_fixed(speed_x, speed_y, 0);
+	//if (speed_x != 0) actor->rotate_fixed(speed_x, 0, 0);
+	//if (speed_y != 0) actor->rotate_fixed(0, speed_y, 0);
 
 	mouse_x_ = mouse_x_center_;
 	mouse_y_ = mouse_y_center_;
 
-	SetCursorPos(mouse_x_, mouse_x_);
+	SetCursorPos(0, 0);
 }
 
 bool Input::is_key_pressed(const unsigned char di_keycode)

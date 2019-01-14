@@ -15,34 +15,13 @@ Player::~Player()
 
 Player::Player(const LPCSTR name, const bool fps) : Character(name)
 {
-	if (fps)
-	{
-		fps_camera_ = new Camera();
-		fps_camera_->transform = Transform(transform.get_local_scale(),XMQuaternionIdentity(), transform.get_local_position() + camera_offset);
-		fps_camera_->translate(Transform::world_up, 3);
-		children_.push_back(fps_camera_);
-	}
-	top_down_camera_ = new Camera();
-	top_down_camera_->transform = Transform(XMVectorSplatOne(), XMQuaternionIdentity(), XMVectorSet(0, 100, 0, 0));
-	top_down_camera_->rotate(XMConvertToRadians(90), 0, 0);
-	is_kinetic_ = true;
-	collider_ = new SphereCollider(transform.get_local_position(), 0.1f);
-
+	init_cameras(fps);
 }
 
 Player::Player(LPCSTR name, Model* model, const Transform transform, const bool fps) : Character(name, model, transform)
 {
 	if (model == nullptr) model_ = new Model("assets/crate.jpg"); // 
-	if (fps)
-	{
-		fps_camera_ = new Camera();
-		fps_camera_->transform = transform;
-		children_.push_back(fps_camera_);
-	}
-	top_down_camera_ = new Camera();
-	top_down_camera_->transform = Transform(XMVectorSplatOne(), XMQuaternionIdentity(), XMVectorSet(0, 100, 0, 0));
-	top_down_camera_->rotate(XMConvertToRadians(90), 0, 0);
-	is_kinetic_ = true;
+	init_cameras(fps);
 }
 
 
@@ -54,7 +33,7 @@ void Player::update_input(VGTime *timer)
 
 
 void Player::update(VGTime *timer) {
-	GameObject::update(timer);
+	Character::update(timer);
 	update_input(timer);
 	update_camera();
 }
@@ -76,6 +55,21 @@ Camera* Player::get_fps_camera() const
 Camera* Player::get_top_down_camera() const
 {
 	return top_down_camera_;
+}
+
+void Player::init_cameras(bool fps)
+{
+	if (fps)
+	{
+		fps_camera_ = new Camera();
+		fps_camera_->transform = transform;
+		children_.push_back(fps_camera_);
+	}
+	top_down_camera_ = new Camera();
+	top_down_camera_->transform = Transform(XMVectorSplatOne(), XMQuaternionIdentity(), XMVectorSet(0, 100, 0, 0));
+	top_down_camera_->rotate(XMConvertToRadians(90), 0, 0);
+	is_kinetic_ = true;
+	sphere_collider_ = new SphereCollider(transform.get_local_position(), 0.5f);
 }
 
 

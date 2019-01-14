@@ -8,7 +8,7 @@ ObjCube::~ObjCube()
 {
 }
 
-ObjCube::ObjCube(const CB_STATE state, const COLLIDER_TYPE col_type) : Model(cube_file, state, col_type)
+ObjCube::ObjCube(const CB_STATE state) : Model(cube_file, state)
 {
 
 }

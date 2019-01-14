@@ -99,7 +99,7 @@ HRESULT BaseModel::load_geo_model(void* vertices, const UINT num_verts, const UI
 // DRAW
 
 void BaseModel::draw(const XMMATRIX view_projection, const bool use_simple_cb, const D3D11_PRIMITIVE_TOPOLOGY mode)
-{
+{	
 	// use the simple constant buffer, if no other was specifically defined
 	if (use_simple_cb) {
 		cb_simple_.world_view_projection = view_projection;
@@ -115,8 +115,8 @@ void BaseModel::draw(const XMMATRIX view_projection, const bool use_simple_cb, c
 	immediate_context_->VSSetConstantBuffers(0, 1, &constant_buffer_);
 
 	// set the shader objects for the pixel and vertex shader as actives
-	immediate_context_->VSSetShader(v_shader_, 0, 0);
-	immediate_context_->PSSetShader(p_shader_, 0, 0);
+	immediate_context_->VSSetShader(v_shader_, nullptr, 0);
+	immediate_context_->PSSetShader(p_shader_, nullptr, 0);
 
 	// set a sampler and a texture as the standard way to draw
 	immediate_context_->PSSetSamplers(0, 1, &sampler0_);
@@ -158,9 +158,13 @@ void BaseModel::draw(const XMMATRIX view_projection, const bool use_simple_cb, c
 HRESULT BaseModel::compile_shaders()
 {
 	HRESULT hr = S_OK;
+	
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// load and compile pixel and vertex shaders - use vs_5_0 to target DX11 hardware only
 	ID3DBlob *error;
+
+	//D3DReadFileToBlob(shader_file_, &ps_);
+	//D3DX11PreprocessShaderFromFile(shader_file_.c_str(),nullptr,nullptr,)
 	hr = D3DX11CompileFromFile(shader_file_.c_str(), nullptr, nullptr, "VShader", "vs_4_0", 0, 0, nullptr, &vs_, &error, nullptr);
 	hr = D3DX11CompileFromFile(shader_file_.c_str(), nullptr, nullptr, "PShader", "ps_4_0", 0, 0, nullptr, &ps_, &error, nullptr);
 
@@ -198,7 +202,7 @@ void BaseModel::set_shader_file(LPCSTR shader_file)
 {
 	this->shader_file_ = shader_file;
 	compile_shaders();
-	//set_default_input_layout();
+	set_default_input_layout();
 }
 
 HRESULT BaseModel::create_default_sampler_for_texture()
@@ -329,16 +333,16 @@ void BaseModel::calculate_origin()
 		for (auto j = i; j < positions.size(); j++)
 		{
 			const auto b = positions[j];
-			if (pow(b.x - a.x, 2) + pow(b.y - a.y, 2) + pow(b.z - a.z, 2) > distance)
+			if (dist(a,b) > distance)
 			{
 				min_outer_vector_ = b;
 				max_outer_vector_ = a;
-				distance = pow(b.x - a.x, 2) + pow(b.y - a.y, 2) + pow(b.z - a.z, 2);
+				distance = dist(a,b);
 			}
 		}
 	}
 
-	origin_ = min_outer_vector_ - max_outer_vector_;
+	origin_ = (max_outer_vector_ + min_outer_vector_ ) / 2;
 }
 
 //void Model::initialize_sphere_collider()

@@ -100,7 +100,7 @@ public:
 	 * \return character dead
 	 */
 	virtual bool inflict(float dmg);
-
+	void update(VGTime *timer)override;
 	void crouch(VGTime *timer);
 	void jump(VGTime *timer);
 protected:

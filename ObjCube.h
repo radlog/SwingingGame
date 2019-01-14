@@ -11,7 +11,7 @@ class ObjCube :
 public:
 	~ObjCube();
 
-	explicit ObjCube(CB_STATE state = CB_STATE_TIME_SCALED, COLLIDER_TYPE col_type = MESH);
+	explicit ObjCube(CB_STATE state = CB_STATE_TIME_SCALED);
 
 private:
 

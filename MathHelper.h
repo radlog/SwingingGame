@@ -79,7 +79,7 @@ inline bool in_triangle(XMVECTOR *triangle_vector_a, XMVECTOR *triangle_vector_b
 	const auto n3 = dot(v3, v3_p);
 
 
-	auto result = sign(n1) == sign(n2) && sign(n1) == sign(n3) && sign(n2) == sign(n3);// || n1 >= 0 && n2 >= 0 && n3 >= 0;
+	auto result = sign(n1) == sign(n2) && sign(n1) == sign(n3) && sign(n2) == sign(n3) || n1 >= 0 && n2 >= 0 && n3 >= 0;
 
 	return result;
 }

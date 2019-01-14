@@ -17,6 +17,7 @@ public:
 
 	HRESULT update_input(GameObject* actor, VGTime* game_time); // updates all input and causes the given actor to move accordingly with deltaTime
 	void mouse_moved(GameObject* actor, VGTime* game_time); // tracks mouse movement and causes the given actor to move accordingly with deltaTime
+	void get_mouse_location(int& mouseX, int& mouseY) const;
 	bool is_key_pressed(unsigned char di_keycode); // determines whether given keycode was pressed
 	bool is_key_released(unsigned char di_keycode); // determines whether given keycode was released
 	void cleanup() const; // cleanup pointers to prevent memory leak
@@ -34,14 +35,14 @@ private:
 	DIMOUSESTATE mouse_state_; // mouse state tracking all necessary mouse events
 
 	const double jump_speed_ = 8.0f;
-	const double rot_speed_ = 10.0; // rotation look speed for mouse movement
+	const double rot_speed_ = 1.0; // rotation look speed for mouse movement
 	const double move_speed_ = 8.0; // movement speed
 
 	const long mouse_x_center_ = 480; // mouse x position of the screen center
 	const long mouse_y_center_ = 640; // mouse y position of the screen center
 
-	long mouse_x_ = mouse_x_center_; // current mouse x position
-	long mouse_y_ = mouse_y_center_; // current mouse y position
+	long mouse_x_ = 0; // current mouse x position
+	long mouse_y_ = 0; // current mouse y position
 
 	bool locked_ = true; // says whether to use the forward vector locked horizontally or not
 	bool fly_mode_ = false; // says whether player can use jump - even when he is in air - or not

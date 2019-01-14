@@ -27,6 +27,7 @@ Floor::Floor(const int tiles, const float scale)
 	load_geo_model(plane_vertices_, (tiles + 1)*(tiles + 1), sizeof(POS_TEX_NORM_COL_VERTEX), plane_indices_, tiles * tiles * 6);
 	load_texture();
 
+	Floor::initialize_sphere_collider();
 	Floor::initialize_mesh_collider();
 	
 }
@@ -36,6 +37,15 @@ Transform* Floor::get_transform() const
 	return transform_;
 }
 
+int Floor::get_tiles() const
+{
+	return tiles_;
+}
+
+float Floor::get_scale() const
+{
+	return scale_;
+}
 
 
 void Floor::initialize_mesh_collider()
@@ -45,7 +55,16 @@ void Floor::initialize_mesh_collider()
 	const auto v1 = XMLoadFloat3(&plane_vertices_[0].pos);// +local_position;
 	const auto v2 = XMLoadFloat3(&plane_vertices_[tiles_ ].pos);// +local_position;
 	const auto v3 = XMLoadFloat3(&plane_vertices_[(tiles_ + 1) * (tiles_ + 1) -1].pos);// +local_position;
-	collider_ = new MeshCollider(origin_,vector<XMVECTOR> {v1,v2,v3});
+	mesh_collider_ = new MeshCollider(origin_,vector<XMVECTOR> {v1,v2,v3});
+}
+
+void Floor::initialize_sphere_collider()
+{
+	float radius;
+	if (obj_file_model_ != nullptr) radius = dist(min_outer_vector_, max_outer_vector_) / 2;
+	else radius = 1.0f;
+	radius = radius * float(tiles_);
+	sphere_collider_ = new SphereCollider(origin_, radius);
 }
 
 

@@ -28,13 +28,15 @@ bool SphereCollider::sphere_to_mesh_collision(MeshCollider col) const
 {	
 	for (auto& i : *col.get_triangles())
 	{
-		XMVECTOR v1 = i.v1 + col.get_world_position();
+		// transform vertices to the correct position in world space
+		XMVECTOR v1 = i.v1 + col.get_world_position(); 
 		XMVECTOR v2 = i.v2 + col.get_world_position();
 		XMVECTOR v3 = i.v3 + col.get_world_position();
-		auto plane = get_plane(v1, v2, v3);
-		auto ray = XMVector4Normalize(plane.normal - world_);
+
+		auto plane = get_plane(v1, v2, v3); // get plane from vertices
+		auto ray = XMVector4Normalize(plane.normal * plane.offset - world_);
 		auto start_point = world_;
-		auto end_point = world_ + plane.normal * radius_;
+		auto end_point = world_ + ray * radius_ * 3;
 		if (plane_intersection(&plane, &start_point, &end_point))
 		{
 			auto point = ray_to_plane_intersection_point(&plane, &ray, &start_point);

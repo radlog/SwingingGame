@@ -84,6 +84,6 @@ float4 PShader(VOut input) : SV_TARGET
     float4 noise = texture2.Sample(sampler0, input.texcoord_noise);// * float4(0.1, 0.1, 0.1, 1);
 
     //return input.color;
-    return input.color *  normal * diffuse - noise;
+    return input.color * normal * diffuse - noise;
     //return input.color * texture0.Sample(sampler0, input.texcoord_diffuse) * texture1.Sample(sampler0, input.texcoord_noise);
 }

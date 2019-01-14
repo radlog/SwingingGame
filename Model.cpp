@@ -2,32 +2,20 @@
 #include "Model.h"
 #include "MeshCollider.h"
 
-Model::Model(const LPCSTR filename, const CB_STATE state, const COLLIDER_TYPE col_type) : BaseModel(filename, state)
+Model::Model(const LPCSTR filename, const CB_STATE state) : BaseModel(filename, state)
 {
-	//calculate_origin();
 	origin_ = XMVectorZero();
-	//min_outer_vector_ = XMVectorSplatOne();
-	//max_outer_vector_ = XMVectorSet(2,2,2,0);
-	switch (col_type)
-	{
-		case SPHERE: initialize_sphere_collider();  break;
-		case MESH: Model::initialize_mesh_collider(); break;
-		default: break;
-	}
+	calculate_origin();
+	Model::initialize_sphere_collider();
+	Model::initialize_mesh_collider();
 }
 
-Model::Model(const CB_STATE state, const COLLIDER_TYPE col_type) : BaseModel(state)
+Model::Model(const CB_STATE state) : BaseModel(state)
 {
-	//calculate_origin();
 	origin_ = XMVectorZero();
-	//min_outer_vector_ = XMVectorSplatOne();
-	//max_outer_vector_ = XMVectorSet(2, 2, 2, 0);
-	switch(col_type)
-	{
-		case SPHERE: initialize_sphere_collider();  break;
-		case MESH: Model::initialize_mesh_collider(); break;		
-		default: break;
-	}
+	calculate_origin();
+	Model::initialize_sphere_collider();
+	Model::initialize_mesh_collider();
 }
 
 Model::~Model()
@@ -39,34 +27,29 @@ void Model::draw(const XMMATRIX view_projection, const bool use_simple_cb, const
 	BaseModel::draw(view_projection, use_simple_cb, mode);
 }
 
-void Model::add_sphere_collider(SphereCollider* col) const
+SphereCollider* Model::get_bounding_sphere() const
 {
-	*collider_ = static_cast<Collider>(*col);
+	return sphere_collider_;
 }
 
-void Model::add_mesh_collider(MeshCollider* col) const
-{	
-	*collider_ = static_cast<Collider>(*col);
+MeshCollider* Model::get_mesh_collider() const
+{
+	return mesh_collider_;
 }
 
-Collider* Model::get_collider() const
-{
-	return collider_;
-}
 
 void Model::initialize_sphere_collider()
 {
 	float radius = 0;
-	if(obj_file_model_ != nullptr) radius = dist(min_outer_vector_, max_outer_vector_);
+	if (obj_file_model_ != nullptr) radius = dist(min_outer_vector_, max_outer_vector_) / 2;
 	else radius = 1.0f;
-	radius = 1.0f;
-	collider_ = new SphereCollider(origin_, radius);
+	sphere_collider_ = new SphereCollider(origin_, radius);
 }
 
 void Model::initialize_mesh_collider()
 {
 	if (obj_file_model_ == nullptr) return;
 
-	collider_ = new MeshCollider(origin_, obj_file_model_->get_vertex_positions());
+	mesh_collider_ = new MeshCollider(origin_, obj_file_model_->get_vertex_positions());
 }
 

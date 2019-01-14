@@ -15,20 +15,22 @@ class D3Dfw;
 
 extern const float push_back_speed = 2.0f;
 
+// tag defines the collision type and how interaction between collided objects work
+enum TAG
+{
+	DEFAULT = 0,
+	GROUND = 1,
+	MODEL = 2,
+	POLY = 3,
+	CHARACTER = 4,
+	PLAYER = 5
+};
+
 // most important class to create and handle all entities within the game
 class GameObject
 {
 
-	// tag defines the collision type and how interaction between collided objects work
-	enum TAG
-	{
-		DEFAULT = 0,
-		GROUND = 1,
-		MODEL = 2,
-		POLY = 3,
-		CHARACTER = 4,
-		PLAYER = 5
-	};
+
 
 public:
 	GameObject();
@@ -65,7 +67,8 @@ public:
 	bool get_kinetic() const;
 	void set_grounded(bool grounded); // sets object grounded
 	bool get_grounded() const;
-	virtual Collider* get_collider();
+	virtual SphereCollider* get_sphere_collider();
+	virtual MeshCollider* get_mesh_collider();
 	bool check_collision(GameObject *target);
 
 
@@ -90,8 +93,6 @@ public:
 	void add_child(GameObject *child); // add a child object
 	bool remove_child(GameObject *child); // remove a child safely(only if it is in the children list)
 
-
-	void set_collider(Collider *col);
 	void update_collision_tree(XMMATRIX *world, float scale);
 	void update_constant_buffer_time_scaled(XMMATRIX world_view_projection, const XMMATRIX view_projection, const XMVECTOR directional_light_vector,
 		const XMVECTOR directional_light_color, const XMVECTOR ambient_light_color, const float game_time);
@@ -115,8 +116,8 @@ protected:
 	ID3D11Device* device_; // pointer to the hardware device
 	ID3D11DeviceContext* immediate_context_; // pointer to the device context
 
-	Collider *collider_;
-
+	SphereCollider *sphere_collider_;
+	MeshCollider *mesh_collider_;
 
 
 };

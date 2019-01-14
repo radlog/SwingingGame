@@ -1,6 +1,7 @@
 #pragma once
 #include "objfilemodel.h"
 #include "BufferDefines.h"
+#include "d3dcompiler.h"
 
 class D3Dfw;
 

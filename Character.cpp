@@ -23,15 +23,15 @@ Character::~Character()
 
 void Character::cut_target(Character target) const
 {
-	if(target.get_state() == AIRBORNE && state_ == AIRBORNE)
+	if (target.get_state() == AIRBORNE && state_ == AIRBORNE)
 	{
-		
+
 	}
 }
 
 void Character::throw_at(Character target) const
 {
-	
+
 }
 
 STATE Character::get_state() const
@@ -74,6 +74,8 @@ Stats Character::get_stats()
 void Character::die()
 {
 	stats_.deaths += 1;
+	transform.translate(XMVectorSet(0, 25, 0, 0));
+	air_time_ = 0;
 }
 
 // inflicts damage to the character, the boolean says if the character died or not
@@ -87,15 +89,20 @@ bool Character::inflict(float dmg)
 	return false;
 }
 
+void Character::update(VGTime* timer)
+{
+	GameObject::update(timer);
+	if (transform.get_local_position().y < -10)
+		die();
+}
+
 void Character::crouch(VGTime *timer)
 {
 }
 
 void Character::jump(VGTime* timer)
 {
-	if(state_ == AIRBORNE)
-	if (!is_grounded_) translate(Transform::world_up, timer->delta_time() * jumpspeed_);
-	else state_ = STANDING;
+	translate(Transform::world_up, timer->delta_time() * jumpspeed_);
 }
 
 

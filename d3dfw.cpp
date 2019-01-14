@@ -109,7 +109,7 @@ HRESULT D3Dfw::initialise_dx() {
 	if (FAILED(hr))
 		return hr;
 
-
+	
 
 	ID3D11Texture2D* buffer_texture = nullptr;
 	hr = swap_chain_->GetBuffer(0, __uuidof(ID3D11Texture2D),
