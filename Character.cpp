@@ -74,7 +74,7 @@ Stats Character::get_stats()
 void Character::die()
 {
 	stats_.deaths += 1;
-	transform.translate(XMVectorSet(0, 25, 0, 0));
+	transform.translate(XMVectorSet(0, 30, 0, 0));
 	air_time_ = 0;
 }
 

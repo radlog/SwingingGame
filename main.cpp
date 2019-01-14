@@ -134,6 +134,10 @@ void render_frame(Camera *camera)
 	//skybox.draw(sky_lock); // draw skybox
 	scene_root.update_constant_buffer_time_scaled(view_projection, view_projection, directional_light_shines_from, directional_light_colour, ambient_light_colour, timer->total_time()); // update constant buffer values for every gameobject in the scene
 	scene_root.draw(view_projection); // draw scene
+	for (size_t i = 0; i < upper_platform_count; i++)
+	{
+		//lower_platforms[i].draw(view_projection/*,D3D11_PRIMITIVE_TOPOLOGY_POINTLIST*/);
+	}
 	// draw end
 
 	dx_handle->get_swap_chain()->Present(0, 0);	// swap back buffer with front buffer
@@ -201,7 +205,14 @@ void load_content()
 
 	//island_model = new Model("assets/FloatingIsland_001.obj", CB_STATE_TIME_SCALED); // platform model i made by myself
 	island_model = new Model("assets/cube.obj", CB_STATE_TIME_SCALED); // platform model i made by myself
-	island_model->load_texture("assets/lava_selfmade_DIFFUSE.png"); // texture of the platform model
+	island_model->load_texture("assets/crate.jpg"); // texture of the platform model
+	island_model->set_shader_file("lighted_shader.hlsl");
+
+	//auto bla = new Model("assets/FloatingIsland_001.obj", CB_STATE_TIME_SCALED); // platform model i made by myself
+	//bla->load_texture("assets/lava_selfmade_diffuse.png"); // texture of the platform model
+	//bla->set_shader_file("lighted_shader.hlsl");
+
+	//auto blu = new GameObject("middle_platform", bla, Transform(XMVectorSplatOne(), rotation, XMVectorSet(-10, 20, 10, 0)));
 
 	// this floor was only there for testing collision
 	//floor_model = new Floor(); // model for the ground
@@ -210,18 +221,19 @@ void load_content()
 
 
 	player = new Player("player1"); // the player gameobject
-	player->transform = Transform(XMVectorSplatOne(), XMQuaternionIdentity(), XMVectorSet(0, 5, -10, 0)); // set initial player position
+	player->transform = Transform(XMVectorSplatOne(), XMQuaternionIdentity(), XMVectorSet(0, 30, 0, 0)); // set initial player position
 	player->update(timer); // call one update to set player to the correct position
 
 	//enemy = Enemy("enemy", cube, Transform(scale, rotation, XMVectorSet(0, 10, 0.0f, 0.0f))); // enemy gameobject
 
 	lava_floor = new LavaFloor("assets/lava_selfmade_diffuse.png"); // lava gameobject
-	lava = new GameObject("lava", lava_floor, Transform(),GROUND); // ground gameobject
+	lava = new GameObject("lava", lava_floor, Transform()); // ground gameobject
 	lava->transform.translate(lava_floor->get_transform()->get_local_position()); // translate the lave to be centered along the x and y axis
 
 	scene_root = GameObject("scene_root");
 	scene_root.set_kinetic(false);
 	scene_root.add_child(player);
+	//scene_root.add_child(blu);
 	//scene_root.add_child(floor_object);
 	//scene_root.add_child(&enemy);
 	scene_root.add_child(lava);
@@ -232,8 +244,8 @@ void load_content()
 		for (size_t j = 0; j < sqrt(lower_platform_count); j++)
 		{
 			const auto pl = new GameObject("lower_Platform", island_model, Transform(XMVectorSplatOne(), rotation, XMVectorSet(i * 10, 0, j * 10,0)));
-			//lower_platforms.push_back(*pl);
-			scene_root.add_child(pl);
+			lower_platforms.push_back(*pl);
+			//scene_root.add_child(pl);
 		}
 	}
 

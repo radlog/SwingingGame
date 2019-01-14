@@ -100,6 +100,7 @@ HRESULT BaseModel::load_geo_model(void* vertices, const UINT num_verts, const UI
 
 void BaseModel::draw(const XMMATRIX view_projection, const bool use_simple_cb, const D3D11_PRIMITIVE_TOPOLOGY mode)
 {	
+	immediate_context_->IASetInputLayout(input_layout_);
 	// use the simple constant buffer, if no other was specifically defined
 	if (use_simple_cb) {
 		cb_simple_.world_view_projection = view_projection;
