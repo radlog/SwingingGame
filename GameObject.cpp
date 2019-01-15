@@ -215,7 +215,7 @@ void GameObject::start()
 
 void GameObject::update_transform(XMMATRIX *world)
 {
-	auto local_world = transform.get_local_world() * * world;
+	auto local_world = transform.get_world() * * world;
 	transform.set_world(local_world);
 
 	// update transform of children

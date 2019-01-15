@@ -34,9 +34,9 @@ bool SphereCollider::sphere_to_mesh_collision(MeshCollider col) const
 		XMVECTOR v3 = i.v3 + col.get_world_position();
 
 		auto plane = get_plane(v1, v2, v3); // get plane from vertices
-		auto ray = XMVector4Normalize(world_ + plane.normal);
+		auto ray = XMVector4Normalize(world_ - plane.normal * col.get_world_position());
 		auto start_point = world_;
-		auto end_point = world_ + ray * radius_ + ray * col.get_radius();
+		auto end_point = world_  + ray * radius_ + ray * col.get_radius();
 
 		if (plane_intersection(&plane, &start_point, &end_point))
 		{
