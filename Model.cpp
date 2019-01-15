@@ -40,16 +40,16 @@ MeshCollider* Model::get_mesh_collider() const
 
 void Model::initialize_sphere_collider()
 {
-	float radius = 0;
-	if (obj_file_model_ != nullptr) radius = dist(min_outer_vector_, max_outer_vector_) / 2;
-	else radius = 1.0f;
-	sphere_collider_ = new SphereCollider(origin_, radius);
+	radius_ = 0;
+	if (obj_file_model_ != nullptr) radius_ = dist(min_outer_vector_, max_outer_vector_) ;
+	else radius_ = 0.2f;
+	sphere_collider_ = new SphereCollider(origin_, radius_);
 }
 
 void Model::initialize_mesh_collider()
 {
 	if (obj_file_model_ == nullptr) return;
 
-	mesh_collider_ = new MeshCollider(origin_, obj_file_model_->get_vertex_positions());
+	mesh_collider_ = new MeshCollider(origin_, obj_file_model_->get_vertex_positions(),radius_);
 }
 

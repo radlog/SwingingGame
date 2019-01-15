@@ -109,6 +109,6 @@ protected:
 	Collectable collected_; // 
 	STATE state_ = STANDING; // 
 	float speed_ = 100; // 
-	double jumpspeed_ = 8.0f;
+	double jump_speed_ = 8.0f;
 };
 

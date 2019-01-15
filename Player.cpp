@@ -69,7 +69,7 @@ void Player::init_cameras(bool fps)
 	top_down_camera_->transform = Transform(XMVectorSplatOne(), XMQuaternionIdentity(), XMVectorSet(0, 100, 0, 0));
 	top_down_camera_->rotate(XMConvertToRadians(90), 0, 0);
 	is_kinetic_ = false;
-	sphere_collider_ = new SphereCollider(transform.get_local_position(), 0.5f);
+	sphere_collider_ = new SphereCollider(transform.get_local_position(), 0.15f);
 }
 
 

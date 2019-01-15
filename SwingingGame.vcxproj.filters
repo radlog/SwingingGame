@@ -123,6 +123,12 @@
     <ClCompile Include="ObjCube.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="text2D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ParticleFactory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="simple_shader.hlsl" />
@@ -130,6 +136,8 @@
     <FxCompile Include="skybox_shader.hlsl" />
     <FxCompile Include="lava_shader.hlsl" />
     <FxCompile Include="lighted_shader.hlsl" />
+    <FxCompile Include="text2D_shaders.hlsl" />
+    <FxCompile Include="particle_shader.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="VGTime.h">
@@ -235,6 +243,12 @@
       <Filter>Header Files\GameObjects</Filter>
     </ClInclude>
     <ClInclude Include="ObjCube.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="text2D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticleFactory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

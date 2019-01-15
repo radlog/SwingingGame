@@ -25,18 +25,19 @@ bool SphereCollider::sphere_to_sphere_collision(const SphereCollider col) const
 }
 
 bool SphereCollider::sphere_to_mesh_collision(MeshCollider col) const
-{	
+{
 	for (auto& i : *col.get_triangles())
 	{
 		// transform vertices to the correct position in world space
-		XMVECTOR v1 = i.v1 + col.get_world_position(); 
+		XMVECTOR v1 = i.v1 + col.get_world_position();
 		XMVECTOR v2 = i.v2 + col.get_world_position();
 		XMVECTOR v3 = i.v3 + col.get_world_position();
 
 		auto plane = get_plane(v1, v2, v3); // get plane from vertices
-		auto ray = XMVector4Normalize(plane.normal * plane.offset - world_);
+		auto ray = XMVector4Normalize(world_ + plane.normal);
 		auto start_point = world_;
-		auto end_point = world_ + ray * radius_ * 3;
+		auto end_point = world_ + ray * radius_ + ray * col.get_radius();
+
 		if (plane_intersection(&plane, &start_point, &end_point))
 		{
 			auto point = ray_to_plane_intersection_point(&plane, &ray, &start_point);
@@ -58,4 +59,9 @@ bool SphereCollider::check_collision(Collider* col)
 	const auto m = dynamic_cast<MeshCollider*>(col);
 	return sphere_to_mesh_collision(*m);
 
+}
+
+float SphereCollider::get_radius() const
+{
+	return radius_;
 }

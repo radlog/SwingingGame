@@ -126,12 +126,14 @@ HRESULT Input::update_input(GameObject* actor, VGTime* game_time)
 	if (is_key_pressed(DIK_SPACE) || mouse_state_.lZ > 0)
 	{
 		actor->set_grounded(false);
+		static_cast<Player*>(actor)->set_state(AIRBORNE);
 	}
 
 	if (actor_type == player_type)
 	{
-		if (!actor->get_grounded())
+		if (!actor->get_grounded() && static_cast<Player*>(actor)->get_state() == AIRBORNE)
 			static_cast<Player*>(actor)->jump(game_time);
+		else static_cast<Player*>(actor)->set_state(STANDING);
 	}
 
 	if (is_key_released(DIK_G)) actor->set_kinetic(!actor->get_kinetic());

@@ -1,5 +1,6 @@
 #include "VGTime.h"
 
+const int fps_limit = 200;
 
 VGTime::VGTime() : start_(0), paused_(0), idle_(0), current_(0), previous_(0), total_(0), delta_(0), is_paused_(false)
 {
@@ -130,18 +131,18 @@ void VGTime::reset()
 
 }
 
-int VGTime::get_fps()
+int VGTime::get_fps() const
 {
 	static double time_since_last_frame;
 	static int frames;
 	frames++;
 	
-	if (total_time() - time_since_last_frame >= 1.0f)
-	{
-		fps_ = frames;
-		frames = 0;
-		time_since_last_frame += 1.0;
-	}
-	return (int(1.0 / delta_time()) + fps_) / 2;
-	//return fps;
+	//if (total_time() - time_since_last_frame >= 1.0f)
+	//{
+	//	fps_ = frames;
+	//	frames = 0;
+	//	time_since_last_frame += 1.0;
+	//}
+	return min((int(1.0 / delta_time())), fps_limit); // +fps_) / 2;
+	//return fps_;
 }

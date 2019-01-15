@@ -10,7 +10,7 @@ BaseModel::BaseModel(const LPCSTR filename, const CB_STATE state) : BaseModel(st
 }
 
 // main constructor of the Model class to initialize a state and pass the device and context instances
-BaseModel::BaseModel(const CB_STATE state)
+BaseModel::BaseModel(const CB_STATE state) : obj_file_model_(nullptr)
 {
 	dx_handle_ = D3Dfw::get_instance();
 
@@ -343,7 +343,7 @@ void BaseModel::calculate_origin()
 		}
 	}
 
-	origin_ = (max_outer_vector_ + min_outer_vector_ ) / 2;
+	origin_ = (max_outer_vector_ + min_outer_vector_ ) / 2;	
 }
 
 //void Model::initialize_sphere_collider()

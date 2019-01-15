@@ -24,6 +24,7 @@ public:
 protected:
 	SphereCollider* sphere_collider_;
 	MeshCollider* mesh_collider_;
+	float radius_;
 	virtual void initialize_sphere_collider();
 	virtual void initialize_mesh_collider();
 };

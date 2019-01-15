@@ -55,16 +55,16 @@ void Floor::initialize_mesh_collider()
 	const auto v1 = XMLoadFloat3(&plane_vertices_[0].pos);// +local_position;
 	const auto v2 = XMLoadFloat3(&plane_vertices_[tiles_ ].pos);// +local_position;
 	const auto v3 = XMLoadFloat3(&plane_vertices_[(tiles_ + 1) * (tiles_ + 1) -1].pos);// +local_position;
-	mesh_collider_ = new MeshCollider(origin_,vector<XMVECTOR> {v1,v2,v3});
+	mesh_collider_ = new MeshCollider(origin_,vector<XMVECTOR> {v1,v2,v3}, radius_);
 }
 
 void Floor::initialize_sphere_collider()
 {
-	float radius;
-	if (obj_file_model_ != nullptr) radius = dist(min_outer_vector_, max_outer_vector_) / 2;
-	else radius = 1.0f;
-	radius = radius * float(tiles_);
-	sphere_collider_ = new SphereCollider(origin_, radius);
+	
+	if (obj_file_model_ != nullptr) radius_ = dist(min_outer_vector_, max_outer_vector_) / 2;
+	else radius_ = 1.0f;
+	radius_ = radius_ * float(tiles_);
+	sphere_collider_ = new SphereCollider(origin_, radius_);
 }
 
 

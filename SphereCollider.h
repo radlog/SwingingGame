@@ -12,7 +12,7 @@ public:
 
 	bool sphere_to_mesh_collision(MeshCollider col) const;
 	bool check_collision(Collider *col) override;
-
+	float get_radius()const ;
 private:
 	float radius_;
 };

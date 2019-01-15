@@ -26,7 +26,7 @@ public:
 	void attack(Character target) const;
 
 	void chase_target(GameObject *target, VGTime *timer);
-
+	void update(VGTime * timer)override;
 	
 };
 

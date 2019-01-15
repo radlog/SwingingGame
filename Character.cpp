@@ -75,6 +75,7 @@ void Character::die()
 {
 	stats_.deaths += 1;
 	transform.translate(XMVectorSet(0, 30, 0, 0));
+	set_grounded(false);
 	air_time_ = 0;
 }
 
@@ -102,7 +103,7 @@ void Character::crouch(VGTime *timer)
 
 void Character::jump(VGTime* timer)
 {
-	translate(Transform::world_up, timer->delta_time() * jumpspeed_);
+	translate(Transform::world_up, timer->delta_time() * jump_speed_ );
 }
 
 

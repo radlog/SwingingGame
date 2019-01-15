@@ -44,7 +44,7 @@ inline Plane get_plane(const XMVECTOR v1, const XMVECTOR v2, const XMVECTOR v3)
 inline float is_point_on_plane(const Plane *plane, const XMVECTOR *point)
 {
 	const auto n = plane->normal;
-	return (n.x * point->x) + (n.y * point->y) + (n.z * point->z) + plane->offset;
+	return dot(n, *point) + plane->offset;
 }
 
 // gives the point of intersection between the ray and the plane
@@ -58,6 +58,7 @@ inline XMVECTOR ray_to_plane_intersection_point(const Plane *plane, const XMVECT
 // uses the plane and two vectors to see if their ray intersects the plane
 inline bool plane_intersection(const Plane *plane, const XMVECTOR *start_point, const XMVECTOR *end_point)
 {
+	//const auto p = new Plane{ -plane->normal, plane->offset };
 	const auto s1 = is_point_on_plane(plane, start_point);
 	const auto s2 = is_point_on_plane(plane, end_point);
 
@@ -68,15 +69,19 @@ inline bool plane_intersection(const Plane *plane, const XMVECTOR *start_point, 
 inline bool in_triangle(XMVECTOR *triangle_vector_a, XMVECTOR *triangle_vector_b, XMVECTOR *triangle_vector_c, const XMVECTOR *point)
 {
 	const auto v1 = *triangle_vector_b - *triangle_vector_a;
-	const auto v1_p = *point - *triangle_vector_a;
-	const auto v2 = *triangle_vector_c - *triangle_vector_b;
-	const auto v2_p = *point - *triangle_vector_b;
-	const auto v3 = *triangle_vector_a - *triangle_vector_c;
-	const auto v3_p = *point - *triangle_vector_c;
+	const auto v1_p =  *point - *triangle_vector_a;
+	const auto v2 =  *triangle_vector_c - *triangle_vector_b;
+	const auto v2_p =  *point -*triangle_vector_b;
+	const auto v3 =  *triangle_vector_a  -*triangle_vector_c;
+	const auto v3_p =  *point - *triangle_vector_c;
 
-	const auto n1 = dot(v1, v1_p);
-	const auto n2 = dot(v2, v2_p);
-	const auto n3 = dot(v3, v3_p);
+	const auto vc1 = cross(v1, v1_p);
+	const auto vc2 = cross(v2, v2_p);
+	const auto vc3 = cross(v3, v3_p);
+
+	const auto n1 = dot(vc1, vc2);
+	const auto n2 = dot(vc2, vc3);
+	const auto n3 = dot(vc3, vc1);
 
 
 	auto result = sign(n1) == sign(n2) && sign(n1) == sign(n3) && sign(n2) == sign(n3) || n1 >= 0 && n2 >= 0 && n3 >= 0;

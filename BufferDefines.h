@@ -5,7 +5,13 @@
 struct CONSTANT_BUFFER_SIMPLE
 {
 	XMMATRIX world_view_projection; // 64 bytes
-}; 
+};
+
+struct CONSTANT_BUFFER_PARTICLE
+{
+	XMMATRIX world_view_projection; // 64 bytes
+	XMFLOAT4 color; // 16 bytes
+}; // 80 bytes
 
 // constant buffer containing world matrix, camera view matrix, light vector, light color, ambient light color
 // size: 112 bytes

@@ -36,5 +36,11 @@ void Enemy::chase_target(GameObject* target, VGTime *timer)
 	}
 }
 
+void Enemy::update(VGTime* timer)
+{
+	Character::update(timer);
+	//chase_target()
+}
+
 
 

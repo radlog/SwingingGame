@@ -36,7 +36,7 @@ private:
 
 	const double jump_speed_ = 8.0f;
 	const double rot_speed_ = 1.0; // rotation look speed for mouse movement
-	const double move_speed_ = 8.0; // movement speed
+	const double move_speed_ = 12.0; // movement speed
 
 	const long mouse_x_center_ = 480; // mouse x position of the screen center
 	const long mouse_y_center_ = 640; // mouse y position of the screen center

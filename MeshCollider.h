@@ -7,7 +7,7 @@ class MeshCollider :
 {
 public:
 	MeshCollider();
-	explicit MeshCollider(XMVECTOR origin, vector<XMVECTOR> vertex_positions);
+	explicit MeshCollider(XMVECTOR origin, vector<XMVECTOR> vertex_positions, float radius);
 	explicit MeshCollider(Plane* plane);
 	~MeshCollider();
 	bool check_collision(Collider* col) override;
@@ -16,9 +16,11 @@ public:
 	bool sphere_to_mesh_collision(SphereCollider *col);
 
 	vector<Triangle>* get_triangles();
+	float get_radius() const;
 
 private:
 	vector<Triangle> *triangles_;
+	float radius_;
 	//Plane* plane_;
 };
 

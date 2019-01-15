@@ -10,6 +10,11 @@
 #include "Model.h"
 #include "Enemy.h"
 #include "ObjCube.h"
+#include "Text2D.h"
+#include "ParticleFactory.h"
+
+
+ParticleFactory particles;
 
 //using namespace std;
 D3Dfw *dx_handle = D3Dfw::get_instance();
@@ -18,7 +23,8 @@ GameObject scene_root;
 
 vector<GameObject> gameobjects;
 
-
+Text2D *fps_info;
+Text2D *stat_info;
 
 Enemy enemy;
 
@@ -71,6 +77,7 @@ LRESULT CALLBACK wnd_proc(HWND, UINT, WPARAM, LPARAM);
 
 void load_content();
 void load_lava();
+void load_map(GameObject* root, float scale);
 
 void render_frame(Camera *camera);
 void draw_map(XMMATRIX view_projection);
@@ -113,7 +120,7 @@ int WINAPI WinMain(const HINSTANCE instance, const HINSTANCE prev_instance, cons
 		else {
 			update(timer);
 			render_frame(player->get_fps_camera());
-			//render_frame(player.get_top_down_camera()); // second camera (top down view) for map overview
+			//render_frame(player->get_top_down_camera()); // second camera (top down view) for map overview
 		}
 	}
 
@@ -131,13 +138,12 @@ void render_frame(Camera *camera)
 	dx_handle->clear_rtv(); // clear the render target view
 
 	// draw start
-	//skybox.draw(sky_lock); // draw skybox
+	skybox.draw(sky_lock); // draw skybox
 	scene_root.update_constant_buffer_time_scaled(view_projection, view_projection, directional_light_shines_from, directional_light_colour, ambient_light_colour, timer->total_time()); // update constant buffer values for every gameobject in the scene
 	scene_root.draw(view_projection); // draw scene
-	for (size_t i = 0; i < upper_platform_count; i++)
-	{
-		//lower_platforms[i].draw(view_projection/*,D3D11_PRIMITIVE_TOPOLOGY_POINTLIST*/);
-	}
+	fps_info->RenderText();
+	stat_info->RenderText();
+	//particles.draw(&view_projection); // does not work somehow, potential to improve, but time was short
 	// draw end
 
 	dx_handle->get_swap_chain()->Present(0, 0);	// swap back buffer with front buffer
@@ -159,8 +165,14 @@ void draw_map(const XMMATRIX view_projection)
 
 void update(VGTime* timer)
 {
-
-	player->update(timer); // update player separately because it has an input update in it methods
+	string kills = "kills " + std::to_string(player->get_stats().kills);
+	string deaths = "deaths " + std::to_string(player->get_stats().deaths);
+	string score = "score " + std::to_string(player->get_stats().score);
+	fps_info->AddText("FPS " + std::to_string(timer->get_fps()), -0.5, +1.0, 0.1);
+	stat_info->AddText(kills, -1.0, +1.0, 0.05);
+	stat_info->AddText(deaths, -1.0, +0.95, 0.05);
+	stat_info->AddText(score, -1.0, +0.90, 0.05);
+	
 	scene_root.update(timer); // update scene with all its children
 }
 
@@ -189,63 +201,21 @@ void load_lava()
 	
 }
 
-
-// loads all objects in the scene and the scene root
-void load_content()
+void load_map(GameObject* root, const float scale)
 {
-	
-	const auto scale = XMVectorSplatOne(); // scale 1,1,1
+	const auto scale_vector = XMVectorSet(1, 1, 1, 0) * scale; // platform scale
 	const auto rotation = XMQuaternionIdentity(); // identity rotation
-
-
-	timer = new VGTime(); // the game timer for steady movement
-	skybox = Skybox("assets/purple_nebular.dds"); // skybox that loads a cubemap
-
-	//cube = new Model("assets/cube.obj", CB_STATE_TIME_SCALED, MESH); // simple cube model used for enemies
-
-	//island_model = new Model("assets/FloatingIsland_001.obj", CB_STATE_TIME_SCALED); // platform model i made by myself
-	island_model = new Model("assets/cube.obj", CB_STATE_TIME_SCALED); // platform model i made by myself
-	island_model->load_texture("assets/crate.jpg"); // texture of the platform model
-	island_model->set_shader_file("lighted_shader.hlsl");
-
-	//auto bla = new Model("assets/FloatingIsland_001.obj", CB_STATE_TIME_SCALED); // platform model i made by myself
-	//bla->load_texture("assets/lava_selfmade_diffuse.png"); // texture of the platform model
-	//bla->set_shader_file("lighted_shader.hlsl");
-
-	//auto blu = new GameObject("middle_platform", bla, Transform(XMVectorSplatOne(), rotation, XMVectorSet(-10, 20, 10, 0)));
-
-	// this floor was only there for testing collision
-	//floor_model = new Floor(); // model for the ground
-	//floor_object = new GameObject("floor", floor_model, Transform()); // ground gameobject
-	//floor_object->transform.translate(floor_model->get_transform()->get_local_position());
-
-
-	player = new Player("player1"); // the player gameobject
-	player->transform = Transform(XMVectorSplatOne(), XMQuaternionIdentity(), XMVectorSet(0, 30, 0, 0)); // set initial player position
-	player->update(timer); // call one update to set player to the correct position
-
-	//enemy = Enemy("enemy", cube, Transform(scale, rotation, XMVectorSet(0, 10, 0.0f, 0.0f))); // enemy gameobject
-
-	lava_floor = new LavaFloor("assets/lava_selfmade_diffuse.png"); // lava gameobject
-	lava = new GameObject("lava", lava_floor, Transform()); // ground gameobject
-	lava->transform.translate(lava_floor->get_transform()->get_local_position()); // translate the lave to be centered along the x and y axis
-
-	scene_root = GameObject("scene_root");
-	scene_root.set_kinetic(false);
-	scene_root.add_child(player);
-	//scene_root.add_child(blu);
-	//scene_root.add_child(floor_object);
-	//scene_root.add_child(&enemy);
-	scene_root.add_child(lava);
+	const auto plat_distance_horizontal = 20 * scale;
+	const auto plat_distance_vertical = 20 * scale;
+	//scene_root.add_child(lava);
 
 	// initialise lower platforms
 	for (size_t i = 0; i < sqrt(lower_platform_count); i++)
 	{
 		for (size_t j = 0; j < sqrt(lower_platform_count); j++)
 		{
-			const auto pl = new GameObject("lower_Platform", island_model, Transform(XMVectorSplatOne(), rotation, XMVectorSet(i * 10, 0, j * 10,0)));
-			lower_platforms.push_back(*pl);
-			//scene_root.add_child(pl);
+			const auto pl = new GameObject("lower_platform", island_model, Transform(scale_vector, rotation, XMVectorSet(i * plat_distance_horizontal, plat_distance_vertical, j * plat_distance_horizontal, 0)));
+			root->add_child(pl);
 		}
 	}
 
@@ -253,9 +223,8 @@ void load_content()
 	{
 		for (size_t j = 0; j < sqrt(middle_platform_count); j++)
 		{
-			const auto pl = new GameObject("middle_platform", island_model, Transform(XMVectorSplatOne(), rotation, XMVectorSet(i * 10, 20, j * 10, 0)));
-			//lower_platforms.push_back(*pl);
-			scene_root.add_child(pl);
+			const auto pl = new GameObject("middle_platform", island_model, Transform(scale_vector, rotation, XMVectorSet(i * plat_distance_horizontal, plat_distance_vertical * 2, j * plat_distance_horizontal, 0)));
+			root->add_child(pl);
 		}
 	}
 
@@ -263,11 +232,50 @@ void load_content()
 	{
 		for (size_t j = 0; j < sqrt(upper_platform_count); j++)
 		{
-			const auto pl = new GameObject("upper_platform", island_model, Transform(XMVectorSplatOne(), rotation, XMVectorSet(i * 10, 40, j * 10, 0)));
-			//lower_platforms.push_back(*pl);
-			scene_root.add_child(pl);
+			const auto pl = new GameObject("upper_platform", island_model, Transform(scale_vector, rotation, XMVectorSet(i * plat_distance_horizontal, plat_distance_vertical * 3, j * plat_distance_horizontal, 0)));
+			root->add_child(pl);
 		}
 	}
+
+
+}
+
+
+// loads all objects in the scene and the scene root
+void load_content()
+{
+	particles = ParticleFactory();
+	particles.create_particle();
+	
+
+	timer = new VGTime(); // the game timer for steady movement
+	skybox = Skybox("assets/purple_nebular.dds"); // skybox that loads a cubemap
+
+	//cube = new Model("assets/cube.obj", CB_STATE_TIME_SCALED, MESH); // simple cube model used for enemies
+
+	island_model = new Model("assets/FloatingIsland_001.obj", CB_STATE_TIME_SCALED); // platform model i made by myself
+	//island_model = new Model("assets/cube.obj", CB_STATE_TIME_SCALED); // platform model i made by myself
+	island_model->load_texture("assets/crate.jpg"); // texture of the platform model
+	island_model->set_shader_file("lighted_shader.hlsl");
+
+	// initialize player gameobject
+	player = new Player("player1"); // the player gameobject
+	player->transform = Transform(XMVectorSplatOne(), XMQuaternionIdentity(), XMVectorSet(0, 30, 0, 0)); // set initial player position
+	player->update(timer); // call one update to set player to the correct position
+
+	//enemy = Enemy("enemy", cube, Transform(scale, rotation, XMVectorSet(0, 10, 0.0f, 0.0f))); // enemy gameobject
+
+	lava_floor = new LavaFloor("assets/lava_selfmade_diffuse.png"); // lava model
+	lava = new GameObject("lava", lava_floor, Transform(), LAVA); // lava gameobject
+	lava->transform.translate(lava_floor->get_transform()->get_local_position()); // translate the lave to be centered along the x and y axis
+
+	scene_root = GameObject("scene_root");
+	scene_root.set_kinetic(false);
+	scene_root.add_child(player);
+	//const auto pl = new GameObject("middle_platform", island_model, Transform(XMVectorSplatOne(), XMQuaternionIdentity(), XMVectorSet(0, 10 , 0, 0)));
+	//lower_platforms.push_back(*pl);
+	//scene_root.add_child(pl);
+	load_map(&scene_root, 1);
 
 	timer->start();
 }
@@ -297,6 +305,9 @@ HRESULT init_dx(const HINSTANCE instance, HINSTANCE prev_instance, const LPSTR l
 		return hr;
 	}
 
+	fps_info = new Text2D("assets/font1.bmp", dx_handle->get_device(), dx_handle->get_immediate_context());
+	stat_info = new Text2D("assets/font1.bmp", dx_handle->get_device(), dx_handle->get_immediate_context());
+	
 	ShowCursor(false);
 
 	return hr;
@@ -321,6 +332,7 @@ LRESULT CALLBACK wnd_proc(const HWND hwnd, const UINT message, const WPARAM w_pa
 	}
 	return 0;
 }
+
 
 
 /*

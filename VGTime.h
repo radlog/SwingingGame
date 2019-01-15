@@ -1,7 +1,12 @@
 #pragma once
 #include <Windows.h>
+extern const int fps_limit;
+
 class VGTime
 {
+
+	
+
 public:
 	VGTime();
 	~VGTime();
@@ -16,7 +21,7 @@ public:
 	void stop();
 	void reset();
 
-	int get_fps();
+	int get_fps() const;
 
 private:
 	//Storage of time
@@ -33,6 +38,6 @@ private:
 	bool is_paused_;
 
 	int fps_ = 0;
-
+	
 };
 

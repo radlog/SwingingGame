@@ -1,5 +1,6 @@
 #include "GameObject.h"
 #include "Physics3D.h"
+#include "Player.h"
 
 
 GameObject::~GameObject()
@@ -56,6 +57,11 @@ void GameObject::update(VGTime *timer)
 		}
 	}
 
+	for (auto& i : children_)
+	{
+		i->update(timer);
+	}
+
 	//update_transform(&XMMatrixIdentity());
 	//update_collision_tree(&XMMatrixIdentity(), transform.get_world_scale().x);
 }
@@ -69,7 +75,7 @@ void GameObject::draw(const XMMATRIX view_projection, const bool use_default_cb,
 	}
 }
 
-void GameObject::translate(const XMVECTOR direction, const float speed)
+bool GameObject::translate(XMVECTOR direction, const float speed)
 {
 	transform.translate(direction, speed);
 
@@ -81,10 +87,16 @@ void GameObject::translate(const XMVECTOR direction, const float speed)
 
 		if (check_collision(parent_))
 		{
+			if (is_grounded_)
+				direction += Transform::world_down;
 			transform.translate(-direction, speed * push_back_speed);
+			update_transform(&XMMatrixIdentity());
+			return true;
 		}
 	}
+	is_grounded_ = false;
 	update_transform(&XMMatrixIdentity());
+	return false;
 }
 
 void GameObject::rotate_fixed(const float pitch, const float yaw, const float roll)
@@ -132,6 +144,11 @@ MeshCollider* GameObject::get_mesh_collider()
 	return mesh_collider_;
 }
 
+TAG GameObject::get_tag() const
+{
+	return tag_;
+}
+
 bool GameObject::check_collision(GameObject* target)
 {
 	//if (tag_ == GROUND)
@@ -141,15 +158,18 @@ bool GameObject::check_collision(GameObject* target)
 	if (target == this || sphere_collider_ == nullptr) return false;
 
 	//is_grounded_ = false;
-	if (sphere_collider_ && target->get_sphere_collider())
+	const auto sc = target->get_sphere_collider();
+	if (sphere_collider_ && sc)
 	{
-		if (sphere_collider_->check_collision(target->get_sphere_collider()))
+		if (sphere_collider_->check_collision(sc))
 		{
-			if (target->get_mesh_collider() == nullptr)
+			const auto mc = target->get_mesh_collider();
+			if (mc == nullptr)
 				return false;
-			if (sphere_collider_->check_collision(target->get_mesh_collider()))
+			if (sphere_collider_->check_collision(mc))
 			{
-				set_grounded(target->transform.get_local_position().y - push_back_speed < transform.get_local_position().y);
+				set_grounded(target->transform.get_local_position().y + target->get_sphere_collider()->get_radius() - 1 < transform.get_local_position().y);
+				if (target->get_tag() == LAVA && typeid(*this).name() == typeid(Player).name()) static_cast<Player*>(this)->die();
 				OutputDebugString(name_);
 				OutputDebugString("\n");
 				OutputDebugString(target->get_name());
@@ -175,6 +195,11 @@ bool GameObject::check_collision(GameObject* target)
 	return false;
 }
 
+
+Collider* GameObject::get_last_collision()
+{
+	return nullptr;
+}
 
 void GameObject::spawn(XMVECTOR position)
 {
@@ -202,7 +227,7 @@ void GameObject::update_transform(XMMATRIX *world)
 
 void GameObject::update_collision_tree(XMMATRIX* world, const float scale)
 {
-	//transform.set_world_scale(transform.get_local_scale() * scale);
+	transform.set_world_scale(transform.get_local_scale() * scale);
 	auto local_world = transform.get_world();
 	local_world *= *world;
 

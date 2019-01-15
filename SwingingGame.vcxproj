@@ -180,6 +180,7 @@
     <ClCompile Include="ObjCube.cpp" />
     <ClCompile Include="objfilemodel.cpp" />
     <ClCompile Include="Obstacle.cpp" />
+    <ClCompile Include="ParticleFactory.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
@@ -195,6 +196,7 @@
     <ClCompile Include="Skybox.cpp" />
     <ClCompile Include="SoundEngine.cpp" />
     <ClCompile Include="SphereCollider.cpp" />
+    <ClCompile Include="text2D.cpp" />
     <ClCompile Include="Transform.cpp" />
     <ClCompile Include="VGTime.cpp" />
   </ItemGroup>
@@ -208,6 +210,12 @@
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">VShader</EntryPointName>
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">VShader</EntryPointName>
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">VShader</EntryPointName>
+    </FxCompile>
+    <FxCompile Include="particle_shader.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>
     <FxCompile Include="simple_shader.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
@@ -229,6 +237,12 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </FxCompile>
     <FxCompile Include="skybox_shader.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="text2D_shaders.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
@@ -261,6 +275,7 @@
     <ClInclude Include="ObjCube.h" />
     <ClInclude Include="objfilemodel.h" />
     <ClInclude Include="Obstacle.h" />
+    <ClInclude Include="ParticleFactory.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Physics3D.h" />
     <ClInclude Include="Player.h" />
@@ -269,6 +284,7 @@
     <ClInclude Include="Skybox.h" />
     <ClInclude Include="SoundEngine.h" />
     <ClInclude Include="SphereCollider.h" />
+    <ClInclude Include="text2D.h" />
     <ClInclude Include="Transform.h" />
     <ClInclude Include="VGTime.h" />
   </ItemGroup>

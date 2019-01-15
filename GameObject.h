@@ -23,7 +23,8 @@ enum TAG
 	MODEL = 2,
 	POLY = 3,
 	CHARACTER = 4,
-	PLAYER = 5
+	PLAYER = 5,
+	LAVA = 6
 };
 
 // most important class to create and handle all entities within the game
@@ -58,7 +59,7 @@ public:
 	 */
 	virtual void draw(XMMATRIX view_projection, bool use_default_cb = false, D3D11_PRIMITIVE_TOPOLOGY mode = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	virtual void translate(XMVECTOR direction, float speed); // moves the object in a direction at a given speed
+	virtual bool translate(XMVECTOR direction, float speed); // moves the object in a direction at a given speed
 	virtual void rotate_fixed(float pitch, float yaw, float roll); // rotates the object at given axis rotations pitch, yaw, roll with rotation lock at 89 degrees to prevent inverted axis
 	virtual void rotate(float pitch, float yaw, float roll); // rotates the object at given axis rotations pitch, yaw, roll
 
@@ -69,6 +70,7 @@ public:
 	bool get_grounded() const;
 	virtual SphereCollider* get_sphere_collider();
 	virtual MeshCollider* get_mesh_collider();
+	TAG get_tag() const;
 	bool check_collision(GameObject *target);
 
 
@@ -77,7 +79,7 @@ public:
 	Transform transform; // the transform of the object
 
 
-
+	Collider* get_last_collision();
 	virtual void spawn(XMVECTOR position);
 	virtual void render(); // render frame
 	virtual void start();
@@ -111,7 +113,7 @@ protected:
 
 	double air_time_ = 0; // time the object is in air
 	bool is_grounded_ = false; // whether the object has ground under its feet
-	bool is_kinetic_ = false; // kinetic objects are not affected by physics and or gravity
+	bool is_kinetic_ = true; // kinetic objects are not affected by physics and or gravity
 
 	ID3D11Device* device_; // pointer to the hardware device
 	ID3D11DeviceContext* immediate_context_; // pointer to the device context
