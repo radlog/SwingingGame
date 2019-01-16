@@ -11,8 +11,9 @@ GameObject::GameObject()
 {
 }
 
-GameObject::GameObject(const LPCSTR name, const TAG tag) : model_(nullptr), sphere_collider_(nullptr), parent_(nullptr), mesh_collider_(nullptr)
+GameObject::GameObject(const LPCSTR name, const TAG tag) : parent_(nullptr), model_(nullptr), sphere_collider_(nullptr), mesh_collider_(nullptr)
 {
+	transform_ = new Transform();
 	dx_handle_ = D3Dfw::get_instance();
 	device_ = dx_handle_->get_device();
 	immediate_context_ = dx_handle_->get_immediate_context();
@@ -20,9 +21,9 @@ GameObject::GameObject(const LPCSTR name, const TAG tag) : model_(nullptr), sphe
 	tag_ = tag;
 }
 
-GameObject::GameObject(const LPCSTR name, Model *model, const Transform transform, const TAG tag) : GameObject(name, tag)
+GameObject::GameObject(const LPCSTR name, Model *model, Transform *transform, const TAG tag) : GameObject(name, tag)
 {
-	this->transform = transform;
+	this->transform_ = transform;
 	model_ = model;
 
 	const auto sc = model->get_bounding_sphere();
@@ -33,7 +34,7 @@ GameObject::GameObject(const LPCSTR name, Model *model, const Transform transfor
 		malloc(s);
 		sphere_collider_ = new SphereCollider();
 		memcpy(sphere_collider_, model_->get_bounding_sphere(), s);
-		sphere_collider_->set_world_position(sphere_collider_->get_origin() + transform.get_local_position());
+		sphere_collider_->set_world_position(sphere_collider_->get_origin() + transform->get_local_position());
 	}
 	if (mc != nullptr)
 	{
@@ -41,7 +42,7 @@ GameObject::GameObject(const LPCSTR name, Model *model, const Transform transfor
 		malloc(s);
 		mesh_collider_ = new MeshCollider();
 		memcpy(mesh_collider_, model_->get_mesh_collider(), s);
-		mesh_collider_->set_world_position(mesh_collider_->get_origin() + transform.get_local_position());
+		mesh_collider_->set_world_position(mesh_collider_->get_origin() + transform->get_local_position());
 	}
 }
 
@@ -61,14 +62,11 @@ void GameObject::update(VGTime *timer)
 	{
 		i->update(timer);
 	}
-
-	//update_transform(&XMMatrixIdentity());
-	//update_collision_tree(&XMMatrixIdentity(), transform.get_world_scale().x);
 }
 
 void GameObject::draw(const XMMATRIX view_projection, const bool use_default_cb, const D3D11_PRIMITIVE_TOPOLOGY mode)
 {
-	if (model_) model_->draw(transform.get_world()* view_projection, use_default_cb, mode);
+	if (model_) model_->draw(transform_->get_world()* view_projection, use_default_cb, mode);
 	for (auto& i : children_)
 	{
 		i->draw(view_projection, use_default_cb, mode);
@@ -77,7 +75,7 @@ void GameObject::draw(const XMMATRIX view_projection, const bool use_default_cb,
 
 bool GameObject::translate(XMVECTOR direction, const float speed)
 {
-	transform.translate(direction, speed);
+	transform_->translate(direction, speed);
 
 	auto identity = XMMatrixIdentity();
 
@@ -89,7 +87,7 @@ bool GameObject::translate(XMVECTOR direction, const float speed)
 		{
 			if (is_grounded_)
 				direction += Transform::world_down;
-			transform.translate(-direction, speed * push_back_speed);
+			transform_->translate(-direction, speed * push_back_speed);
 			update_transform(&XMMatrixIdentity());
 			return true;
 		}
@@ -101,7 +99,7 @@ bool GameObject::translate(XMVECTOR direction, const float speed)
 
 void GameObject::rotate_fixed(const float pitch, const float yaw, const float roll)
 {
-	transform.rotate_fixed(pitch, yaw, roll);
+	transform_->rotate_fixed(pitch, yaw, roll);
 	for (auto& i : children_)
 	{
 		i->rotate_fixed(pitch, yaw, roll);
@@ -110,7 +108,7 @@ void GameObject::rotate_fixed(const float pitch, const float yaw, const float ro
 
 void GameObject::rotate(const float pitch, const float yaw, const float roll)
 {
-	transform.rotate(pitch, yaw, roll);
+	transform_->rotate(pitch, yaw, roll);
 	for (auto& i : children_)
 	{
 		i->rotate(pitch, yaw, roll);
@@ -168,7 +166,7 @@ bool GameObject::check_collision(GameObject* target)
 				return false;
 			if (sphere_collider_->check_collision(mc))
 			{
-				set_grounded(target->transform.get_local_position().y + target->get_sphere_collider()->get_radius() - 1 < transform.get_local_position().y);
+				set_grounded(target->transform_->get_local_position().y + target->get_sphere_collider()->get_radius() - 1 < transform_->get_local_position().y);
 				if (target->get_tag() == LAVA && typeid(*this).name() == typeid(Player).name()) static_cast<Player*>(this)->die();
 				OutputDebugString(name_);
 				OutputDebugString("\n");
@@ -195,6 +193,16 @@ bool GameObject::check_collision(GameObject* target)
 	return false;
 }
 
+Transform* GameObject::get_transform() const
+{
+	return transform_;
+}
+
+
+void GameObject::set_transform(Transform *transform)
+{
+	transform_= transform;
+}
 
 Collider* GameObject::get_last_collision()
 {
@@ -215,8 +223,8 @@ void GameObject::start()
 
 void GameObject::update_transform(XMMATRIX *world)
 {
-	auto local_world = transform.get_world() * * world;
-	transform.set_world(local_world);
+	auto local_world = transform_->get_world() * * world;
+	transform_->set_world(local_world);
 
 	// update transform of children
 	for (auto& i : children_)
@@ -227,12 +235,12 @@ void GameObject::update_transform(XMMATRIX *world)
 
 void GameObject::update_collision_tree(XMMATRIX* world, const float scale)
 {
-	transform.set_world_scale(transform.get_local_scale() * scale);
-	auto local_world = transform.get_world();
+	transform_->set_world_scale(transform_->get_local_scale() * scale);
+	auto local_world = transform_->get_world();
 	local_world *= *world;
 
-	if (sphere_collider_) sphere_collider_->set_world_position(sphere_collider_->get_origin() + transform.get_local_position());
-	if (mesh_collider_) mesh_collider_->set_world_position(mesh_collider_->get_origin() + transform.get_local_position());
+	if (sphere_collider_) sphere_collider_->set_world_position(sphere_collider_->get_origin() + transform_->get_local_position());
+	if (mesh_collider_) mesh_collider_->set_world_position(mesh_collider_->get_origin() + transform_->get_local_position());
 
 	for (auto& i : children_)
 	{
@@ -244,8 +252,8 @@ void GameObject::update_constant_buffer_time_scaled(const XMMATRIX world_view_pr
 	const XMMATRIX view_projection, const XMVECTOR directional_light_vector, const XMVECTOR directional_light_color,
 	const XMVECTOR ambient_light_color, const float game_time)
 {
-	const auto local_world = XMMatrixTranspose(transform.get_local_world()) * world_view_projection;
-	transform.set_world(local_world);
+	const auto local_world = XMMatrixTranspose(transform_->get_local_world()) * world_view_projection;
+	transform_->set_world(local_world);
 
 	if (model_)
 	{

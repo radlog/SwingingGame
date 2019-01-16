@@ -443,6 +443,7 @@ void* BaseModel::get_constant_buffer_state()
 
 void BaseModel::cleanup() const
 {
+	if (this == nullptr)return;
 	if (device_) device_->Release();
 	if (immediate_context_) immediate_context_->Release();
 	if (v_shader_) v_shader_->Release();

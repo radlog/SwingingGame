@@ -13,94 +13,82 @@
 #include "Text2D.h"
 #include "ParticleFactory.h"
 
+// constants
+const int enemy_count = 10;
+const int platform_count = 100; // number of platforms
+const auto scale_vector = XMVectorSet(1, 1, 1, 0); // platform scale
+const auto rotation = XMQuaternionIdentity(); // identity rotation
+const auto plat_distance_horizontal = 20;
+const auto plat_distance_vertical = 20;
+const auto lava_tiles = 800;
+
 
 ParticleFactory particles;
 
 //using namespace std;
 D3Dfw *dx_handle = D3Dfw::get_instance();
 
-GameObject scene_root;
 
-vector<GameObject> gameobjects;
 
+
+// 2d text
 Text2D *fps_info;
 Text2D *stat_info;
 
-Enemy enemy;
-
-double time_since_last_frame = 0;
-double second = 1;
-static int fps = 0;
-static int frames = 0;
-// game objects
-Player *player;
-GameObject* floor_object;
-GameObject *lava;
-LavaFloor *lava_floor;
-Floor *floor_model;
-Camera *camera;
-const int upper_platform_count = 100; // 3000 * 3312 vertices seems to slow down the process when rotating -> consider optimizations for rotations
-const int middle_platform_count = 100;
-const int lower_platform_count = 100;
-vector<GameObject> upper_platforms;
-vector<GameObject> middle_platforms;
-vector<GameObject> lower_platforms;
-
-// text render factory and format
-IDWriteFactory *dwrite_factory;
-IDWriteTextFormat *text_format;
-
-
+// models
 Model* cube;
 Model *island_model;
+Model* enemy;
+
+// game objects
+GameObject scene_root; // root object
+GameObject* floor_object;
+GameObject *lava;
+Player *player;
+LavaFloor *lava_floor;
+Floor *floor_model;
+Skybox skybox;
+
+// input
 Input input;
 
-bool enable_glowing = false;
-
-
-XMVECTOR directional_light_shines_from = XMVectorSet(0.0f, 0.5f, 1.0f, 0.0f);
-XMVECTOR directional_light_colour = XMVectorSet(1.0f, 1.0f, 1.0f, 1.0f); // green
-XMVECTOR ambient_light_colour = XMVectorSet(0.1f, 0.1f, 0.1f, 1.0f); // dark grey
-
-
-
+// game timer
 VGTime* timer;
+
+// lighting
+XMVECTOR directional_light_shines_from = XMVectorSet(0.0f, 0.5f, 1.0f, 0.0f); // light direction front / down
+XMVECTOR directional_light_colour = XMVectorSet(1.0f, 1.0f, 1.0f, 1.0f); // white color
+XMVECTOR ambient_light_colour = XMVectorSet(0.1f, 0.1f, 0.1f, 1.0f); // dark grey
 
 // the window title
 char g_title[100] = "Swing to Win(g)";
 
-
 // methods
 HRESULT init_dx(HINSTANCE instance, HINSTANCE prev_instance, LPSTR lp_cmd_line, int n_cmd_show);
-HRESULT initialise_window(HINSTANCE hInstance, int nCmdShow);
 LRESULT CALLBACK wnd_proc(HWND, UINT, WPARAM, LPARAM);
 
+// scene loading
 void load_content();
 void load_lava();
+void load_enemies(GameObject* root);
 void load_map(GameObject* root, float scale);
 
-void render_frame(Camera *camera);
-void draw_map(XMMATRIX view_projection);
+// updates
 void update(VGTime *timer);
-void update_ai();
-void update_sound();
-void update_graphics();
+
+// draw method
+void render_frame(Camera *camera);
+
+
 void end_game();
 
-void update_lava(XMMATRIX view_projection, float time);
-
-Skybox skybox;
-
-POS_TEX_NORM_COL_VERTEX *plane_vertices;
-unsigned int *plane_indices;
-
-void debug_util(int str);
 
 
+//// simple debug method to test values
+//void debug_util(int str);
 
 
-
-
+// main function
 int WINAPI WinMain(const HINSTANCE instance, const HINSTANCE prev_instance, const LPSTR lp_cmd_line, const int n_cmd_show)
 {
 
@@ -125,7 +113,7 @@ int WINAPI WinMain(const HINSTANCE instance, const HINSTANCE prev_instance, cons
 	}
 
 	end_game();
-	return static_cast<int>(msg.wParam);
+	return static_cast<int>(msg.wParam); // return exit message
 }
 
 
@@ -133,16 +121,20 @@ int WINAPI WinMain(const HINSTANCE instance, const HINSTANCE prev_instance, cons
 void render_frame(Camera *camera)
 {
 	const auto view_projection = camera->calculate_view_projection(); // get camera view projection to project the 3d space to 2d 
-	const auto sky_lock = XMMatrixTranslationFromVector(camera->transform.get_local_position()) * view_projection; // move skybox transform with the camera
+	const auto sky_lock = XMMatrixTranslationFromVector(camera->get_transform()->get_local_position()) * view_projection; // move skybox transform with the camera
 	
 	dx_handle->clear_rtv(); // clear the render target view
 
 	// draw start
 	skybox.draw(sky_lock); // draw skybox
-	scene_root.update_constant_buffer_time_scaled(view_projection, view_projection, directional_light_shines_from, directional_light_colour, ambient_light_colour, timer->total_time()); // update constant buffer values for every gameobject in the scene
+
+	// update constant buffer values for every gameobject in the scene
+	scene_root.update_constant_buffer_time_scaled(view_projection, view_projection, directional_light_shines_from, directional_light_colour, ambient_light_colour, timer->total_time()); 
 	scene_root.draw(view_projection); // draw scene
-	fps_info->RenderText();
-	stat_info->RenderText();
+
+	// draw text 
+	fps_info->RenderText(); // average fps text
+	stat_info->RenderText(); // kills, deaths, score text
 	//particles.draw(&view_projection); // does not work somehow, potential to improve, but time was short
 	// draw end
 
@@ -151,88 +143,80 @@ void render_frame(Camera *camera)
 
 
 
-void draw_map(const XMMATRIX view_projection)
-{
-	for (size_t i = 0; i < upper_platform_count; i++)
-	{
-		upper_platforms[i].draw(view_projection/*,D3D11_PRIMITIVE_TOPOLOGY_POINTLIST*/);
-		middle_platforms[i].draw(view_projection/*,D3D11_PRIMITIVE_TOPOLOGY_POINTLIST*/);
-		lower_platforms[i].draw(view_projection/*,D3D11_PRIMITIVE_TOPOLOGY_POINTLIST*/);
-	}
-}
-
-
-
 void update(VGTime* timer)
 {
-	string kills = "kills " + std::to_string(player->get_stats().kills);
-	string deaths = "deaths " + std::to_string(player->get_stats().deaths);
-	string score = "score " + std::to_string(player->get_stats().score);
-	fps_info->AddText("FPS " + std::to_string(timer->get_fps()), -0.5, +1.0, 0.1);
-	stat_info->AddText(kills, -1.0, +1.0, 0.05);
-	stat_info->AddText(deaths, -1.0, +0.95, 0.05);
-	stat_info->AddText(score, -1.0, +0.90, 0.05);
+	const auto kills = "kills " + std::to_string(player->get_stats().kills); // player kills text
+	const auto deaths = "deaths " + std::to_string(player->get_stats().deaths); // player deaths text
+	const auto score = "score " + std::to_string(player->get_stats().score); // player score text
+	fps_info->AddText("FPS " + std::to_string(timer->get_fps()), -0.5, +1.0, 0.1); // add fps info text
+	stat_info->AddText(kills, -1.0, +1.0, 0.05); // add kills text
+	stat_info->AddText(deaths, -1.0, +0.95, 0.05); // add deaths text
+	stat_info->AddText(score, -1.0, +0.90, 0.05); // add score text
 	
 	scene_root.update(timer); // update scene with all its children
 }
 
+
+
 void end_game()
 {
 	timer->stop();
-}
-
-void update_ai()
-{
-
+	scene_root.cleanup();	
 }
 
 
-
-void debug_util(const int str)
-{
-	std::ostringstream ss;
-	ss << str;
-	string s = ss.str() + "\n";
-	OutputDebugString(s.c_str());
-}
+// was only used for debugging, excluded from build
+//void debug_util(const int str)
+//{
+//	std::ostringstream ss;
+//	ss << str;
+//	string s = ss.str() + "\n";
+//	OutputDebugString(s.c_str());
+//}
 
 void load_lava()
 {
 	
 }
 
+void load_enemies(GameObject* root)
+{
+	for (size_t i = 0; i < enemy_count; i++)
+	{
+		auto e = new Enemy("enemy", enemy, new Transform(XMVectorSplatOne(), XMQuaternionIdentity(), XMVectorSet(i * plat_distance_horizontal, plat_distance_vertical * 1.5, i * plat_distance_horizontal, 0)));
+			root->add_child(e);
+	}
+}
+
 void load_map(GameObject* root, const float scale)
 {
-	const auto scale_vector = XMVectorSet(1, 1, 1, 0) * scale; // platform scale
-	const auto rotation = XMQuaternionIdentity(); // identity rotation
-	const auto plat_distance_horizontal = 20 * scale;
-	const auto plat_distance_vertical = 20 * scale;
+
 	scene_root.add_child(lava);
 
 	// initialise lower platforms
-	for (size_t i = 0; i < sqrt(lower_platform_count); i++)
+	for (size_t i = 0; i < sqrt(platform_count); i++)
 	{
-		for (size_t j = 0; j < sqrt(lower_platform_count); j++)
+		for (size_t j = 0; j < sqrt(platform_count); j++)
 		{
-			const auto pl = new GameObject("lower_platform", island_model, Transform(scale_vector, rotation, XMVectorSet(i * plat_distance_horizontal, plat_distance_vertical, j * plat_distance_horizontal, 0)));
+			const auto pl = new GameObject("lower_platform", island_model, new Transform(scale_vector, rotation, XMVectorSet(i * plat_distance_horizontal, plat_distance_vertical, j * plat_distance_horizontal, 0)));
 			root->add_child(pl);
 		}
 	}
 
-	for (size_t i = 0; i < sqrt(middle_platform_count); i++)
+	for (size_t i = 0; i < sqrt(platform_count); i++)
 	{
-		for (size_t j = 0; j < sqrt(middle_platform_count); j++)
+		for (size_t j = 0; j < sqrt(platform_count); j++)
 		{
-			const auto pl = new GameObject("middle_platform", island_model, Transform(scale_vector, rotation, XMVectorSet(i * plat_distance_horizontal, plat_distance_vertical * 2, j * plat_distance_horizontal, 0)));
+			const auto pl = new GameObject("middle_platform", island_model, new Transform(scale_vector, rotation, XMVectorSet(i * plat_distance_horizontal, plat_distance_vertical * 2, j * plat_distance_horizontal, 0)));
 			root->add_child(pl);
 		}
 	}
 
-	for (size_t i = 0; i < sqrt(upper_platform_count); i++)
+	for (size_t i = 0; i < sqrt(platform_count); i++)
 	{
-		for (size_t j = 0; j < sqrt(upper_platform_count); j++)
+		for (size_t j = 0; j < sqrt(platform_count); j++)
 		{
-			const auto pl = new GameObject("upper_platform", island_model, Transform(scale_vector, rotation, XMVectorSet(i * plat_distance_horizontal, plat_distance_vertical * 3, j * plat_distance_horizontal, 0)));
+			const auto pl = new GameObject("upper_platform", island_model, new Transform(scale_vector, rotation, XMVectorSet(i * plat_distance_horizontal, plat_distance_vertical * 3, j * plat_distance_horizontal, 0)));
 			root->add_child(pl);
 		}
 	}
@@ -244,39 +228,42 @@ void load_map(GameObject* root, const float scale)
 // loads all objects in the scene and the scene root
 void load_content()
 {
-	particles = ParticleFactory();
-	particles.create_particle();
+	// particles 
+	particles = ParticleFactory(); // particle object
+	particles.create_particle(); // particle creation
 	
-
 	timer = new VGTime(); // the game timer for steady movement
-	skybox = Skybox("assets/purple_nebular.dds"); // skybox that loads a cubemap
+	skybox = Skybox("assets/purple_nebular.dds"); // skybox that loads a cube-map
 
-	//cube = new Model("assets/cube.obj", CB_STATE_TIME_SCALED, MESH); // simple cube model used for enemies
-
+	// initialize floating platform model
 	island_model = new Model("assets/FloatingIsland_001.obj", CB_STATE_TIME_SCALED); // platform model i made by myself
-	//island_model = new Model("assets/cube.obj", CB_STATE_TIME_SCALED); // platform model i made by myself
 	island_model->load_texture("assets/crate.jpg"); // texture of the platform model
-	island_model->set_shader_file("lighted_shader.hlsl");
+	island_model->set_shader_file("lighted_shader.hlsl"); // set shader for the model
+
+	// initialize enemy model
+	enemy = new Model("assets/cube.obj", CB_STATE_TIME_SCALED); // cube model
+	enemy->load_texture("assets/lava_selfmade_diffuse.png"); // texture of the enemy model
+	enemy->set_shader_file("lighted_shader.hlsl"); // set shader for the model
 
 	// initialize player gameobject
 	player = new Player("player1"); // the player gameobject
-	player->transform = Transform(XMVectorSplatOne(), XMQuaternionIdentity(), XMVectorSet(0, 30, 0, 0)); // set initial player position
+	player->set_transform(new Transform(XMVectorSplatOne(), XMQuaternionIdentity(), XMVectorSet(0, 30, 0, 0))); // set initial player position
 	player->update(timer); // call one update to set player to the correct position
 
-	//enemy = Enemy("enemy", cube, Transform(scale, rotation, XMVectorSet(0, 10, 0.0f, 0.0f))); // enemy gameobject
+	// initialize lava gameobject
+	lava_floor = new LavaFloor("assets/lava_selfmade_diffuse.png", lava_tiles); // lava model
+	lava = new GameObject("lava", lava_floor, new Transform(), LAVA); // lava gameobject
+	lava->get_transform()->translate(lava_floor->get_transform()->get_local_position()); // translate the lave to be centered along the x and y axis
 
-	lava_floor = new LavaFloor("assets/lava_selfmade_diffuse.png"); // lava model
-	lava = new GameObject("lava", lava_floor, Transform(), LAVA); // lava gameobject
-	lava->transform.translate(lava_floor->get_transform()->get_local_position()); // translate the lave to be centered along the x and y axis
+	// initialize scene root
+	scene_root = GameObject("scene_root"); // root object
+	scene_root.set_kinetic(false); // make root static not affected by gravity
+	scene_root.add_child(player); // add player to root as first to ensure he gets updates before all other objects
 
-	scene_root = GameObject("scene_root");
-	scene_root.set_kinetic(false);
-	scene_root.add_child(player);
-	//const auto pl = new GameObject("middle_platform", island_model, Transform(XMVectorSplatOne(), XMQuaternionIdentity(), XMVectorSet(0, 10 , 0, 0)));
-	//lower_platforms.push_back(*pl);
-	//scene_root.add_child(pl);
+
+
 	load_map(&scene_root, 1);
-
+	load_enemies(&scene_root);
 	timer->start();
 }
 
@@ -333,11 +320,3 @@ LRESULT CALLBACK wnd_proc(const HWND hwnd, const UINT message, const WPARAM w_pa
 	return 0;
 }
 
-
-
-/*
-HRESULT initialise_window(HINSTANCE hInstance, int nCmdShow)
-{
-	return 0;
-}
-*/

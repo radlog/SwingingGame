@@ -13,7 +13,7 @@ LavaFloor::~LavaFloor()
 
 }
 
-LavaFloor::LavaFloor(const LPCSTR texture, const LPCSTR texture_normal, const LPCSTR texture_noise, const int tiles, const float scale) : Floor(tiles, scale)
+LavaFloor::LavaFloor(const LPCSTR texture, const int tiles, const float scale, const LPCSTR texture_normal, const LPCSTR texture_noise) : Floor(tiles, scale)
 {
 	set_shader_file("lava_shader.hlsl");
 

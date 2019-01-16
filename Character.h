@@ -42,7 +42,7 @@ public:
 	 * \param model characters model
 	 * \param transform initial starting transform
 	 */
-	Character(LPCSTR name, Model *model, Transform transform = Transform());
+	Character(LPCSTR name, Model *model, Transform *transform);
 
 	/**
 	 * \brief cuts the selected character off the hook

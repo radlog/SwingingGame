@@ -17,7 +17,7 @@ public:
 	~Enemy();
 	
 	explicit Enemy(LPCSTR name);
-	explicit Enemy(LPCSTR name, Model *model, Transform transform = Transform());
+	explicit Enemy(LPCSTR name, Model *model, Transform *transform);
 
 	/**
 	 * \brief causes the enemy to attack a character
@@ -25,8 +25,13 @@ public:
 	 */
 	void attack(Character target) const;
 
+
 	void chase_target(GameObject *target, VGTime *timer);
-	void update(VGTime * timer)override;
-	
+	void update(VGTime * timer) override;
+
+private:
+	float time_since_collision_ = 0;
+	float time_to_recover_ = 4;
+	void step_back(VGTime* timer, XMVECTOR direction);
 };
 

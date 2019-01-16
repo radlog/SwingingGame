@@ -20,7 +20,7 @@ public:
 	 * \param transform starting transform
 	 * \param fps first person mode
 	 */
-	explicit Player(LPCSTR name, Model *model, Transform transform = Transform(), bool fps = true);
+	explicit Player(LPCSTR name, Model *model, Transform *transform, bool fps = true);
 	/**
 	 * \brief process input using the direct input class of the current directX instance
 	 * \param timer using VGTime to update with deltaTime

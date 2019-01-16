@@ -138,17 +138,17 @@ HRESULT Input::update_input(GameObject* actor, VGTime* game_time)
 
 	if (is_key_released(DIK_G)) actor->set_kinetic(!actor->get_kinetic());
 
-	if (is_key_pressed(DIK_A)) direction += -actor->transform.get_local_right();
-	if (is_key_pressed(DIK_D)) direction += actor->transform.get_local_right();
+	if (is_key_pressed(DIK_A)) direction += -actor->get_transform()->get_local_right();
+	if (is_key_pressed(DIK_D)) direction += actor->get_transform()->get_local_right();
 	if (is_key_pressed(DIK_W))
 	{
-		if (locked_)direction += actor->transform.get_local_forward_horizontal();
-		else direction += actor->transform.get_local_forward();
+		if (locked_)direction += actor->get_transform()->get_local_forward_horizontal();
+		else direction += actor->get_transform()->get_local_forward();
 	}
 	if (is_key_pressed(DIK_S))
 	{
-		if (locked_)direction += -actor->transform.get_local_forward_horizontal();
-		else direction += -actor->transform.get_local_forward();
+		if (locked_)direction += -actor->get_transform()->get_local_forward_horizontal();
+		else direction += -actor->get_transform()->get_local_forward();
 	}
 
 	if (is_key_pressed(DIK_LEFT)) { actor->rotate_fixed(0, static_cast<float>(-game_time->delta_time() * rot_speed_), 0); 	OutputDebugStringA("left arrow : ");  OutputDebugStringA(std::to_string((-game_time->delta_time() * rot_speed_)).c_str()); OutputDebugStringA("\n"); }

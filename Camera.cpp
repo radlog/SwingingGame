@@ -4,7 +4,7 @@
 
 Camera::Camera()
 {
-	transform = Transform(XMVectorSet(1,1,1,0),XMQuaternionIdentity(), XMVectorSet(0.0, 0.0, -20.0, 0.0));	
+	transform_ = new Transform(XMVectorSet(1,1,1,0),XMQuaternionIdentity(), XMVectorSet(0.0, 0.0, -20.0, 0.0));	
 	//XMStoreFloat4x4(&world, transform.calculate_world_transform());
 	view_ = XMMatrixIdentity();
 	projection_ = XMMatrixPerspectiveFovLH(XMConvertToRadians(default_fov_), default_aspect_ratio_, default_near_plane_, default_far_plane_);
@@ -17,7 +17,7 @@ Camera::~Camera()
 
 Camera::Camera(const LPCSTR name, const float fov, const float aspect_ratio, const float near_plane, const float far_plane) : GameObject(name), look_at_(XMVectorSet(0,0,0,0))
 {
-	transform = Transform();
+	transform_ = new Transform();
 	view_ = XMMatrixIdentity();
 
 	this->fov_ = fov;
@@ -85,7 +85,7 @@ float Camera::get_far_plane() const
 XMMATRIX Camera::calculate_view_projection()
 {
 	XMVECTOR determinant;
-	view_ = XMMatrixInverse(&determinant, transform.calculate_world_transform());
+	view_ = XMMatrixInverse(&determinant, transform_->calculate_world_transform());
 	view_projection = XMMatrixMultiply(view_, projection_);
 	return view_projection;
 }

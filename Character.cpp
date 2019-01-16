@@ -11,7 +11,7 @@ Character::Character(const LPCSTR name) : GameObject(name)
 
 }
 
-Character::Character(const LPCSTR name, Model *model, const Transform transform) : GameObject(name, model, transform)
+Character::Character(const LPCSTR name, Model *model, Transform *transform) : GameObject(name, model, transform)
 {
 }
 
@@ -74,7 +74,7 @@ Stats Character::get_stats()
 void Character::die()
 {
 	stats_.deaths += 1;
-	transform.translate(XMVectorSet(0, 30, 0, 0));
+	transform_->translate(XMVectorSet(0, 30, 0, 0));
 	set_grounded(false);
 	air_time_ = 0;
 }
@@ -93,7 +93,7 @@ bool Character::inflict(float dmg)
 void Character::update(VGTime* timer)
 {
 	GameObject::update(timer);
-	if (transform.get_local_position().y < -10)
+	if (transform_->get_local_position().y < -10)
 		die();
 }
 

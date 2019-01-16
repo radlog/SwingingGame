@@ -50,7 +50,7 @@ public:
 	 * \param transform initial gameobject's transform
 	 * \param tag
 	 */
-	GameObject(LPCSTR name, Model *model, const Transform transform, TAG tag = DEFAULT);
+	GameObject(LPCSTR name, Model *model, Transform *transform, TAG tag = DEFAULT);
 	/**
 	 * \brief draw the objects model with provided view_projection, default constant buffer flag, topology mode
 	 * \param view_projection pass in cameras view projection
@@ -75,9 +75,9 @@ public:
 
 
 
-	// TODO: make transform private or find out how to make it an interface or how to make a better abstraction 
-	Transform transform; // the transform of the object
 
+	Transform* get_transform() const;
+	void set_transform(Transform* transform);
 
 	Collider* get_last_collision();
 	virtual void spawn(XMVECTOR position);
@@ -120,6 +120,6 @@ protected:
 
 	SphereCollider *sphere_collider_;
 	MeshCollider *mesh_collider_;
-
+	Transform *transform_; // the transform of the object
 
 };
