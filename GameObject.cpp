@@ -53,7 +53,7 @@ void GameObject::update(VGTime *timer)
 		{
 			air_time_ += timer->delta_time();
 			const auto falling_velocity = Physics3D::gravity * (air_time_*air_time_);
-			translate(Transform::world_up, falling_velocity * timer->delta_time());
+			translate(Transform::world_down, falling_velocity * timer->delta_time());
 		}
 	}
 

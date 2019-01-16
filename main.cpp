@@ -207,7 +207,7 @@ void load_map(GameObject* root, const float scale)
 	const auto rotation = XMQuaternionIdentity(); // identity rotation
 	const auto plat_distance_horizontal = 20 * scale;
 	const auto plat_distance_vertical = 20 * scale;
-	//scene_root.add_child(lava);
+	scene_root.add_child(lava);
 
 	// initialise lower platforms
 	for (size_t i = 0; i < sqrt(lower_platform_count); i++)
