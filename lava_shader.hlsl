@@ -4,6 +4,9 @@ Texture2D texture2 : register(t2);
 
 SamplerState sampler0;
 
+
+
+// constant buffer
 cbuffer CB0
 {
     matrix WorldViewProjection; // 64 bytes
@@ -38,9 +41,6 @@ struct VIn
 VOut VShader(VIn input)
 {
     VOut output;
-    //float aplitude = 1.0f;
-    //float frequency = 12.0f;
-   // float2 noise = sin(TotalTime * frequency) * sin(TotalTime * frequency / 3);
 
     float2 tmp = input.texcoord;
 
@@ -48,17 +48,12 @@ VOut VShader(VIn input)
     output.worldToEye = (WorldViewProjection, input.position);
 
     // map texcoords and move them
-    output.texcoord_diffuse = float2(tmp.x, tmp.y)+TotalTime / 10;
-    output.texcoord_normal = float2(tmp.x, tmp.y) + TotalTime/10;
-    output.texcoord_noise = tmp + TotalTime/2;
-    //float2(sin(tmp.x * TotalTime / 10), sin(tmp.y * TotalTime / 10));
+    output.texcoord_diffuse = float2(tmp.x, tmp.y) + TotalTime ;
+    output.texcoord_normal = float2(tmp.x, tmp.y) + TotalTime;
+    output.texcoord_noise = tmp + TotalTime / 2;
 
-
-    // move the lava vertices themselves
+    // move the lava vertices themselves to create waves
     output.position.y += (abs(sin((TotalTime / 2 + input.position.z)) * sin(TotalTime / 10 + input.position.x))) / 2;
-    output.position.z += sin(TotalTime + input.position.y) / 100;
-    output.position.x += sin(TotalTime + input.position.y) / 100;
-
 
     float diffuse_amount = dot(directional_light, input.normal);
     diffuse_amount = saturate(diffuse_amount);
@@ -69,21 +64,21 @@ VOut VShader(VIn input)
 
 float4 PShader(VOut input) : SV_TARGET
 {
+    int offset = 50;
+    // move texcoords of all three textures
     
-	input.texcoord_diffuse.x /= 50 + sin(TotalTime);
-	input.texcoord_diffuse.y /= 50 + sin(TotalTime);
+    input.texcoord_diffuse.x /= offset - sin(TotalTime) * 100;
+    input.texcoord_diffuse.y /= offset - sin(TotalTime) * 200;
 
-	input.texcoord_normal.x /= 50 + sin(TotalTime);
-	input.texcoord_normal.y /= 50 + sin(TotalTime);
+    input.texcoord_normal.x /= offset + sin(TotalTime);
+    input.texcoord_normal.y /= offset + sin(TotalTime);
 
-	input.texcoord_noise.x /= 5 + sin(TotalTime);
-	input.texcoord_noise.y /= 5 + sin(TotalTime);
+    input.texcoord_noise.x /= offset / 10 + sin(TotalTime);
+    input.texcoord_noise.y /= offset / 10 + sin(TotalTime);
 
     float4 diffuse = texture0.Sample(sampler0, input.texcoord_diffuse);
     float4 normal = texture1.Sample(sampler0, input.texcoord_normal);
-    float4 noise = texture2.Sample(sampler0, input.texcoord_noise);// * float4(0.1, 0.1, 0.1, 1);
+    float4 noise = texture2.Sample(sampler0, input.texcoord_noise);
 
-    //return input.color;
-    return input.color * normal * diffuse - noise;
-    //return input.color * texture0.Sample(sampler0, input.texcoord_diffuse) * texture1.Sample(sampler0, input.texcoord_noise);
+    return input.color * diffuse * (normal - noise);
 }

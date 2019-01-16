@@ -11,6 +11,7 @@ Geometry::~Geometry()
 {
 }
 
+// create a cube suitable for a skybox
 POS_TEX_VERTEX* Geometry::create_skybox(UINT *numverts)
 {
 	*numverts = cube_num_verts;
@@ -65,6 +66,7 @@ POS_TEX_VERTEX* Geometry::create_skybox(UINT *numverts)
 	return skybox;
 }
 
+// create a cube with position,texture,normal
 POS_TEX_NORM_VERTEX* Geometry::cube_ptn(UINT *numverts)
 {
 	*numverts = cube_num_verts;
@@ -118,6 +120,7 @@ POS_TEX_NORM_VERTEX* Geometry::cube_ptn(UINT *numverts)
 	return cube;
 }
 
+// create a cube with position,texture,color
 POS_COL_TEX_VERTEX* Geometry::cube_ptc(UINT *numverts)
 {
 	*numverts = cube_num_verts;
@@ -171,6 +174,7 @@ POS_COL_TEX_VERTEX* Geometry::cube_ptc(UINT *numverts)
 	return cube;
 }
 
+// create a cube with position,texture,normal,color
 POS_TEX_NORM_COL_VERTEX* Geometry::cube_ptnc(UINT *numverts)
 {
 	*numverts = cube_num_verts;
@@ -224,6 +228,7 @@ POS_TEX_NORM_COL_VERTEX* Geometry::cube_ptnc(UINT *numverts)
 	return cube;
 }
 
+// create a plane with indices,tiles,texture,normal
 void Geometry::plane_ittn(POS_TEX_NORM_COL_VERTEX** plane, unsigned int **indices, const UINT tiles)
 {
 	const auto plane_vertices = new POS_TEX_NORM_COL_VERTEX[(tiles + 1)*(tiles + 1)];
@@ -256,56 +261,3 @@ void Geometry::plane_ittn(POS_TEX_NORM_COL_VERTEX** plane, unsigned int **indice
 	*plane = plane_vertices;
 	*indices = plane_indices;
 }
-
-// NOTE::this method is not used in this solution. I still want to keep it for testing
-//POS_COL_VERTEX* Geometry::cube_pc(const float scale)
-//{
-//	POS_COL_VERTEX color_cube[] =
-//	{
-//		// back face 
-//		{XMFLOAT3(-scale, scale, scale), XMFLOAT4(1, 0.0f, 0.0f, 1)},
-//		{XMFLOAT3(-scale, -scale, scale), XMFLOAT4(1, 0.0f, 0.0f, 1)},
-//		{XMFLOAT3(scale, scale, scale), XMFLOAT4(1, 0.0f, 0.0f, 1)},
-//		{XMFLOAT3(scale, scale, scale), XMFLOAT4(1, 0.0f, 0.0f, 1)},
-//		{XMFLOAT3(-scale, -scale, scale),XMFLOAT4(1, 0.0f, 0.0f, 1)},
-//		{XMFLOAT3(scale, -scale, scale), XMFLOAT4(1, 0.0f, 0.0f, 1)},
-//		// front face
-//		{XMFLOAT3(-scale, -scale, -scale), XMFLOAT4(1, 0.0f, 0.0f, 1)},
-//		{XMFLOAT3(-scale, scale, -scale), XMFLOAT4(1, 0.0f, 0.0f, 1)},
-//		{XMFLOAT3(scale, scale, -scale),  XMFLOAT4(1, 0.0f, 0.0f, 1)},
-//		{XMFLOAT3(-scale, -scale, -scale),  XMFLOAT4(1, 0.0f, 0.0f, 1)},
-//		{XMFLOAT3(scale, scale, -scale),  XMFLOAT4(1, 0.0f, 0.0f, 1)},
-//		{XMFLOAT3(scale, -scale, -scale),  XMFLOAT4(1, 0.0f, 0.0f, 1)},
-//		// left face
-//		{XMFLOAT3(-scale, -scale, -scale), XMFLOAT4(0.0f, 0.0f, 1, 1)},
-//		{XMFLOAT3(-scale, -scale, scale), XMFLOAT4(0.0f, 0.0f, 1, 1)},
-//		{XMFLOAT3(-scale, scale, -scale), XMFLOAT4(0.0f, 0.0f, 1, 1)},
-//		{XMFLOAT3(-scale, -scale, scale), XMFLOAT4(0.0f, 0.0f, 1, 1)},
-//		{XMFLOAT3(-scale, scale, scale), XMFLOAT4(0.0f, 0.0f, 1, 1)},
-//		{XMFLOAT3(-scale, scale, -scale), XMFLOAT4(0.0f, 0.0f, 1, 1)},
-//		// right face
-//		{XMFLOAT3(scale, -scale, scale),  XMFLOAT4(0.0f, 0.0f, 1, 1)},
-//		{XMFLOAT3(scale, -scale, -scale),  XMFLOAT4(0.0f, 0.0f, 1, 1)},
-//		{XMFLOAT3(scale, scale, -scale),  XMFLOAT4(0.0f, 0.0f, 1, 1)},
-//		{XMFLOAT3(scale, scale, scale), XMFLOAT4(0.0f, 0.0f, 1, 1)},
-//		{XMFLOAT3(scale, -scale, scale),  XMFLOAT4(0.0f, 0.0f, 1, 1)},
-//		{XMFLOAT3(scale, scale, -scale),  XMFLOAT4(0.0f, 0.0f, 1, 1)},
-//		// bottom face
-//		{XMFLOAT3(scale, -scale, -scale), XMFLOAT4(0.0f, 1, 0.0f, 1)},
-//		{XMFLOAT3(scale, -scale, scale), XMFLOAT4(0.0f, 1, 0.0f, 1)},
-//		{XMFLOAT3(-scale, -scale, -scale), XMFLOAT4(0.0f, 1, 0.0f, 1)},
-//		{XMFLOAT3(scale, -scale, scale), XMFLOAT4(0.0f, 1, 0.0f, 1)},
-//		{XMFLOAT3(-scale, -scale, scale), XMFLOAT4(0.0f, 1, 0.0f, 1)},
-//		{XMFLOAT3(-scale, -scale, -scale), XMFLOAT4(0.0f, 1, 0.0f, 1)},
-//		// top face
-//		{XMFLOAT3(scale, scale, scale), XMFLOAT4(0.0f, 1, 0.0f, 1)},
-//		{XMFLOAT3(scale, scale, -scale),XMFLOAT4(0.0f, 1, 0.0f, 1)},
-//		{XMFLOAT3(-scale, scale, -scale), XMFLOAT4(0.0f, 1, 0.0f, 1)},
-//		{XMFLOAT3(-scale, scale, scale), XMFLOAT4(0.0f, 1, 0.0f, 1)},
-//		{XMFLOAT3(scale, scale, scale), XMFLOAT4(0.0f, 1, 0.0f, 1)},
-//		{XMFLOAT3(-scale, scale, -scale), XMFLOAT4(0.0f, 1, 0.0f, 1)}
-//	};
-//
-//
-//	return color_cube;
-//}

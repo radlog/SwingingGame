@@ -9,7 +9,8 @@ D3Dfw::~D3Dfw()
 
 }
 
-D3Dfw::D3Dfw()
+D3Dfw::D3Dfw(): h_inst(nullptr), h_wnd(nullptr), input(nullptr), device_(nullptr), immediate_context_(nullptr),
+                z_buffer_(nullptr)
 {
 }
 
@@ -17,7 +18,7 @@ D3Dfw * D3Dfw::get_instance()
 {
 	if (instance_ == nullptr)
 		instance_ = new D3Dfw();
-	return instance_;
+	return instance_; // return singleton instance for any class needs access to it
 }
 
 
@@ -41,15 +42,15 @@ HRESULT D3Dfw::initialise_window(const HINSTANCE instance, const int n_cmd_show,
 
 	// create window
 	h_inst = instance;
-	RECT rc = { 0, 0, screen_width_, screen_height_ };
-	AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, FALSE);
+	RECT rc = { 0, 0, screen_width_, screen_height_ }; // rectangle with corner positions
+	AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, FALSE); // put the window rect to a specific position
 	h_wnd = CreateWindow(name, g_title_, WS_OVERLAPPEDWINDOW,
 		CW_USEDEFAULT, CW_USEDEFAULT, rc.right - rc.left,
 		rc.bottom - rc.top, NULL, NULL, instance, NULL);
 	if (!h_wnd)
 		return E_FAIL;
 
-	ShowWindow(h_wnd, n_cmd_show);
+	ShowWindow(h_wnd, n_cmd_show); // make window visible
 
 	return S_OK;
 }
@@ -59,20 +60,22 @@ HRESULT D3Dfw::initialise_dx() {
 
 	RECT rc;
 	GetClientRect(h_wnd, &rc);
-	const UINT width = rc.right - rc.left;
-	const UINT height = rc.bottom - rc.top;
+	// width and height defined by the rectangle of the window
+	const UINT width = rc.right - rc.left; // window width
+	const UINT height = rc.bottom - rc.top; // window height
 
-	const UINT create_device_flags = 0;
 
 
+	// direct x driver types
 	D3D_DRIVER_TYPE driver_types[] =
 	{
-		D3D_DRIVER_TYPE_HARDWARE, // 
-		D3D_DRIVER_TYPE_WARP, // 
+		D3D_DRIVER_TYPE_HARDWARE, 
+		D3D_DRIVER_TYPE_WARP, 
 		D3D_DRIVER_TYPE_REFERENCE,
 	};
-	const auto num_driver_types = ARRAYSIZE(driver_types);
+	const auto num_driver_types = ARRAYSIZE(driver_types); // number of driver types
 
+	// supported feature levels
 	D3D_FEATURE_LEVEL feature_levels[] =
 	{
 		D3D_FEATURE_LEVEL_11_0,
@@ -95,6 +98,8 @@ HRESULT D3Dfw::initialise_dx() {
 	sd.SampleDesc.Quality = 0;
 	sd.Windowed = true;
 
+	// loop through driver types and create device and swap chain connection. break when succeded
+	const UINT create_device_flags = 0;
 	for (auto& driver_type : driver_types)
 	{
 		driver_type_ = driver_type;
@@ -110,22 +115,23 @@ HRESULT D3Dfw::initialise_dx() {
 		return hr;
 
 	
-
+	// load swap chain buffer into texture resource
 	ID3D11Texture2D* buffer_texture = nullptr;
 	hr = swap_chain_->GetBuffer(0, __uuidof(ID3D11Texture2D),
 		reinterpret_cast<LPVOID*>(&buffer_texture));
 
 	if (FAILED(hr)) return hr;
 
+	// create render target view using buffer texture
 	hr = device_->CreateRenderTargetView(buffer_texture, nullptr, &render_target_view_);
 
-	buffer_texture->Release();
+	buffer_texture->Release(); // delete buffer texture
 
 	if (FAILED(hr)) return hr;
 
-	// create z buffer texture
+	// z buffer texture description
 	D3D11_TEXTURE2D_DESC tex_2d_desc;
-	
+	// free memory for the z buffer description
 	ZeroMemory(&tex_2d_desc, sizeof(tex_2d_desc));
 
 	tex_2d_desc.Width = width;
@@ -137,6 +143,7 @@ HRESULT D3Dfw::initialise_dx() {
 	tex_2d_desc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
 	tex_2d_desc.Usage = D3D11_USAGE_DEFAULT;
 
+	// create z buffer texture
 	ID3D11Texture2D *z_buffer_texture;
 	hr = device_->CreateTexture2D(&tex_2d_desc, nullptr, &z_buffer_texture);
 
@@ -146,13 +153,13 @@ HRESULT D3Dfw::initialise_dx() {
 	D3D11_DEPTH_STENCIL_VIEW_DESC dsv_desc;
 	ZeroMemory(&dsv_desc, sizeof(dsv_desc));
 
-	dsv_desc.Format = tex_2d_desc.Format;
-	dsv_desc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+	dsv_desc.Format = tex_2d_desc.Format; // set format for the depth stencil buffer
+	dsv_desc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D; // format of the depth stencil view dimension
 
-	device_->CreateDepthStencilView(z_buffer_texture, &dsv_desc, &z_buffer_);
-	z_buffer_texture->Release();
+	device_->CreateDepthStencilView(z_buffer_texture, &dsv_desc, &z_buffer_); // create depth stencil view
+	z_buffer_texture->Release(); // delete z buffer texture
 
-	immediate_context_->OMSetRenderTargets(1, &render_target_view_, z_buffer_);
+	immediate_context_->OMSetRenderTargets(1, &render_target_view_, z_buffer_); // set a single render target view
 
 	// viewport structure
 	D3D11_VIEWPORT viewport;
@@ -167,12 +174,12 @@ HRESULT D3Dfw::initialise_dx() {
 	immediate_context_->RSSetViewports(1, &viewport); // create single viewport 
 
 
-	return S_OK;
+	return hr;
 }
 
 HRESULT D3Dfw::initialise_input()
 {
-	input = new Input();
+	input = new Input(); // create input using program and window instance
 	return input->initialise_input(h_inst, h_wnd);
 }
 
@@ -199,7 +206,7 @@ IDXGISwapChain* D3Dfw::get_swap_chain() const
 }
 
 void D3Dfw::cleanup() const
-{
+{	
 	if (device_) device_->Release();
 	if (immediate_context_) immediate_context_->Release();
 	if (render_target_view_) render_target_view_->Release();

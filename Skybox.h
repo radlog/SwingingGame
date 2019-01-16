@@ -7,19 +7,20 @@ public:
 	Skybox();
 
 	explicit Skybox(LPCSTR texture_name);
-	Skybox(LPCSTR name, Transform transform, BaseModel model);
-	void draw(XMMATRIX view_projection, D3D11_PRIMITIVE_TOPOLOGY mode = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	void draw(XMMATRIX view_projection, D3D11_PRIMITIVE_TOPOLOGY mode = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST) const;
+	void cleanup() const;
 
 private:
-	ID3D11ShaderResourceView *texture_;
 
-	ID3D11RasterizerState *rasterizer_solid_ = nullptr;
-	ID3D11RasterizerState *rasterizer_sky_ = nullptr;
-	ID3D11DepthStencilState *depth_write_solid_ = nullptr;
-	ID3D11DepthStencilState *depth_write_sky_ = nullptr;
+	ID3D11RasterizerState *rasterizer_solid_ = nullptr; // solid rasterizer state
+	ID3D11RasterizerState *rasterizer_sky_ = nullptr; // sky rasterizer state
+	ID3D11DepthStencilState *depth_write_solid_ = nullptr; // solid depth stencil state
+	ID3D11DepthStencilState *depth_write_sky_ = nullptr; // sky depth stencil state
 
-	HRESULT init_rasterizer();
-	HRESULT init_depth_stencil_states();
-	void cleanup() const;
+	HRESULT init_rasterizer(); // initialize rasterizer
+	HRESULT init_depth_stencil_states(); // initialize depth stencil state
+
+
+	
 };
 

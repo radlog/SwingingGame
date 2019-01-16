@@ -1,4 +1,3 @@
-
 #include "main.h"
 
 #include "LavaFloor.h"
@@ -8,18 +7,13 @@
 #include "Model.h"
 #include "Enemy.h"
 #include "Text2D.h"
-#include "ParticleFactory.h"
 
 #include "Camera.h"
 #include "GameObject.h"
 #include "Skybox.h"
 
-
-ParticleFactory particles;
-
-//using namespace std;
+// directX instance handle
 D3Dfw *dx_handle = D3Dfw::get_instance();
-
 
 // 2d text
 Text2D *fps_info;
@@ -149,11 +143,12 @@ void update(VGTime* timer)
 }
 
 
-
+// cleanup all pointers when application closes to prevent memory leaks
 void end_game()
 {
 	timer->stop();
 	scene_root.cleanup();
+	dx_handle->cleanup();	
 }
 
 
@@ -175,8 +170,8 @@ void load_enemies(GameObject* root)
 {
 	for (size_t i = 0; i < enemy_count; i++)
 	{
-		const auto enem = new Enemy("enemy", enemy, new Transform(XMVectorSplatOne(), XMQuaternionIdentity(), XMVectorSet(i * plat_distance_horizontal, plat_distance_vertical * 1.5, i * plat_distance_horizontal, 0)));
-		root->add_child(enem);
+		const auto pl = new Enemy("enemy", enemy, new Transform(XMVectorSplatOne(), XMQuaternionIdentity(), XMVectorSet((i + 1) * plat_distance_horizontal, plat_distance_vertical * 1.5, (i + 1) * plat_distance_horizontal, 0)));
+		root->add_child(pl);
 	}
 }
 
@@ -200,7 +195,7 @@ void load_map(GameObject* root, const float scale)
 		for (size_t j = 0; j < static_cast<int>(sqrt(platform_count)); j++)
 		{
 			const auto pl = new GameObject("middle_platform", island_model, new Transform(scale_vector, rotation, XMVectorSet(i * plat_distance_horizontal, plat_distance_vertical * 2, j * plat_distance_horizontal, 0)));
-			root->add_child(pl); // add to scene
+			root->add_child(pl); // add to scene		
 		}
 	}
 
@@ -210,7 +205,7 @@ void load_map(GameObject* root, const float scale)
 		for (size_t j = 0; j < static_cast<int>(sqrt(platform_count)); j++)
 		{
 			const auto pl = new GameObject("upper_platform", island_model, new Transform(scale_vector, rotation, XMVectorSet(i * plat_distance_horizontal, plat_distance_vertical * 3, j * plat_distance_horizontal, 0)));
-			root->add_child(pl); // add to scene
+			root->add_child(pl); // add to scene			
 		}
 	}
 }
@@ -219,10 +214,6 @@ void load_map(GameObject* root, const float scale)
 // loads all objects in the scene and the scene root
 void load_content()
 {
-	// particles 
-	particles = ParticleFactory(); // particle object
-	particles.create_particle(); // particle creation
-
 	timer = new VGTime(); // the game timer for steady movement
 	skybox = Skybox("assets/purple_nebular.dds"); // skybox that loads a cube-map
 
@@ -242,7 +233,7 @@ void load_content()
 	player->update(timer); // call one update to set player to the correct position
 
 	// initialize lava gameobject
-	lava_floor = new LavaFloor("assets/lava_selfmade_diffuse.png", lava_tiles); // lava model
+	lava_floor = new LavaFloor(lava_tiles); // lava model
 	lava = new GameObject("lava", lava_floor, new Transform(), LAVA); // lava gameobject
 	lava->get_transform()->translate(lava_floor->get_transform()->get_local_position()); // translate the lave to be centered along the x and y axis
 

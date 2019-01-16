@@ -33,13 +33,13 @@ public:
 	ID3D11Device *get_device() const; // returns the instance's device
 	ID3D11DeviceContext *get_immediate_context() const; // returns the instance's context
 	IDXGISwapChain *get_swap_chain() const; // returns the instance's swap chain 
-	
+	void cleanup() const; // cleanup pointers to prevent memory leaks
+
 private:
 
 	D3Dfw();
 	~D3Dfw();
 	static D3Dfw *instance_; // singleton instance object
-	void cleanup() const; // cleanup pointers to prevent memory leaks
 	char g_title_[100] = "Swing to Win(g)"; // the window's title
 
 	ID3D11Device *device_; // pointer hardware device

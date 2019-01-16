@@ -1,9 +1,7 @@
 Texture2D texture0;
 SamplerState sampler0;
 
-
-
-
+// constant buffer
 cbuffer CBuffer0
 {
     float4x4 WVPMatrix; // 64 bytes
@@ -23,12 +21,14 @@ cbuffer CBuffer0
 }; // total 80 bytes
 
 
+// vertex shader out structure
 struct VOut
 {
     float4 position : SV_POSITION;
     float4 color : COLOR;
     float2 texcoord : TEXCOORD;
 };
+
 
 
 // this code is a copy from a resource i wanted to learn from, so i just commented it out
@@ -62,6 +62,7 @@ struct VOut
 //    return finalColor;
 //}
 
+// vertex shader
 VOut VShader(float4 position : POSITION, float4 color : COLOR, float2 texcoord : TEXCOORD, float3 normal : NORMAL)
 {
 
@@ -77,18 +78,18 @@ VOut VShader(float4 position : POSITION, float4 color : COLOR, float2 texcoord :
     
     // PHONG LIFGHTING
     float4 diffuse_amount = saturate(dot(normalize(normal), normalize(directional_light_vector)));
-    float3 reflection = normalize(2 * diffuse_amount * normalize(normal) - normalize(directional_light_vector));
-    float4 specular = pow(saturate(dot(reflection, look_direction)), 20); // R.V^n
+    float3 reflection = normalize(diffuse_amount * normalize(normal) - normalize(directional_light_vector));
+    float4 specular = pow(saturate(dot(reflection, look_direction)), 2);
 
+    // add together the trhee important components to get phong lighting
     output.color = ambient_light_colour + directional_light_colour * diffuse_amount + specular;
     output.texcoord = texcoord;
 
     return output;
 }
 
+// pixel shader
 float4 PShader(float4 position : SV_POSITION, float4 color : COLOR, float2 texcoord : TEXCOORD) : SV_TARGET
 {
-
-
     return color * texture0.Sample(sampler0, texcoord);;
 }

@@ -72,141 +72,144 @@ HRESULT Input::initialise_input(const HINSTANCE instance, const HWND hwnd)
 
 HRESULT Input::update_input(GameObject* actor, VGTime* game_time)
 {
+	// update keyboard input and write state in keyboard_keys_state_
 	HRESULT hr = keyboard_->GetDeviceState(sizeof(keyboard_keys_state_), LPVOID(&keyboard_keys_state_));
 
 	if (FAILED(hr)) {
 		if ((hr == DIERR_INPUTLOST) || (hr == DIERR_NOTACQUIRED))
 		{
-			keyboard_->Acquire();
+			keyboard_->Acquire(); // reacquire keyboard when input signal was lost
 		}
 	}
 
+	// update mouse input and write state in the mouse_state_
 	hr = mouse_input_->GetDeviceState(sizeof(mouse_state_), LPVOID(&mouse_state_));
 
 	if (FAILED(hr)) {
 		if ((hr == DIERR_INPUTLOST) || (hr == DIERR_NOTACQUIRED))
 		{
-			mouse_input_->Acquire();
+			mouse_input_->Acquire(); // reacquire mouse when input signal was lost
 		}
 	}
 
-	if (is_key_released(DIK_L))
+	if (is_key_released(DIK_L)) // pause first person control and all other input
 		paused_ = !paused_;
 
-	if (paused_) return S_OK;
+	if (paused_) return S_OK; // do not check for other keys if input is paused
 
-	if (is_key_pressed(DIK_ESCAPE))
+	if (is_key_pressed(DIK_ESCAPE)) // exit game
 	{
 		cleanup();
 		DestroyWindow(hwnd_);
 	}
 
+	const auto actor_type = typeid(*actor).name(); // get type of actor
+	const auto player_type = typeid(Player).name(); // get type if player
+	auto direction = XMVectorZero(); // set initial direction
 
-	const auto actor_type = typeid(*actor).name();
-	const auto player_type = typeid(Player).name();
-	auto direction = XMVectorZero();
-
-	if (is_key_released(DIK_F)) locked_ = !locked_;
+	if (is_key_released(DIK_F)) locked_ = !locked_; // toggle movement lock to limit movement to x and z or allow all axis
 
 	if (fps_) mouse_moved(actor, game_time); // check mouse movement and rotate in adequate direction
 
+	// DEVELOPERS ONLY
+#ifdef DEBUG
 	if (is_key_pressed(DIK_H)) fly_mode_ = !fly_mode_; // toggle fly mode
+#endif
 
-	if (is_key_pressed(DIK_LSHIFT))
+	if (is_key_pressed(DIK_LSHIFT)) // crouch key
 	{
-		if (fly_mode_) direction = -Transform::world_up;
-		else if (typeid(actor).name() == typeid(Player).name()) static_cast<Player*>(actor)->crouch(game_time);
+		if (fly_mode_) direction = -Transform::world_up; // move down if fly_mode_ is on
+		else if (actor_type == player_type) static_cast<Player*>(actor)->crouch(game_time); // crouch if fly_mode_ is off
 	}
-	auto name = typeid(*actor).name();
+	// DEVELOPERS ONLY 
+#ifdef DEBUG
 	if (is_key_pressed(DIK_SPACE) )
 	{
-		if (fly_mode_) direction = Transform::world_up;
+		if (fly_mode_) direction = Transform::world_up; // move up in world space
 	}
-	if (is_key_pressed(DIK_SPACE) || mouse_state_.lZ > 0)
+#endif
+
+	if (is_key_pressed(DIK_SPACE) || mouse_state_.lZ > 0) // set grounded state if space is pressed
 	{
 		actor->set_grounded(false);
 		static_cast<Player*>(actor)->set_state(AIRBORNE);
 	}
 
+	// execute this only, if the actor is a player
 	if (actor_type == player_type)
 	{
 		if (!actor->get_grounded() && static_cast<Player*>(actor)->get_state() == AIRBORNE)
-			static_cast<Player*>(actor)->jump(game_time);
-		else static_cast<Player*>(actor)->set_state(STANDING);
+			static_cast<Player*>(actor)->jump(game_time); // jump while player state is airborne and is not grounded
+		else static_cast<Player*>(actor)->set_state(STANDING); // set player to standing
 	}
 
-	if (is_key_released(DIK_G)) actor->set_kinetic(!actor->get_kinetic());
+	if (is_key_released(DIK_G)) actor->set_kinetic(!actor->get_kinetic()); // toggle kinetic state to be affected by gravity or not
 
-	if (is_key_pressed(DIK_A)) direction += -actor->get_transform()->get_local_right();
-	if (is_key_pressed(DIK_D)) direction += actor->get_transform()->get_local_right();
+	if (is_key_pressed(DIK_A)) direction += -actor->get_transform()->get_local_right(); // set direction -right
+	if (is_key_pressed(DIK_D)) direction += actor->get_transform()->get_local_right(); // set direction +right
 	if (is_key_pressed(DIK_W))
 	{
-		if (locked_)direction += actor->get_transform()->get_local_forward_horizontal();
-		else direction += actor->get_transform()->get_local_forward();
+		if (locked_)direction += actor->get_transform()->get_local_forward_horizontal(); // horizontal movement forward
+		else direction += actor->get_transform()->get_local_forward(); // movement along all axis forward
 	}
 	if (is_key_pressed(DIK_S))
 	{
-		if (locked_)direction += -actor->get_transform()->get_local_forward_horizontal();
-		else direction += -actor->get_transform()->get_local_forward();
+		if (locked_)direction += -actor->get_transform()->get_local_forward_horizontal(); // horizontal movement backward
+		else direction += -actor->get_transform()->get_local_forward(); // movement along all axis backward
 	}
 
+	// rotation with keyboard ->excluded from build
+#ifdef DEBUG
 	if (is_key_pressed(DIK_LEFT)) { actor->rotate_fixed(0, static_cast<float>(-game_time->delta_time() * rot_speed_), 0); 	OutputDebugStringA("left arrow : ");  OutputDebugStringA(std::to_string((-game_time->delta_time() * rot_speed_)).c_str()); OutputDebugStringA("\n"); }
 	if (is_key_pressed(DIK_RIGHT)) { actor->rotate_fixed(0, static_cast<float>(game_time->delta_time() * rot_speed_), 0); OutputDebugStringA("left arrow : "); OutputDebugStringA(std::to_string((game_time->delta_time() * rot_speed_)).c_str()); 	OutputDebugStringA("\n"); }
 	if (is_key_pressed(DIK_UP)) actor->rotate_fixed(static_cast<float>(-game_time->delta_time() * rot_speed_), 0, 0);
 	if (is_key_pressed(DIK_DOWN)) actor->rotate_fixed(static_cast<float>(game_time->delta_time() * rot_speed_), 0, 0);
+#endif
 
 
-
+	// if direction has changed
 	if (direction.x != 0 || direction.y != 0 || direction.z != 0)
-		actor->translate(direction, game_time->delta_time() * move_speed_);
+		actor->translate(direction, game_time->delta_time() * move_speed_); // move in the direction with move_speed_
 
-
-
-	//SetCursorPos(mouse_x_, mouse_x_);
 	return S_OK;
 }
 
 void Input::mouse_moved(GameObject* actor, VGTime* game_time)
 {
-	const auto speed_x = static_cast<float> (game_time->delta_time() * rot_speed_ * static_cast<float> (mouse_state_.lY));
-	const auto speed_y = static_cast<float>(game_time->delta_time() * rot_speed_ * static_cast<float> (mouse_state_.lX));
+	const auto speed_x = static_cast<float> (game_time->delta_time() * rot_speed_ * static_cast<float> (mouse_state_.lY)); // get mouse state y and store it
+	const auto speed_y = static_cast<float>(game_time->delta_time() * rot_speed_ * static_cast<float> (mouse_state_.lX)); // get mouse state x and store it
 
+	actor->rotate_fixed(speed_x, speed_y, 0); // rotate with a rotation lock for the x axis
 
-	//OutputDebugStringA("mouse y : ");
-	//OutputDebugStringA(std::to_string(speed_x).c_str());
-	//OutputDebugStringA("\n");
-	//OutputDebugStringA("mouse x : ");
-	//OutputDebugStringA(std::to_string(speed_y).c_str());
-	//OutputDebugStringA("\n");
-	actor->rotate_fixed(speed_x, speed_y, 0);
-	//if (speed_x != 0) actor->rotate_fixed(speed_x, 0, 0);
-	//if (speed_y != 0) actor->rotate_fixed(0, speed_y, 0);
+	mouse_x_ = mouse_x_center_; // reset mouse x
+	mouse_y_ = mouse_y_center_; // reset mouse y
 
-	mouse_x_ = mouse_x_center_;
-	mouse_y_ = mouse_y_center_;
-
-	SetCursorPos(0, 0);
+	SetCursorPos(0, 0); // set cursor to default position
 }
 
+// check if the state of the keyboard has the keycode pressed
 bool Input::is_key_pressed(const unsigned char di_keycode)
 {
-	return keyboard_keys_state_[di_keycode] & 0x80;
+	return keyboard_keys_state_[di_keycode] & 0x80; 
 }
 
+// check if any key is released that was previously pressed
 bool Input::is_key_released(const unsigned char di_keycode)
 {
-	if (!is_key_pressed(di_keycode) && pressed_[di_keycode])
+	// if previously pressed keys are stored, but the state has no keycode stored that is pressed
+	if (!is_key_pressed(di_keycode) && pressed_[di_keycode]) 
 	{
 #ifdef DEBUG
 		//OutputDebugString("released");
 #endif
-		return !((pressed_[di_keycode] = !pressed_[di_keycode]));
+		return !((pressed_[di_keycode] = !pressed_[di_keycode])); // negate the pressed stored key and then return its negation
 	}
-	if (is_key_pressed(di_keycode)) pressed_[di_keycode] = true;
+	if (is_key_pressed(di_keycode)) pressed_[di_keycode] = true; // set pressed value in array of keys which are pressed
 
 	return false;
 }
 
+// cleanup to avoid memory leaks 
 void Input::cleanup() const
 {
 	if (keyboard_) {

@@ -5,52 +5,47 @@
 
 Model::Model(const LPCSTR filename, const CB_STATE state) : BaseModel(filename, state), sphere_collider_(nullptr),mesh_collider_(nullptr),radius_(0)
 {
-	origin_ = XMVectorZero();
-	calculate_origin();
-	Model::initialize_sphere_collider();
-	Model::initialize_mesh_collider();
+	calculate_origin(); // get models origin vector
+	Model::initialize_sphere_collider(); // initialize sphere collider
+	Model::initialize_mesh_collider(); // initialize mesh collider
 }
 
 Model::Model(const CB_STATE state) : BaseModel(state), sphere_collider_(nullptr), mesh_collider_(nullptr), radius_(0)
 {
-	origin_ = XMVectorZero();
-	calculate_origin();
-	Model::initialize_sphere_collider();
-	Model::initialize_mesh_collider();
+	calculate_origin(); // get models origin vector
+	Model::initialize_sphere_collider(); // initialize sphere collider
+	Model::initialize_mesh_collider(); // initialize mesh collider
 }
 
 Model::~Model()
 {
 }
 
-void Model::draw(const XMMATRIX view_projection, const bool use_simple_cb, const D3D11_PRIMITIVE_TOPOLOGY mode)
-{
-	BaseModel::draw(view_projection, use_simple_cb, mode);
-}
-
+// return the sphere collider
 SphereCollider* Model::get_bounding_sphere() const
 {
 	return sphere_collider_;
 }
 
+// return the mesh collider
 MeshCollider* Model::get_mesh_collider() const
 {
 	return mesh_collider_;
 }
 
-
+// initialize sphere collider
 void Model::initialize_sphere_collider()
 {
-	radius_ = 0;
-	if (obj_file_model_ != nullptr) radius_ = dist(min_outer_vector_, max_outer_vector_) ;
-	else radius_ = 0.2f;
-	sphere_collider_ = new SphereCollider(origin_, radius_);
+	// get radius from model max and min outer vector
+	if (obj_file_model_ != nullptr) radius_ = dist(min_outer_vector_, max_outer_vector_);
+	else radius_ = initial_radius_; // if model nullptr then set initial radius
+	sphere_collider_ = new SphereCollider(origin_, radius_); // initialize sphere collider with origin and radius
 }
 
+// initialize mesh collider
 void Model::initialize_mesh_collider()
 {
-	if (obj_file_model_ == nullptr) return;
+	if (obj_file_model_ == nullptr) return; // do not use mesh collider if there is no obj model
 
-	mesh_collider_ = new MeshCollider(origin_, obj_file_model_->get_vertex_positions(),radius_);
+	mesh_collider_ = new MeshCollider(origin_, obj_file_model_->get_vertex_positions(),radius_); // initialize mesh collider with origin and radius
 }
-

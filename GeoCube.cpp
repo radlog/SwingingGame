@@ -1,9 +1,10 @@
 #include "GeoCube.h"
 
 
-GeoCube::GeoCube(LPCSTR texture, const VERTEX_FORMAT vertex_format, const CB_STATE state) : Model(state)
+GeoCube::GeoCube(const LPCSTR texture, const VERTEX_FORMAT vertex_format, const CB_STATE state) : Model(state)
 {
-	UINT numverts;
+	UINT numverts; // number of vertices
+	// create different types of cube with different vertex formats
 	switch(vertex_format) 
 	{ 
 		case TEXTURED_LIGHTED: 
@@ -22,14 +23,14 @@ GeoCube::GeoCube(LPCSTR texture, const VERTEX_FORMAT vertex_format, const CB_STA
 		default: break; 
 	}
 
-	initialize_sphere_collider();
+	Model::initialize_sphere_collider(); // initialize sphere collider
 
-	numverts_ = numverts;
+	numverts_ = numverts; // set number of vertices
 
-	origin_ = XMVectorSet(0, 0, 0, 0);
+	origin_ = XMVectorZero(); // geo cubes origin is always zero
 
-	load_geo_model(vertices_, numverts_, vert_size_);
-	load_texture();
+	load_geo_model(vertices_, numverts_, vert_size_); // load created geometry
+	load_texture(texture); // load texture
 }
 
 

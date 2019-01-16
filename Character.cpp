@@ -6,12 +6,12 @@ Character::Character()
 
 }
 
-Character::Character(const LPCSTR name) : GameObject(name), life_(100)
+Character::Character(const LPCSTR name) : GameObject(name), life_(max_life_),speed_(initial_speed_)
 {
 
 }
 
-Character::Character(const LPCSTR name, Model *model, Transform *transform) : GameObject(name, model, transform), life_(100)
+Character::Character(const LPCSTR name, Model *model, Transform *transform) : GameObject(name, model, transform), life_(max_life_)
 {
 }
 
@@ -25,7 +25,7 @@ void Character::cut_target(Character target) const
 {
 	if (target.get_state() == AIRBORNE && state_ == AIRBORNE)
 	{
-
+		
 	}
 }
 
@@ -39,29 +39,32 @@ STATE Character::get_state() const
 	return this->state_;
 }
 
-void Character::set_state(STATE state)
+void Character::set_state(const STATE state)
 {
 	state_ = state;
 }
 
-void Character::set_speed_buff(float speed, float time)
+void Character::set_speed_buff(const float speed, float time)
 {
 	speed_ = speed;
 }
 
 // set kills of character
-void Character::set_stat_kills(int kills)
+void Character::set_stat_kills(const int kills)
 {
+	stats_.kills = kills;
 }
 
 // set deaths of character
-void Character::set_stat_deaths(int deaths)
+void Character::set_stat_deaths(const int deaths)
 {
+	stats_.deaths = deaths;
 }
 
 // set score of character
-void Character::set_stat_score(int score)
+void Character::set_stat_score(const int score)
 {
+	stats_.score = score;
 }
 
 // get stats of the character
@@ -73,11 +76,10 @@ Stats Character::get_stats()
 // character dies
 void Character::die()
 {
-	stats_.deaths += 1;
-	transform_->translate(XMVectorSet(0, 30, 0, 0));
-	set_grounded(false);
-	air_time_ = 0;
-	life_ = 100;
+	stats_.deaths ++;
+	transform_->translate(spawn_position_); // re-spawn character at the initial re-spawn position	
+	air_time_ = 0; // reset air_time
+	life_ = max_life_; // set life back to max
 }
 
 // inflicts damage to the character, the boolean says if the character died or not
@@ -95,7 +97,7 @@ bool Character::inflict(const int dmg)
 void Character::update(VGTime* timer)
 {
 	GameObject::update(timer);
-	if (transform_->get_local_position().y < -10)
+	if (transform_->get_local_position().y < ground_death_position_)
 		die();
 }
 

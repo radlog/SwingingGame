@@ -67,7 +67,7 @@ public:
 	virtual SphereCollider* get_sphere_collider(); // get sphere collider
 	virtual MeshCollider* get_mesh_collider(); // get mesh collider
 	TAG get_tag() const; // get gameobjects tag
-	bool check_collision(GameObject *target); // check collision with other gameobject
+	virtual bool check_collision(GameObject *target); // check collision with other gameobject
 
 
 	Transform* get_transform() const; // returns current transform of the object
@@ -108,5 +108,5 @@ protected:
 	Transform *transform_; // the transform of the object
 
 	void set_parent(GameObject *parent); // set the parent of this object
-	void remove_parent(GameObject *child); // remove the parent of this object
+	void remove_parent(GameObject *child) const; // remove the parent of this object
 };

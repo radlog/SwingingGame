@@ -110,6 +110,10 @@ protected:
 	STATE state_ = STANDING; // character movement state
 	int life_; // character life
 	float speed_; // character movement speed
-	double jump_speed_ = 8.0f; // character jump speed
+	const double jump_speed_ = 8.0f; // character jump speed
+	const XMVECTOR spawn_position_ = XMVectorSet(0, 30, 0, 0);
+	const int max_life_ = 100;
+	const float initial_speed_ = 10;
+	const float ground_death_position_ = -10;
 };
 

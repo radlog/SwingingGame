@@ -15,8 +15,6 @@ public:
 	explicit Model(CB_STATE state = CB_STATE_TIME_SCALED); // initialize model with constant buffer state
 	~Model();
 
-	void draw(XMMATRIX view_projection, bool use_simple_cb = false, D3D11_PRIMITIVE_TOPOLOGY mode = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST) override; // draw override
-
 	SphereCollider* get_bounding_sphere() const; // return bounding sphere collider
 	MeshCollider* get_mesh_collider() const; // return mesh collider
 
@@ -26,5 +24,7 @@ protected:
 	float radius_; // initial radius of the model collision
 	virtual void initialize_sphere_collider(); // initialize sphere collider
 	virtual void initialize_mesh_collider(); // initialize mesh collider
+	
+	const float initial_radius_ = 0.2f;
 };
 

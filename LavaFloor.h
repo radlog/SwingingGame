@@ -6,8 +6,8 @@ class LavaFloor : public Floor
 public:
 	LavaFloor();
 	~LavaFloor();
-	// lava floor initializer taking texture, tiles, scale, normal texture, noise texture
-	explicit LavaFloor(LPCSTR texture, int tiles = 200,float scale = 1.0f, LPCSTR texture_normal = "assets/lava_selfmade_normal.png", LPCSTR texture_noise = "assets/lava_noise.png");
+	// lava floor initializer taking tiles, scale, texture, normal texture, noise texture
+	explicit LavaFloor(int tiles = 200, float scale = 1.0f, LPCSTR texture = "assets/lava_selfmade_diffuse.png", LPCSTR texture_normal = "assets/lava_selfmade_normal.png", LPCSTR texture_noise = "assets/lava_noise.png");
 
 	void draw(XMMATRIX view_projection, bool use_default_cb = false, D3D11_PRIMITIVE_TOPOLOGY mode = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST) override; // draw method override 
 

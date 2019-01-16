@@ -77,7 +77,6 @@ private:
 	float near_plane_; // near plane
 	float far_plane_; // far plane
 
-	XMVECTOR look_at_; // look at
 	XMMATRIX projection_; // projection
 	XMMATRIX view_; // view
 
