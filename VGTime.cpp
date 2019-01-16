@@ -34,11 +34,6 @@ void VGTime::start()
 		paused_ = 0;
 		is_paused_ = false;
 	}
-	else {
-		//return std::runtime_error("Could not get the current time from query performance counter!");
-	}
-
-
 }
 
 void VGTime::tick()
@@ -60,12 +55,7 @@ void VGTime::tick()
 
 			total_ = (current_ - start_ - idle_)*seconds_per_tick_;
 		}
-		else {
-			//return std::runtime_error("Could not get the current time from query performance counter!");
-		}
 	}
-
-
 }
 
 void VGTime::pause()
@@ -75,12 +65,6 @@ void VGTime::pause()
 		is_paused_ = true;
 		total_ = (paused_ - start_ - idle_)*seconds_per_tick_;
 	}
-	else
-	{
-		//return std::runtime_error("Could not get the current time from query performance counter!");
-	}
-
-
 }
 
 void VGTime::resume()
@@ -93,11 +77,6 @@ void VGTime::resume()
 
 		is_paused_ = false;
 	}
-	else {
-		//return std::runtime_error("Could not get the current time from query performance counter!");
-	}
-
-
 }
 
 void VGTime::stop()
@@ -107,10 +86,6 @@ void VGTime::stop()
 		total_ = static_cast<double> (current_ - start_) - idle_;
 		is_paused_ = true;
 	}
-	else {
-		//return std::runtime_error("timer is already stopped!");
-	}
-
 }
 
 void VGTime::reset()
@@ -124,11 +99,6 @@ void VGTime::reset()
 		total_ = 0;
 		is_paused_ = false;
 	}
-	else {
-		//return std::runtime_error("Could not get the current time from query performance counter!");
-	}
-
-
 }
 
 int VGTime::get_fps() const
@@ -144,5 +114,4 @@ int VGTime::get_fps() const
 	//	time_since_last_frame += 1.0;
 	//}
 	return min((int(1.0 / delta_time())), fps_limit); // +fps_) / 2;
-	//return fps_;
 }

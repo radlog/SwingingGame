@@ -10,22 +10,21 @@ class Model :
 	public BaseModel
 {
 
-
 public:
-	explicit Model(LPCSTR filename, CB_STATE state = CB_STATE_TIME_SCALED);
-	explicit Model(CB_STATE state = CB_STATE_TIME_SCALED);
+	explicit Model(LPCSTR filename, CB_STATE state = CB_STATE_TIME_SCALED); // initialize model with filename, constant buffer state
+	explicit Model(CB_STATE state = CB_STATE_TIME_SCALED); // initialize model with constant buffer state
 	~Model();
 
-	void draw(XMMATRIX view_projection, bool use_simple_cb = false, D3D11_PRIMITIVE_TOPOLOGY mode = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST) override;
+	void draw(XMMATRIX view_projection, bool use_simple_cb = false, D3D11_PRIMITIVE_TOPOLOGY mode = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST) override; // draw override
 
-	SphereCollider* get_bounding_sphere() const;
-	MeshCollider* get_mesh_collider() const;
+	SphereCollider* get_bounding_sphere() const; // return bounding sphere collider
+	MeshCollider* get_mesh_collider() const; // return mesh collider
 
 protected:
-	SphereCollider* sphere_collider_;
-	MeshCollider* mesh_collider_;
-	float radius_;
-	virtual void initialize_sphere_collider();
-	virtual void initialize_mesh_collider();
+	SphereCollider* sphere_collider_; // bounding sphere collider
+	MeshCollider* mesh_collider_; // mesh collider
+	float radius_; // initial radius of the model collision
+	virtual void initialize_sphere_collider(); // initialize sphere collider
+	virtual void initialize_mesh_collider(); // initialize mesh collider
 };
 

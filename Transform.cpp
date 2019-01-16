@@ -82,10 +82,6 @@ void Transform::translate(const XMVECTOR direction, const float speed)
 	calculate_world_transform();
 }
 
-void Transform::look_at(XMVECTOR target)
-{
-
-}
 
 XMMATRIX Transform::get_world()
 {
@@ -114,11 +110,6 @@ void Transform::set_world_position(XMVECTOR position)
 	calculate_world_transform();
 }
 
-void Transform::apply_force(XMVECTOR force)
-{
-	local_position_ += XMVector4Normalize(force);
-	calculate_world_transform();
-}
 
 XMVECTOR Transform::get_local_scale() const
 {

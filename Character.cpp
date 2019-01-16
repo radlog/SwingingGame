@@ -6,12 +6,12 @@ Character::Character()
 
 }
 
-Character::Character(const LPCSTR name) : GameObject(name)
+Character::Character(const LPCSTR name) : GameObject(name), life_(100)
 {
 
 }
 
-Character::Character(const LPCSTR name, Model *model, Transform *transform) : GameObject(name, model, transform)
+Character::Character(const LPCSTR name, Model *model, Transform *transform) : GameObject(name, model, transform), life_(100)
 {
 }
 
@@ -77,12 +77,14 @@ void Character::die()
 	transform_->translate(XMVectorSet(0, 30, 0, 0));
 	set_grounded(false);
 	air_time_ = 0;
+	life_ = 100;
 }
 
 // inflicts damage to the character, the boolean says if the character died or not
-bool Character::inflict(float dmg)
+bool Character::inflict(const int dmg)
 {
-	if (life_ -= dmg <= 0)
+	life_ -= dmg;
+	if (life_ <= 0)
 	{
 		die();
 		return true;
@@ -104,6 +106,11 @@ void Character::crouch(VGTime *timer)
 void Character::jump(VGTime* timer)
 {
 	translate(Transform::world_up, timer->delta_time() * jump_speed_ );
+}
+
+int Character::get_life() const
+{
+	return life_;
 }
 
 

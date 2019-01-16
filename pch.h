@@ -1,9 +1,11 @@
 #pragma once
 #include <Windows.h>
 #include <d3d11.h>
+#include <d2d1.h>
+#include <sstream>
 #include <dxgi.h>
 #include <d3dx11.h>
-#include <dxerr.h>
+#include <dxerr.h> 
 #include <xnamath.h>
 #include <dinput.h>
 #include "d3dfw.h"

@@ -12,9 +12,8 @@ public:
 	Obstacle();
 	~Obstacle();
 
-	explicit Obstacle(OBSTACLE_TYPE obstacle_type);
+	explicit Obstacle(OBSTACLE_TYPE obstacle_type); // initialize obstacle
 
-	void explode(Character target, float dmg) const;
-	void push_back(Character target, XMVECTOR force) const;
+	void explode(Character target, float dmg) const; // explode when target collided
 };
 

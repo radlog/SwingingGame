@@ -27,7 +27,7 @@ HRESULT D3Dfw::initialise_window(const HINSTANCE instance, const int n_cmd_show,
 	// window title
 	char name[100] = "Swing around\0";
 
-	// Register class
+	// register window class
 	WNDCLASSEX wcex = { 0 };
 	wcex.cbSize = sizeof(WNDCLASSEX);
 	wcex.style = CS_HREDRAW | CS_VREDRAW;
@@ -39,9 +39,9 @@ HRESULT D3Dfw::initialise_window(const HINSTANCE instance, const int n_cmd_show,
 
 	if (!RegisterClassEx(&wcex)) return E_FAIL;
 
-	// Create window
+	// create window
 	h_inst = instance;
-	RECT rc = { 0, 0, 640, 480 };
+	RECT rc = { 0, 0, screen_width_, screen_height_ };
 	AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, FALSE);
 	h_wnd = CreateWindow(name, g_title_, WS_OVERLAPPEDWINDOW,
 		CW_USEDEFAULT, CW_USEDEFAULT, rc.right - rc.left,
@@ -67,8 +67,8 @@ HRESULT D3Dfw::initialise_dx() {
 
 	D3D_DRIVER_TYPE driver_types[] =
 	{
-		D3D_DRIVER_TYPE_HARDWARE, // comment out this line if you need to test D3D 11.0 functionality on hardware that doesn't support it
-		D3D_DRIVER_TYPE_WARP, // comment this out also to use reference device
+		D3D_DRIVER_TYPE_HARDWARE, // 
+		D3D_DRIVER_TYPE_WARP, // 
 		D3D_DRIVER_TYPE_REFERENCE,
 	};
 	const auto num_driver_types = ARRAYSIZE(driver_types);
@@ -137,8 +137,8 @@ HRESULT D3Dfw::initialise_dx() {
 	tex_2d_desc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
 	tex_2d_desc.Usage = D3D11_USAGE_DEFAULT;
 
-	ID3D11Texture2D *pZBufferTexture;
-	hr = device_->CreateTexture2D(&tex_2d_desc, nullptr, &pZBufferTexture);
+	ID3D11Texture2D *z_buffer_texture;
+	hr = device_->CreateTexture2D(&tex_2d_desc, nullptr, &z_buffer_texture);
 
 	if (FAILED(hr)) return hr;
 
@@ -149,21 +149,22 @@ HRESULT D3Dfw::initialise_dx() {
 	dsv_desc.Format = tex_2d_desc.Format;
 	dsv_desc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 
-	device_->CreateDepthStencilView(pZBufferTexture, &dsv_desc, &z_buffer_);
-	pZBufferTexture->Release();
+	device_->CreateDepthStencilView(z_buffer_texture, &dsv_desc, &z_buffer_);
+	z_buffer_texture->Release();
 
 	immediate_context_->OMSetRenderTargets(1, &render_target_view_, z_buffer_);
 
+	// viewport structure
 	D3D11_VIEWPORT viewport;
 
-	viewport.TopLeftX = 0;
-	viewport.TopLeftY = 0;
-	viewport.Width = static_cast<FLOAT>(width);
-	viewport.Height = static_cast<FLOAT>(height);
-	viewport.MinDepth = 0.0f;
-	viewport.MaxDepth = 1.0f;
+	viewport.TopLeftX = 0; // set top left x coordinate
+	viewport.TopLeftY = 0; // set top left y coordinate
+	viewport.Width = static_cast<FLOAT>(width); // define the width
+	viewport.Height = static_cast<FLOAT>(height); // define the height
+	viewport.MinDepth = 0.0f; // minimum depth of viewport
+	viewport.MaxDepth = 1.0f; // maximum depth of viewport
 
-	immediate_context_->RSSetViewports(1, &viewport);
+	immediate_context_->RSSetViewports(1, &viewport); // create single viewport 
 
 
 	return S_OK;
@@ -177,9 +178,9 @@ HRESULT D3Dfw::initialise_input()
 
 void D3Dfw::clear_rtv() const
 {
-	float rgba_clear_colour[4] = { 0.0f,0.0f,0.0f,1.0f };
-	immediate_context_->ClearRenderTargetView(render_target_view_, rgba_clear_colour);
-	immediate_context_->ClearDepthStencilView(z_buffer_, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+	float rgba_clear_colour[4] = { 0.0f,0.0f,0.0f,1.0f }; // set the clear color of the render target
+	immediate_context_->ClearRenderTargetView(render_target_view_, rgba_clear_colour); // clear the render target with the color
+	immediate_context_->ClearDepthStencilView(z_buffer_, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0); // clear z-buffer
 }
 
 ID3D11Device* D3Dfw::get_device() const

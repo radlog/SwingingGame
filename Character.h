@@ -99,16 +99,17 @@ public:
 	 * \param dmg damage to be inflicted
 	 * \return character dead
 	 */
-	virtual bool inflict(float dmg);
+	virtual bool inflict(int dmg);
 	void update(VGTime *timer)override;
 	void crouch(VGTime *timer);
 	void jump(VGTime *timer);
+	int get_life() const;
 protected:
-	Stats stats_; // 
-	int life_ = 100; // 
-	Collectable collected_; // 
-	STATE state_ = STANDING; // 
-	float speed_ = 100; // 
-	double jump_speed_ = 8.0f;
+	Stats stats_; // character stats
+	Collectable collected_; // collected items
+	STATE state_ = STANDING; // character movement state
+	int life_; // character life
+	float speed_; // character movement speed
+	double jump_speed_ = 8.0f; // character jump speed
 };
 

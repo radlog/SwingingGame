@@ -14,9 +14,12 @@ cbuffer CBuffer0
     float4 rgb_amount;
     float game_time;
     float3 packing; // 12 bytes
+
+    // these vars are a copies from a resource i wanted to learn from, so i just commented it out
     //float3 PointLightPos : packoffset(c0);
     //float PointLightRangeRcp : packoffset(c0.w);
     //float scale; // 4 bytes
+
 }; // total 80 bytes
 
 
@@ -27,6 +30,10 @@ struct VOut
     float2 texcoord : TEXCOORD;
 };
 
+
+// this code is a copy from a resource i wanted to learn from, so i just commented it out
+
+// NOT IN USE
 
 //float3 CalcPoint
 //    (
@@ -66,14 +73,14 @@ VOut VShader(float4 position : POSITION, float4 color : COLOR, float2 texcoord :
 
     float3 world_eye_position = position;
     float3 view_position = normalize(mul(position, WVPMatrix));
-    float3 look_direction = world_eye_position - view_position;
-    //output.color = ambient_light_colour + (directional_light_colour * diffuse_amount);//+color;
+    float3 look_direction = view_position - world_eye_position;
+    
+    // PHONG LIFGHTING
     float4 diffuse_amount = saturate(dot(normalize(normal), normalize(directional_light_vector)));
     float3 reflection = normalize(2 * diffuse_amount * normalize(normal) - normalize(directional_light_vector));
-    float4 specular = pow(saturate(dot(reflection, look_direction)), 6); // R.V^n
+    float4 specular = pow(saturate(dot(reflection, look_direction)), 20); // R.V^n
 
     output.color = ambient_light_colour + directional_light_colour * diffuse_amount + specular;
-    //output.color = color;
     output.texcoord = texcoord;
 
     return output;

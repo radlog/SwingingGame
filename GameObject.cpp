@@ -31,7 +31,6 @@ GameObject::GameObject(const LPCSTR name, Model *model, Transform *transform, co
 	if (sc != nullptr)
 	{
 		const auto s = sizeof(SphereCollider);
-		malloc(s);
 		sphere_collider_ = new SphereCollider();
 		memcpy(sphere_collider_, model_->get_bounding_sphere(), s);
 		sphere_collider_->set_world_position(sphere_collider_->get_origin() + transform->get_local_position());
@@ -39,7 +38,6 @@ GameObject::GameObject(const LPCSTR name, Model *model, Transform *transform, co
 	if (mc != nullptr)
 	{
 		const auto s = sizeof(MeshCollider);
-		malloc(s);
 		mesh_collider_ = new MeshCollider();
 		memcpy(mesh_collider_, model_->get_mesh_collider(), s);
 		mesh_collider_->set_world_position(mesh_collider_->get_origin() + transform->get_local_position());
@@ -168,10 +166,10 @@ bool GameObject::check_collision(GameObject* target)
 			{
 				set_grounded(target->transform_->get_local_position().y + target->get_sphere_collider()->get_radius() - 1 < transform_->get_local_position().y);
 				if (target->get_tag() == LAVA && typeid(*this).name() == typeid(Player).name()) static_cast<Player*>(this)->die();
-				OutputDebugString(name_);
-				OutputDebugString("\n");
-				OutputDebugString(target->get_name());
-				OutputDebugString("\n");
+				//OutputDebugString(name_);
+				//OutputDebugString("\n");
+				//OutputDebugString(target->get_name());
+				//OutputDebugString("\n");
 				return true;
 			}
 		}
@@ -204,22 +202,6 @@ void GameObject::set_transform(Transform *transform)
 	transform_= transform;
 }
 
-Collider* GameObject::get_last_collision()
-{
-	return nullptr;
-}
-
-void GameObject::spawn(XMVECTOR position)
-{
-}
-
-void GameObject::render()
-{
-}
-
-void GameObject::start()
-{
-}
 
 void GameObject::update_transform(XMMATRIX *world)
 {
@@ -278,11 +260,6 @@ LPCSTR GameObject::get_name() const
 Model* GameObject::get_model() const
 {
 	return model_;
-}
-
-void GameObject::set_model(Model* model)
-{
-	model_ = model;
 }
 
 void GameObject::set_parent(GameObject* parent)

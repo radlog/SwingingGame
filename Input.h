@@ -44,6 +44,5 @@ private:
 	long mouse_y_ = 0; // current mouse y position
 
 	bool locked_ = true; // says whether to use the forward vector locked horizontally or not
-	bool fly_mode_ = false; // says whether player can use jump - even when he is in air - or not
-	bool jumping_;
+	bool fly_mode_ = false; // says whether player can use jump - even when he is in air - or not	
 };

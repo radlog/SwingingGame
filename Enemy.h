@@ -11,7 +11,6 @@ class Enemy : public Character
 		SWINGER
 	};
 	
-	
 public:
 	Enemy();
 	~Enemy();
@@ -23,15 +22,24 @@ public:
 	 * \brief causes the enemy to attack a character
 	 * \param target character to be attacked
 	 */
-	void attack(Character target) const;
+	void attack(Character *target) const; // attack a target
 
 
-	void chase_target(GameObject *target, VGTime *timer);
-	void update(VGTime * timer) override;
+	void chase_target(GameObject *target, VGTime *timer); // chases target
+	
+	void update(VGTime * timer) override; // update enemy logic
+	void set_path(vector<XMVECTOR> *path);
 
 private:
-	double time_since_collision_ = 0;
-	float time_to_recover_ = 4;
-	void step_back(VGTime* timer, XMVECTOR direction);
+
+
+
+	vector<XMVECTOR> *path_;
+	double time_since_collision_ = 0; // total game time is stored, when enemy collides
+	float time_to_recover_ = 4; // time that enemy flees when collided
+	float switch_limit_ = 1; // maximum distance to the next node in path to switch to another
+	void step_back(VGTime* timer, XMVECTOR direction); // move enemy away from the target it collided with
+	void patrol(VGTime* timer);
+	int path_counter_;
 };
 

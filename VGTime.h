@@ -13,12 +13,12 @@ public:
 	double delta_time() const;
 	double total_time() const;
 
-	void start();
-	void tick();
-	void pause();
-	void resume();
-	void stop();
-	void reset();
+	void start(); // start the timer
+	void tick(); // run the timer and add a tick to total time
+	void pause(); // pause the timer
+	void resume(); // resume the timer
+	void stop(); // stop the timer
+	void reset(); // reset the timer
 
 	int get_fps() const;
 
@@ -32,11 +32,11 @@ private:
 
 	double total_; //total time the timer ran(total lifetime - idle)
 	double delta_; //time between two frames
-	double seconds_per_tick_;
+	double seconds_per_tick_; // value in seconds per tick
 
-	bool is_paused_;
+	bool is_paused_; // is timer paused or not
 
-	int fps_ = 0;
+	//int fps_ = 0; // average frames per second
 	
 };
 

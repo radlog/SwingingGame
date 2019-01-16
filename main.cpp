@@ -1,8 +1,7 @@
 
 #include "main.h"
-#include <sstream>
+
 #include "LavaFloor.h"
-#include <d2d1.h>
 #include "Floor.h"
 #include "Player.h"
 #include "GeoCube.h"
@@ -10,9 +9,6 @@
 #include "Enemy.h"
 #include "Text2D.h"
 #include "ParticleFactory.h"
-#include <dxgi.h>
-#include <dxerr.h>   
-#include <xnamath.h>
 
 #include "Camera.h"
 #include "GameObject.h"
@@ -116,14 +112,14 @@ void render_frame(Camera *camera)
 {
 	const auto view_projection = camera->calculate_view_projection(); // get camera view projection to project the 3d space to 2d 
 	const auto sky_lock = XMMatrixTranslationFromVector(camera->get_transform()->get_local_position()) * view_projection; // move skybox transform with the camera
-	
+
 	dx_handle->clear_rtv(); // clear the render target view
 
 	// draw start
 	skybox.draw(sky_lock); // draw skybox
 
 	// update constant buffer values for every gameobject in the scene
-	scene_root.update_constant_buffer_time_scaled(view_projection, view_projection, directional_light_shines_from, directional_light_colour, ambient_light_colour, timer->total_time()); 
+	scene_root.update_constant_buffer_time_scaled(view_projection, view_projection, directional_light_shines_from, directional_light_colour, ambient_light_colour, timer->total_time());
 	scene_root.draw(view_projection); // draw scene
 
 	// draw text 
@@ -142,11 +138,13 @@ void update(VGTime* timer)
 	const auto kills = "kills " + std::to_string(player->get_stats().kills); // player kills text
 	const auto deaths = "deaths " + std::to_string(player->get_stats().deaths); // player deaths text
 	const auto score = "score " + std::to_string(player->get_stats().score); // player score text
+	const auto life = "life " + std::to_string(player->get_life()); // player life text
 	fps_info->AddText("FPS " + std::to_string(timer->get_fps()), -0.5, +1.0, 0.1); // add fps info text
 	stat_info->AddText(kills, -1.0, +1.0, 0.05); // add kills text
 	stat_info->AddText(deaths, -1.0, +0.95, 0.05); // add deaths text
 	stat_info->AddText(score, -1.0, +0.90, 0.05); // add score text
-	
+	stat_info->AddText(life, -1.0, +0.85, 0.05); // add life text
+
 	scene_root.update(timer); // update scene with all its children
 }
 
@@ -155,7 +153,7 @@ void update(VGTime* timer)
 void end_game()
 {
 	timer->stop();
-	scene_root.cleanup();	
+	scene_root.cleanup();
 }
 
 
@@ -170,7 +168,7 @@ void end_game()
 
 void load_lava()
 {
-	
+
 }
 
 void load_enemies(GameObject* root)
@@ -178,14 +176,13 @@ void load_enemies(GameObject* root)
 	for (size_t i = 0; i < enemy_count; i++)
 	{
 		const auto enem = new Enemy("enemy", enemy, new Transform(XMVectorSplatOne(), XMQuaternionIdentity(), XMVectorSet(i * plat_distance_horizontal, plat_distance_vertical * 1.5, i * plat_distance_horizontal, 0)));
-			root->add_child(enem);
+		root->add_child(enem);
 	}
 }
 
 void load_map(GameObject* root, const float scale)
 {
-
-	scene_root.add_child(lava);
+	scene_root.add_child(lava); // add lava to scene
 
 	// initialise lower platforms
 	for (size_t i = 0; i < static_cast<int>(sqrt(platform_count)); i++)
@@ -193,29 +190,29 @@ void load_map(GameObject* root, const float scale)
 		for (size_t j = 0; j < static_cast<int>(sqrt(platform_count)); j++)
 		{
 			const auto pl = new GameObject("lower_platform", island_model, new Transform(scale_vector, rotation, XMVectorSet(i * plat_distance_horizontal, plat_distance_vertical, j * plat_distance_horizontal, 0)));
-			root->add_child(pl);
+			root->add_child(pl); // add to scene
 		}
 	}
 
+	// initialise middle platforms
 	for (size_t i = 0; i < static_cast<int>(sqrt(platform_count)); i++)
 	{
 		for (size_t j = 0; j < static_cast<int>(sqrt(platform_count)); j++)
 		{
 			const auto pl = new GameObject("middle_platform", island_model, new Transform(scale_vector, rotation, XMVectorSet(i * plat_distance_horizontal, plat_distance_vertical * 2, j * plat_distance_horizontal, 0)));
-			root->add_child(pl);
+			root->add_child(pl); // add to scene
 		}
 	}
 
+	// initialise upper platforms
 	for (size_t i = 0; i < static_cast<int>(sqrt(platform_count)); i++)
 	{
 		for (size_t j = 0; j < static_cast<int>(sqrt(platform_count)); j++)
 		{
 			const auto pl = new GameObject("upper_platform", island_model, new Transform(scale_vector, rotation, XMVectorSet(i * plat_distance_horizontal, plat_distance_vertical * 3, j * plat_distance_horizontal, 0)));
-			root->add_child(pl);
+			root->add_child(pl); // add to scene
 		}
 	}
-
-
 }
 
 
@@ -225,7 +222,7 @@ void load_content()
 	// particles 
 	particles = ParticleFactory(); // particle object
 	particles.create_particle(); // particle creation
-	
+
 	timer = new VGTime(); // the game timer for steady movement
 	skybox = Skybox("assets/purple_nebular.dds"); // skybox that loads a cube-map
 
@@ -288,7 +285,7 @@ HRESULT init_dx(const HINSTANCE instance, HINSTANCE prev_instance, const LPSTR l
 
 	fps_info = new Text2D("assets/font1.bmp", dx_handle->get_device(), dx_handle->get_immediate_context());
 	stat_info = new Text2D("assets/font1.bmp", dx_handle->get_device(), dx_handle->get_immediate_context());
-	
+
 	ShowCursor(false);
 
 	return hr;

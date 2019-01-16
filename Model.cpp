@@ -3,7 +3,7 @@
 #include "MeshCollider.h"
 #include "MathHelper.h"
 
-Model::Model(const LPCSTR filename, const CB_STATE state) : BaseModel(filename, state), sphere_collider_(nullptr),radius_(0),mesh_collider_(nullptr)
+Model::Model(const LPCSTR filename, const CB_STATE state) : BaseModel(filename, state), sphere_collider_(nullptr),mesh_collider_(nullptr),radius_(0)
 {
 	origin_ = XMVectorZero();
 	calculate_origin();
@@ -11,7 +11,7 @@ Model::Model(const LPCSTR filename, const CB_STATE state) : BaseModel(filename, 
 	Model::initialize_mesh_collider();
 }
 
-Model::Model(const CB_STATE state) : BaseModel(state), sphere_collider_(nullptr), radius_(0), mesh_collider_(nullptr)
+Model::Model(const CB_STATE state) : BaseModel(state), sphere_collider_(nullptr), mesh_collider_(nullptr), radius_(0)
 {
 	origin_ = XMVectorZero();
 	calculate_origin();

@@ -1,5 +1,5 @@
 #pragma once
-#include "InputHandler.h"
+#include "Input.h"
 
 // directX framework class to initialise directX and create an instance to be used as handle
 class D3Dfw
@@ -35,6 +35,7 @@ public:
 	IDXGISwapChain *get_swap_chain() const; // returns the instance's swap chain 
 	
 private:
+
 	D3Dfw();
 	~D3Dfw();
 	static D3Dfw *instance_; // singleton instance object
@@ -51,5 +52,7 @@ private:
 	ID3D11RenderTargetView *render_target_view_ = nullptr; // pointer to render target view
 	ID3D11DepthStencilView *z_buffer_; // pointer to depth stencil buffer
 
+	int screen_width_ = 1280;
+	int screen_height_ = 920;
 
 };

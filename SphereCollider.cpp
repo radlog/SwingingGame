@@ -18,10 +18,9 @@ SphereCollider::~SphereCollider()
 
 bool SphereCollider::sphere_to_sphere_collision(const SphereCollider col) const
 {
-	const auto distance = dist(col.world_, world_);
-	const auto limit = col.radius_ + radius_;
-	auto test = distance <= limit;
-	return distance <= limit;
+	const auto distance = dist(col.world_, world_); // get distance to other sphere collider
+	const auto limit = col.radius_ + radius_; // set limit adding radius of both together	
+	return distance <= limit; // return true if the distance is less than the limit
 }
 
 bool SphereCollider::sphere_to_mesh_collision(MeshCollider col) const
@@ -34,14 +33,13 @@ bool SphereCollider::sphere_to_mesh_collision(MeshCollider col) const
 		XMVECTOR v3 = i.v3 + col.get_world_position();
 
 		auto plane = get_plane(v1, v2, v3); // get plane from vertices
-		auto ray = XMVector4Normalize(world_ - plane.normal * col.get_world_position());
-		auto start_point = world_;
-		auto end_point = world_  + ray * radius_ + ray * col.get_radius();
+		auto ray = XMVector4Normalize(world_ - plane.normal * col.get_world_position()); // create ray pointing towards the mesh colliding with		
+		auto end_point = world_  + ray * radius_ + ray * col.get_radius(); // cast ray multiplied with collider radius to prevent multiple collisions with planes of the mesh
 
-		if (plane_intersection(&plane, &start_point, &end_point))
+		if (plane_intersection(&plane, &world_, &end_point)) // check if ray intersected with plane
 		{
-			auto point = ray_to_plane_intersection_point(&plane, &ray, &start_point);
-			if (in_triangle(&v1, &v2, &v3, &point))
+			auto point = ray_to_plane_intersection_point(&plane, &ray, &world_); // get intersection point
+			if (in_triangle(&v1, &v2, &v3, &point)) // check if intersection point is in triangle
 				return true;
 		}
 	}
@@ -50,6 +48,7 @@ bool SphereCollider::sphere_to_mesh_collision(MeshCollider col) const
 
 bool SphereCollider::check_collision(Collider* col)
 {
+	// call the corresponding function depending on which type the collider is
 	if (typeid(*col).name() == typeid(SphereCollider).name())
 	{
 		const auto s = dynamic_cast<SphereCollider*>(col);

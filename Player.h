@@ -45,6 +45,6 @@ public:
 protected:
 	Camera *fps_camera_ = nullptr; //the camera attached to the player
 	Camera *top_down_camera_ = nullptr; // represents the minimap shown at the right upper corner of the view
-	void init_cameras(bool fps);
+	void init_cameras(bool fps); // initialize players cameras
 };
 
