@@ -2,7 +2,6 @@
 #include "VGTime.h"
 #include "Character.h"
 
-
 class GameObject;
 class Character;
 

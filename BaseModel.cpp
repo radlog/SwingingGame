@@ -1,5 +1,5 @@
 #include "BaseModel.h"
-
+#include "MathHelper.h"
 
 // CONSTRUCTOR methods
 

@@ -2,33 +2,27 @@
 #include "main.h"
 #include <sstream>
 #include "LavaFloor.h"
-#include <dwrite.h>
 #include <d2d1.h>
 #include "Floor.h"
 #include "Player.h"
 #include "GeoCube.h"
 #include "Model.h"
 #include "Enemy.h"
-#include "ObjCube.h"
 #include "Text2D.h"
 #include "ParticleFactory.h"
+#include <dxgi.h>
+#include <dxerr.h>   
+#include <xnamath.h>
 
-// constants
-const int enemy_count = 10;
-const int platform_count = 100; // number of platforms
-const auto scale_vector = XMVectorSet(1, 1, 1, 0); // platform scale
-const auto rotation = XMQuaternionIdentity(); // identity rotation
-const auto plat_distance_horizontal = 20;
-const auto plat_distance_vertical = 20;
-const auto lava_tiles = 800;
+#include "Camera.h"
+#include "GameObject.h"
+#include "Skybox.h"
 
 
 ParticleFactory particles;
 
 //using namespace std;
 D3Dfw *dx_handle = D3Dfw::get_instance();
-
-
 
 
 // 2d text
@@ -79,7 +73,7 @@ void update(VGTime *timer);
 // draw method
 void render_frame(Camera *camera);
 
-
+// cleanup for when the game ends
 void end_game();
 
 
@@ -183,8 +177,8 @@ void load_enemies(GameObject* root)
 {
 	for (size_t i = 0; i < enemy_count; i++)
 	{
-		auto e = new Enemy("enemy", enemy, new Transform(XMVectorSplatOne(), XMQuaternionIdentity(), XMVectorSet(i * plat_distance_horizontal, plat_distance_vertical * 1.5, i * plat_distance_horizontal, 0)));
-			root->add_child(e);
+		const auto enem = new Enemy("enemy", enemy, new Transform(XMVectorSplatOne(), XMQuaternionIdentity(), XMVectorSet(i * plat_distance_horizontal, plat_distance_vertical * 1.5, i * plat_distance_horizontal, 0)));
+			root->add_child(enem);
 	}
 }
 
@@ -194,27 +188,27 @@ void load_map(GameObject* root, const float scale)
 	scene_root.add_child(lava);
 
 	// initialise lower platforms
-	for (size_t i = 0; i < sqrt(platform_count); i++)
+	for (size_t i = 0; i < static_cast<int>(sqrt(platform_count)); i++)
 	{
-		for (size_t j = 0; j < sqrt(platform_count); j++)
+		for (size_t j = 0; j < static_cast<int>(sqrt(platform_count)); j++)
 		{
 			const auto pl = new GameObject("lower_platform", island_model, new Transform(scale_vector, rotation, XMVectorSet(i * plat_distance_horizontal, plat_distance_vertical, j * plat_distance_horizontal, 0)));
 			root->add_child(pl);
 		}
 	}
 
-	for (size_t i = 0; i < sqrt(platform_count); i++)
+	for (size_t i = 0; i < static_cast<int>(sqrt(platform_count)); i++)
 	{
-		for (size_t j = 0; j < sqrt(platform_count); j++)
+		for (size_t j = 0; j < static_cast<int>(sqrt(platform_count)); j++)
 		{
 			const auto pl = new GameObject("middle_platform", island_model, new Transform(scale_vector, rotation, XMVectorSet(i * plat_distance_horizontal, plat_distance_vertical * 2, j * plat_distance_horizontal, 0)));
 			root->add_child(pl);
 		}
 	}
 
-	for (size_t i = 0; i < sqrt(platform_count); i++)
+	for (size_t i = 0; i < static_cast<int>(sqrt(platform_count)); i++)
 	{
-		for (size_t j = 0; j < sqrt(platform_count); j++)
+		for (size_t j = 0; j < static_cast<int>(sqrt(platform_count)); j++)
 		{
 			const auto pl = new GameObject("upper_platform", island_model, new Transform(scale_vector, rotation, XMVectorSet(i * plat_distance_horizontal, plat_distance_vertical * 3, j * plat_distance_horizontal, 0)));
 			root->add_child(pl);

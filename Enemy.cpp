@@ -1,8 +1,9 @@
 #include "Enemy.h"
 #include "Player.h"
+#include "MathHelper.h"
 
-const float chase_radius = 10.0f;
-const float chase_speed = 10.0f;
+const double chase_radius = 10.0f;
+const double chase_speed = 10.0f;
 
 
 Enemy::Enemy()

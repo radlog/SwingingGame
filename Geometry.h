@@ -1,5 +1,4 @@
 #pragma once
-#include "Transform.h"
 
 // vertex format with position, color
 // NOTE::this structure is not used in this solution. I still want to keep it for testing

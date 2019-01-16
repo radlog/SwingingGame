@@ -1,12 +1,6 @@
 #include "pch.h"
 #include "Floor.h"
-
-
-
-//Floor::Floor()
-//{
-//}
-
+#include "MathHelper.h"
 
 Floor::~Floor()
 {

@@ -1,10 +1,7 @@
 #pragma once
-#include <string>
 #include "Transform.h"
 #include "Model.h"
-#include "SoundEngine.h"
 #include "GameData.h"
-#include "MathHelper.h"
 #include "SphereCollider.h"
 #include "MeshCollider.h"
 

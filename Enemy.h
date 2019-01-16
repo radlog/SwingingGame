@@ -1,7 +1,7 @@
 #pragma once
 
-extern const float chase_radius;
-extern const float chase_speed;
+extern const double chase_radius;
+extern const double chase_speed;
 
 class Enemy : public Character
 {
@@ -30,7 +30,7 @@ public:
 	void update(VGTime * timer) override;
 
 private:
-	float time_since_collision_ = 0;
+	double time_since_collision_ = 0;
 	float time_to_recover_ = 4;
 	void step_back(VGTime* timer, XMVECTOR direction);
 };

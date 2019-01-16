@@ -1,5 +1,4 @@
 #pragma once
-#include <Windows.h>
 extern const int fps_limit;
 
 class VGTime
