@@ -1,6 +1,8 @@
 #include "Character.h"
 
 
+const float hook_range = 10.0f;
+
 Character::Character()
 {
 
@@ -108,6 +110,18 @@ void Character::crouch(VGTime *timer)
 void Character::jump(VGTime* timer)
 {
 	translate(Transform::world_up, timer->delta_time() * jump_speed_ );
+}
+
+void Character::hook(VGTime* timer)
+{
+	auto hook_ray = transform_->get_local_forward() * hook_range;
+	for(auto& i : parent_->get_children())
+	{
+		if(cast_ray(hook_ray, hook_range) == i)
+		{
+			
+		}
+	}
 }
 
 int Character::get_life() const

@@ -103,6 +103,7 @@ public:
 	void update(VGTime *timer)override;
 	void crouch(VGTime *timer);
 	void jump(VGTime *timer);
+	void hook(VGTime *timer);
 	int get_life() const;
 protected:
 	Stats stats_; // character stats

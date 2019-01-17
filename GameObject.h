@@ -20,7 +20,8 @@ enum TAG
 	POLY = 3,
 	CHARACTER = 4,
 	PLAYER = 5,
-	LAVA = 6
+	LAVA = 6,
+	PLATFORM = 7
 };
 
 // most important class to create and handle all entities within the game
@@ -87,6 +88,7 @@ public:
 		const XMVECTOR directional_light_color, const XMVECTOR ambient_light_color, const float game_time); //update constant buffer for lighted models
 
 	virtual void cleanup(); // cleanup pointers to prevent memory leaks
+	virtual GameObject* cast_ray(XMVECTOR ray, float range);
 protected:
 	GameObject *parent_; // parent gameobject
 	vector<GameObject*> children_; // pointer to children list of gameobject

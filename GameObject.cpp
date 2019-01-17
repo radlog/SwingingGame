@@ -344,3 +344,8 @@ void GameObject::cleanup()
 	for (auto& i : children_)
 		i->cleanup();
 }
+
+GameObject* GameObject::cast_ray(XMVECTOR ray, float range)
+{
+
+}
