@@ -31,6 +31,12 @@
     <Filter Include="Header Files\directx">
       <UniqueIdentifier>{edbbf3e3-bcea-4cf1-b474-f20a601bab5d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\MemoryManagement">
+      <UniqueIdentifier>{16854087-0b6c-46b8-865e-804aeb681fc1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\MemoryManagement">
+      <UniqueIdentifier>{cec570b9-c633-42fe-9bd5-10643cd8a6e8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -110,6 +116,9 @@
     </ClCompile>
     <ClCompile Include="ParticleFactory.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Allocator.cpp">
+      <Filter>Source Files\MemoryManagement</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -214,6 +223,9 @@
     </ClInclude>
     <ClInclude Include="ParticleFactory.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Allocator.h">
+      <Filter>Header Files\MemoryManagement</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
